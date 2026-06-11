@@ -10,7 +10,7 @@ PermissionsExPlus provides a flexible permissions system with support for users,
 
 This fork is based on the original PermissionsEx project and keeps the same core plugin identity and command style where practical.
 
-**Maven:** parent **`dev.rono.permissions:PermissionsExPlus`**. Runtime ships as **`permissionsex-bootstrap`** (universal jar). Hook plugins compile against **`permissionsex-legacy-api`** + **`permissionsex-legacy-stub`** (classic) and/or **`permissionsex-api`** (modern). See [Modules](#modules) and [Hook plugin development](#hook-plugin-development).
+**Maven:** parent **`dev.rono.permissions:PermissionsExPlus`**. Runtime ships as **`permissionsex-bootstrap`** (universal jar). Hook plugins compile against **`permissionsex-legacy-api`** + **`permissionsex-legacy-stub`** (classic) and/or **`permissionsex-api`** (modern). See [Modules](#modules), [Hook plugin development](#hook-plugin-development), and **[API documentation](docs/api/README.md)**.
 
 ```mermaid
 flowchart BT
@@ -94,7 +94,7 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 | `dev.rono.permissions.api.*` | Modern integration SPI | **Yes** — via `permissionsex-api` / `permissionsex-core-api` |
 | `dev.rono.permissions.core.*` | Implementation internals | **No** — not a supported hook surface |
 
-More detail: [`ARCHITECTURE.md`](ARCHITECTURE.md).
+More detail: [`ARCHITECTURE.md`](ARCHITECTURE.md). Hook plugin APIs: [`docs/api/README.md`](docs/api/README.md).
 
 ## Hook plugin development
 
@@ -135,11 +135,11 @@ For plugins originally written against PermissionsEx 1.23.x (`PermissionsEx.getP
 
 **Runtime:** the server provides the real `ru.tehkode.permissions.bukkit.PermissionsEx` (`JavaPlugin`) and registers `PermissionManager` on `ServicesManager`. Pre-1.23.5 PEX hook JARs should run **without recompiling** if they only used the classic public API.
 
-Working example: [`example-legacy-plugin/`](example-legacy-plugin/).
+Working example: [`example-legacy-plugin/`](example-legacy-plugin/). Full reference: **[Legacy API docs](docs/api/LEGACY_API.md)**.
 
 ### Modern (new) API hook — `dev.rono.*`
 
-For new integrations that should not depend on the frozen `ru.tehkode.*` surface.
+For new integrations that should not depend on the frozen `ru.tehkode.*` surface. Full reference: **[Modern API docs](docs/api/MODERN_API.md)**. Planned additions: **[API roadmap](docs/api/FUTURE.md)**.
 
 #### Maven dependencies
 
@@ -198,6 +198,16 @@ New features are added on **`dev.rono.permissions.api.*`** only — the legacy `
 
 ### Modern API reference
 
+Detailed documentation lives under **[`docs/api/`](docs/api/README.md)**:
+
+| Document | Contents |
+|----------|----------|
+| [MODERN_API.md](docs/api/MODERN_API.md) | `PermissionService`, subjects, world contexts, timed permissions |
+| [LEGACY_API.md](docs/api/LEGACY_API.md) | Classic `PermissionManager`, events, stub |
+| [FUTURE.md](docs/api/FUTURE.md) | Recommended API additions and gaps |
+
+Summary below; see the linked docs for complete method lists and examples.
+
 #### `PermissionService` (`permissionsex-api`)
 
 Primary entry point for modern hook plugins. Lookup: `ServicesManager.getRegistration(PermissionService.class)`.
@@ -239,6 +249,11 @@ Subject operations are accessed through `User` and `Group` instances from `Permi
 | `effectivePermissions(world)` | Merged permissions after inheritance |
 | `addPermission` / `removePermission` / `setPermissions` | Direct permission CRUD |
 | `addTimedPermission` / `removeTimedPermission` / `timedPermissions` | Timed permission nodes |
+| `timedPermissionEntries(world)` / `allTimedPermissionEntries()` | Timed nodes with remaining seconds |
+| `timedPermissionRemainingSeconds(permission, world)` | Seconds until a timed permission expires |
+| `configuredWorlds()` | Worlds where this subject has data |
+| `permissionsByWorld()` / `effectivePermissionsByWorld()` | Per-world permission maps |
+| `inWorld(world)` / `global()` | World-scoped view (`SubjectWorldContext`) |
 | `prefix` / `suffix` / `setPrefix` / `setSuffix` | Chat meta |
 | `option` / `setOption` / `options` | Arbitrary options map |
 | `save()` / `delete()` | Persist or remove the subject |
@@ -249,6 +264,9 @@ Subject operations are accessed through `User` and `Group` instances from `Permi
 | `groups(world)` / `groups(world, inherit)` | Group membership |
 | `inGroup(name, world, inherit)` | Membership test |
 | `addGroup` / `removeGroup` | Group membership CRUD (supports timed membership) |
+| `timedGroupMemberships(world)` / `allTimedGroupMemberships()` | Timed group memberships with remaining seconds |
+| `groupMembershipRemainingSeconds(group, world)` | Seconds until timed membership expires |
+| `inWorld(world)` / `global()` | World-scoped view (`UserWorldContext`) |
 
 | `Group` (additional) | Description |
 |----------------------|-------------|
@@ -259,10 +277,24 @@ Subject operations are accessed through `User` and `Group` instances from `Permi
 | `addParent` / `removeParent` / `setParents` | Inheritance CRUD |
 | `isChildOf(name, world, inherit)` | Hierarchy test |
 | `rank()` / `rankLadder()` / `setRank(rank, ladder)` | Rank ladder metadata |
+| `memberIdentifiers(world)` / `members(world)` | Users in this group |
+| `activeMembers()` / `activeMembers(inherit)` | Online members |
+| `inWorld(world)` / `global()` | World-scoped view (`GroupWorldContext`) |
 
-`world` is `null` or empty for the global context (classic PEX `null` world).
+#### World helpers & timed records
 
-Sources: `api/src/main/java/dev/rono/permissions/api/subject/`
+| Type | Description |
+|------|-------------|
+| `Worlds.GLOBAL` | Global namespace (`null`); empty strings normalize to global |
+| `TimedPermissionEntry` | Record: permission, world, remainingSeconds |
+| `TimedGroupMembership` | Record: groupName, world, remainingSeconds |
+| `SubjectWorldContext` | World-scoped permission/meta view for any subject |
+| `UserWorldContext` | Adds group membership operations |
+| `GroupWorldContext` | Adds inheritance/default operations |
+
+`world` is `null` or empty for the global context (classic PEX `null` world). Prefer `user.inWorld("world_nether").addPermission("node")` for world-specific edits.
+
+Sources: `api/src/main/java/dev/rono/permissions/api/subject/`, `api/src/main/java/dev/rono/permissions/api/world/`
 
 #### `PlatformAdapter` (`permissionsex-core-api`)
 
@@ -360,7 +392,7 @@ For a full modern sample, see [`example-plugin/`](example-plugin/). For classic 
 |-------|--------|
 | **Minecraft** | Target **1.8.8 – 1.26.1** on Spigot/Paper and compatible forks |
 | **Java (this build)** | **Java 21+** required to run the plugin jar (bytecode is Java 21) |
-| **Legacy hook plugins** | Classic `ru.tehkode.*` contract restored to **`628215f`**; no recompile needed for typical 1.23.x hooks |
+| **Legacy hook plugins** | Classic `ru.tehkode.*` contract restored to **`628215f`**; see [`docs/api/LEGACY_API.md`](docs/api/LEGACY_API.md) |
 | **Bungee / Waterfall** | Same universal jar; see [`bootstrap/README.md`](bootstrap/README.md) |
 | **Pre-release verification** | [`docs/testing/REAL_SERVER_MATRIX.md`](docs/testing/REAL_SERVER_MATRIX.md) |
 | **Full notes** | [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) |

@@ -26,6 +26,8 @@ Compile against:
 - `permissionsex-legacy-api` — types, events, utils
 - `permissionsex-legacy-stub` — `PermissionsEx` static entry points only
 
+API reference: [api/LEGACY_API.md](api/LEGACY_API.md). New plugins: [api/MODERN_API.md](api/MODERN_API.md).
+
 Runtime uses the live `ru.tehkode.permissions.bukkit.PermissionsEx` class from the deployed plugin jar.
 
 ## Verification

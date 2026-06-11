@@ -38,6 +38,8 @@ Dependency direction: **platform** → **legacy-api** / **api** → **core-api**
 
 New implementation code belongs under `dev.rono`. Public contracts consumed by third-party plugins remain under `ru.tehkode` as thin types delegating to core where needed.
 
+**Hook plugin API documentation:** [`docs/api/README.md`](docs/api/README.md) (modern + legacy reference and roadmap).
+
 ## Permission resolution
 
 1. `DefaultPermissionManager.getUser()` resolves UUID-first, then name / offline records.
