@@ -108,6 +108,10 @@ Working example: [`example-plugin/`](example-plugin/).
 
 For new integrations that should not depend on the frozen `ru.tehkode.*` surface.
 
+#### Maven dependencies
+
+Most companion plugins only need **`permissionsex-api`**:
+
 ```xml
 <dependency>
   <groupId>dev.rono.permissions</groupId>
@@ -115,22 +119,148 @@ For new integrations that should not depend on the frozen `ru.tehkode.*` surface
   <version>1.23.5</version>
   <scope>provided</scope>
 </dependency>
+<dependency>
+  <groupId>org.spigotmc</groupId>
+  <artifactId>spigot-api</artifactId>
+  <scope>provided</scope>
+</dependency>
 ```
 
-At runtime on Spigot/Paper:
+Add **`permissionsex-core-api`** only if you implement a **custom platform host** or need bus/platform types at compile time (unusual for normal Bukkit plugins):
+
+```xml
+<dependency>
+  <groupId>dev.rono.permissions</groupId>
+  <artifactId>permissionsex-core-api</artifactId>
+  <version>1.23.5</version>
+  <scope>provided</scope>
+</dependency>
+```
+
+| Artifact | Package root | Intended consumer |
+|----------|--------------|-------------------|
+| `permissionsex-api` | `dev.rono.permissions.api.service` | Companion plugins on **Spigot/Paper** |
+| `permissionsex-core-api` | `dev.rono.permissions.api.runtime`, `.bus` | Platform adapters, core tests, advanced integration |
+
+#### Runtime registration (Spigot/Paper only)
+
+On game servers, PEX registers **`PermissionService`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
 
 ```java
 RegisteredServiceProvider<PermissionService> reg =
         getServer().getServicesManager().getRegistration(PermissionService.class);
 if (reg != null) {
     PermissionService pex = reg.getProvider();
-    // registeredUserNameCount(), registeredGroupCount(), activeBackendSimpleName(), …
+    getLogger().info("PEX backend: " + pex.activeBackendSimpleName());
+    getLogger().info("Users: " + pex.registeredUserNameCount()
+            + ", groups: " + pex.registeredGroupCount());
 }
 ```
 
-`PermissionService` is implemented by the same runtime manager as legacy `PermissionManager`. New features are added on **`dev.rono.permissions.api.*`** only — the legacy `PermissionManager` interface is not expanded.
+**Bungee/Waterfall:** `PermissionService` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
 
-For custom platform hosts (non-Bukkit), depend on **`permissionsex-core-api`** and implement `PlatformAdapter`.
+New features are added on **`dev.rono.permissions.api.*`** only — the legacy `PermissionManager` interface is not expanded.
+
+---
+
+### Modern API reference
+
+#### `PermissionService` (`permissionsex-api`)
+
+Read-only introspection token for companion plugins. Register lookup: `ServicesManager.getRegistration(PermissionService.class)`.
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `registeredUserNameCount()` | `int` | Count of registered user **display names** in the active backend |
+| `registeredGroupCount()` | `int` | Count of registered groups in the active backend |
+| `activeBackendSimpleName()` | `String` | Simple class name of the active backend (e.g. `YamlFileBackend`, `SQLBackend`) |
+
+**Not on `PermissionService` (yet):** permission checks (`has`), user/group CRUD, prefix/suffix, events. For those today, also resolve legacy **`PermissionManager`** from `ServicesManager` (see minimal example below) or listen to legacy Bukkit events on Spigot.
+
+Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
+
+#### `PlatformAdapter` (`permissionsex-core-api`)
+
+Platform-neutral host bridge implemented by Spigot/Bungee runtimes. **Not registered on `ServicesManager`** — internal to PEX and platform modules. Documented here for authors of alternate hosts or deep integration.
+
+| Method | Description |
+|--------|-------------|
+| `uuidToName(UUID)` | Resolve online display name, or `null` |
+| `nameToUuid(String)` | Resolve UUID from name, or `null` |
+| `isOnline(UUID)` | Whether the holder is connected |
+| `serverId()` | Logical server / container UUID |
+| `realmNames()` | World names (game server) or backend ids (proxy) |
+| `publish(PermissionDispatch)` | Emit engine notification (see bus types below) |
+| `onlineRealm(UUID)` | Current world/realm when online, else `null` |
+| `onlineDisplayName(UUID)` | Display name when online, else `null` |
+| `isOperator(UUID)` | Operator flag when online |
+
+On Spigot, `SpigotPermissionsExPlugin` implements this interface; game-server logic is delegated to `SpigotPlatformBridge`.
+
+Source: `core-api/src/main/java/dev/rono/permissions/api/runtime/PlatformAdapter.java`
+
+#### Bus dispatches (`permissionsex-core-api`)
+
+Immutable notifications from the engine to the active `PlatformAdapter`. On **Spigot**, `SpigotEventPublisher` translates these into legacy Bukkit events (`ru.tehkode.permissions.events.*`) for hook plugins.
+
+| Type | Role |
+|------|------|
+| `PermissionDispatch` | Sealed root: `EntityDispatch` \| `SystemDispatch` |
+| `EntityDispatch` | Record: `(sourceId, entityIdentifier, entityType, mutation)` — user/group change |
+| `SystemDispatch` | Record: `(sourceId, mutation)` — engine/system change |
+| `EntityMutation` | `PERMISSIONS_CHANGED`, `OPTIONS_CHANGED`, `INHERITANCE_CHANGED`, `INFO_CHANGED`, `TIMEDPERMISSION_EXPIRED`, `RANK_CHANGED`, `DEFAULTGROUP_CHANGED`, `WEIGHT_CHANGED`, `SAVED`, `REMOVED` |
+| `SystemMutation` | `BACKEND_CHANGED`, `RELOADED`, `WORLDINHERITANCE_CHANGED`, `DEFAULTGROUP_CHANGED`, `DEBUGMODE_TOGGLE`, `REINJECT_PERMISSIBLES` |
+
+**Listening from a hook plugin today:** subscribe to legacy **`PermissionEntityEvent`** / **`PermissionSystemEvent`** on Spigot rather than consuming bus records directly.
+
+Sources: `core-api/src/main/java/dev/rono/permissions/api/bus/`
+
+#### Supporting runtime types (`permissionsex-core-api`)
+
+| Type | Role |
+|------|------|
+| `ContextResolver` | Functional: `realmFor(UUID)` — maps a holder to an active realm/world slug |
+| `SchedulerBridge` | `runSync`, `runAsync`, `runLater` — host scheduling abstraction |
+
+These are used inside PEX platform wiring, not typical hook-plugin entry points.
+
+#### Minimal modern + legacy hook example (Spigot)
+
+Modern introspection via `PermissionService`; permission checks via legacy `PermissionManager` (same provider object):
+
+```java
+import dev.rono.permissions.api.service.PermissionService;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import ru.tehkode.permissions.PermissionManager;
+
+public void onEnable() {
+    RegisteredServiceProvider<PermissionService> modern =
+            getServer().getServicesManager().getRegistration(PermissionService.class);
+    RegisteredServiceProvider<PermissionManager> legacy =
+            getServer().getServicesManager().getRegistration(PermissionManager.class);
+    if (modern == null || legacy == null) {
+        getLogger().warning("PermissionsEx is not available.");
+        return;
+    }
+    PermissionService service = modern.getProvider();
+    PermissionManager manager = legacy.getProvider();
+    getLogger().info("PEX " + service.activeBackendSimpleName()
+            + " — " + service.registeredGroupCount() + " groups");
+    // Permission checks still use the classic manager surface:
+    // manager.has(player, "my.permission");
+}
+
+public void onJoin(Player player) {
+    RegisteredServiceProvider<PermissionManager> reg =
+            getServer().getServicesManager().getRegistration(PermissionManager.class);
+    if (reg != null && reg.getProvider().has(player, "my.permission")) {
+        // allowed
+    }
+}
+```
+
+For a full classic-only sample (static `PermissionsEx` entry points), see [`example-plugin/`](example-plugin/).
 
 ### Which API should I use?
 
