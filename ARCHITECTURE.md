@@ -2,19 +2,29 @@
 
 ## Module stack
 
+Grouped by concern (matches root `pom.xml` reactor order):
+
 ```
-permissionsex-core-api   Platform-neutral SPI (PlatformAdapter, bus dispatches)
-permissionsex-api        Thin PermissionService façade
-permissionsex-legacy-api Classic ru.tehkode.permissions types + utils + Bukkit events
-permissionsex-legacy-stub Compile-only PermissionsEx static entry points (hook plugins)
-permissionsex-legacy-compat Regression tests (MockBukkit + optional classic plugin JARs)
-permissionsex-core       Engine (manager, backends, commands, hierarchy)
-permissionsex-spigot   Bukkit/Paper bootstrap, superperms bridge, platform adapters
-permissionsex-bungee   Proxy bootstrap and permission bridge
-permissionsex-bootstrap Universal shaded jar (plugin.yml + bungee.yml)
+legacy-api/
+  permissionsex-legacy-api    Classic ru.tehkode.permissions types + utils + Bukkit events
+  permissionsex-legacy-stub   Compile-only PermissionsEx static entry points
+  permissionsex-legacy-compat Regression tests (MockBukkit + optional classic plugin JARs)
+
+api/
+  permissionsex-core-api      Platform-neutral SPI (PlatformAdapter, bus dispatches)
+  permissionsex-api           PermissionService façade for modern hook plugins
+
+platform/
+  permissionsex-core          Engine (manager, backends, commands, hierarchy)
+  permissionsex-spigot        Bukkit/Paper runtime
+  permissionsex-bungee        Proxy runtime
+  permissionsex-bootstrap     Universal shaded jar (plugin.yml + bungee.yml)
+
+plugin/
+  permissionsex-example-plugin Sample classic hook plugin
 ```
 
-Dependency direction: platform modules → core → legacy-api / api → core-api.
+Dependency direction: **platform** → **legacy-api** / **api** → **core-api**; **plugin** → **legacy-api** (+ **legacy-stub**).
 
 ## Namespace policy
 

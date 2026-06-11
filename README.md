@@ -14,42 +14,72 @@ This fork is based on the original PermissionsEx project and keeps the same core
 
 ```mermaid
 flowchart BT
-  coreapi[permissionsex-core-api]
-  api[permissionsex-api]
-  legacy[permissionsex-legacy-api]
-  stub[permissionsex-legacy-stub]
-  core[permissionsex-core]
-  spigot[permissionsex-spigot]
-  bungee[permissionsex-bungee]
-  boot[permissionsex-bootstrap]
-  api --> coreapi
-  legacy --> coreapi
-  stub --> legacy
-  core --> coreapi
-  core --> api
-  core --> legacy
-  spigot --> core
-  bungee --> core
-  boot --> spigot
-  boot --> bungee
+  subgraph legacy [legacy-api]
+    legacyMod[permissionsex-legacy-api]
+    stub[permissionsex-legacy-stub]
+    compat[permissionsex-legacy-compat]
+    stub --> legacyMod
+    compat --> legacyMod
+  end
+  subgraph api [api]
+    coreapi[permissionsex-core-api]
+    apiMod[permissionsex-api]
+    apiMod --> coreapi
+  end
+  subgraph platform [platform]
+    core[permissionsex-core]
+    spigot[permissionsex-spigot]
+    bungee[permissionsex-bungee]
+    boot[permissionsex-bootstrap]
+    core --> coreapi
+    core --> apiMod
+    core --> legacyMod
+    spigot --> core
+    bungee --> core
+    boot --> spigot
+    boot --> bungee
+  end
+  subgraph plugin [plugin]
+    example[permissionsex-example-plugin]
+    example --> legacyMod
+    example --> stub
+  end
+  legacyMod --> coreapi
 ```
 
 ## Modules
 
-Every Maven module in this repository, what it is for, and who should depend on it.
+Maven reactor order matches four groups (see root `pom.xml`). Maven still resolves **build order** from inter-module dependencies.
 
-| Module | Artifact ID | Ships in plugin jar? | Purpose |
-|--------|-------------|----------------------|---------|
-| **Core API** | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches (`EntityDispatch`, `SystemDispatch`), scheduler/context hooks. Used when writing **platform adapters** or deep core integration — not typical hook plugins. |
-| **Public API** | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionService` token registered on Bukkit `ServicesManager`. New integrations should use this. |
-| **Legacy API** | `permissionsex-legacy-api` | Yes (shaded) | **Classic hook surface:** frozen `ru.tehkode.permissions.*` types — `PermissionManager`, `PermissionUser`, `PermissionGroup`, events, `NativeInterface`, `ru.tehkode.utils.*`, backend interfaces. Matches baseline commit **`628215f`**. |
-| **Legacy stub** | `permissionsex-legacy-stub` | **No** | **Compile-only** `ru.tehkode.permissions.bukkit.PermissionsEx` static helpers (`getPermissionManager()`, `getUser()`, `isAvailable()`). Lets old plugins compile without pulling in the live `JavaPlugin` class. At runtime the server loads the real `PermissionsEx` from the deployed plugin. |
-| **Core** | `permissionsex-core` | Yes (shaded) | Engine: manager, backends (YAML/SQL/multi), hierarchy, commands, config. Not a public compile dependency for hook plugins. |
-| **Spigot** | `permissionsex-spigot` | Yes (shaded) | Bukkit/Paper bootstrap: live `ru.tehkode.permissions.bukkit.PermissionsEx` plugin class, superperms bridge, Cloud commands, Bukkit events. |
-| **Bungee** | `permissionsex-bungee` | Yes (shaded) | Proxy bootstrap and permission bridge. |
-| **Bootstrap** | `permissionsex-bootstrap` | **This is the jar you install** | Merges Spigot + Bungee shaded jars → `PermissionsExPlus-{version}.jar`. |
-| **Example plugin** | `permissionsex-example-plugin` | Separate jar | Sample classic hook plugin; see `example-plugin/`. |
-| **Legacy compat** | `permissionsex-legacy-compat` | No (tests only) | Regression tests: MockBukkit smoke test + optional classic plugin JAR probe. |
+### `legacy-api` — classic hook compile surfaces
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
+| `legacy-api/` | `permissionsex-legacy-api` | Yes (shaded) | **Classic hook surface:** frozen `ru.tehkode.permissions.*` — `PermissionManager`, `PermissionUser`, `PermissionGroup`, events, `NativeInterface`, `ru.tehkode.utils.*`, backend interfaces. Baseline **`628215f`**. |
+| `legacy-stub/` | `permissionsex-legacy-stub` | **No** | **Compile-only** `ru.tehkode.permissions.bukkit.PermissionsEx` static helpers. Not in the Spigot runtime classpath as a duplicate class. |
+| `legacy-compat/` | `permissionsex-legacy-compat` | No (tests only) | Regression tests: MockBukkit smoke test + optional classic plugin JAR probe (`src/test/resources/plugin-jars/`). |
+
+### `api` — modern integration SPI
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
+| `core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
+| `api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
+
+### `platform` — engine, runtimes, bootstrap
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
+| `core/` | `permissionsex-core` | Yes (shaded) | Engine: manager, backends (YAML/SQL/multi), hierarchy, commands, config. Internal — not a hook compile dependency. |
+| `spigot/` | `permissionsex-spigot` | Yes (shaded) | Bukkit/Paper runtime: live `PermissionsEx` `JavaPlugin`, superperms bridge, Cloud commands, Bukkit events. |
+| `bungee/` | `permissionsex-bungee` | Yes (shaded) | Bungee/Waterfall proxy runtime and permission bridge. |
+| `bootstrap/` | `permissionsex-bootstrap` | **Install this jar** | Merges Spigot + Bungee → `PermissionsExPlus-{version}.jar`. |
+
+### `plugin` — sample companion plugins
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
+| `example-plugin/` | `permissionsex-example-plugin` | Separate jar | Sample **classic** hook plugin (`legacy-api` + `legacy-stub`). |
 
 ### Namespace map
 

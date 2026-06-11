@@ -11,16 +11,23 @@
     <url>https://github.com/rowan-smith/PermissionsExPlus</url>
 
     <modules>
-        <module>core-api</module>
-        <module>api</module>
+        <!-- legacy-api: classic ru.tehkode.* compile surfaces and regression tests -->
         <module>legacy-api</module>
         <module>legacy-stub</module>
+        <module>legacy-compat</module>
+
+        <!-- api: modern dev.rono.permissions.api.* integration SPI -->
+        <module>core-api</module>
+        <module>api</module>
+
+        <!-- platform: engine, runtimes, and installable bootstrap jar -->
         <module>core</module>
         <module>spigot</module>
         <module>bungee</module>
         <module>bootstrap</module>
+
+        <!-- plugin: sample / companion plugin modules -->
         <module>example-plugin</module>
-        <module>legacy-compat</module>
     </modules>
 
     <properties>
