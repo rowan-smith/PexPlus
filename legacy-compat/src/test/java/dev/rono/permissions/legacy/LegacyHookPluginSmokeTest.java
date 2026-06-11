@@ -1,6 +1,6 @@
 package dev.rono.permissions.legacy;
 
-import dev.rono.proxychat.examplePlugin.ExamplePlugin;
+import dev.rono.proxychat.exampleLegacyPlugin.ExampleLegacyPlugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class LegacyHookPluginSmokeTest {
 
     @Test
     void exampleHookPluginLoadsAndReachesLegacyApi() throws Exception {
-        MockBukkit.load(ExamplePlugin.class);
+        MockBukkit.load(ExampleLegacyPlugin.class);
 
         PermissionManager manager = pex.getPermissionsManager();
         assertNotNull(manager);

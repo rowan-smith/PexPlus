@@ -11,7 +11,7 @@
 
     <artifactId>permissionsex-api</artifactId>
     <name>PermissionsExPlus Public API</name>
-    <description>Minimal modern integration surface: dev.rono.permissions.api.service.PermissionService for Bukkit ServicesManager registration.</description>
+    <description>Modern hook integration surface: PermissionService, User, Group, and PermissionSubject on Bukkit ServicesManager.</description>
 
     <dependencies>
         <dependency>

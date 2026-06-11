@@ -27,6 +27,7 @@
         <module>bootstrap</module>
 
         <!-- plugin: sample / companion plugin modules -->
+        <module>example-legacy-plugin</module>
         <module>example-plugin</module>
     </modules>
 

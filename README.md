@@ -40,9 +40,11 @@ flowchart BT
     boot --> bungee
   end
   subgraph plugin [plugin]
+    exampleLegacy[permissionsex-example-legacy-plugin]
     example[permissionsex-example-plugin]
-    example --> legacyMod
-    example --> stub
+    exampleLegacy --> legacyMod
+    exampleLegacy --> stub
+    example --> apiMod
   end
   legacyMod --> coreapi
 ```
@@ -79,7 +81,8 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
-| `example-plugin/` | `permissionsex-example-plugin` | Separate jar | Sample **classic** hook plugin (`legacy-api` + `legacy-stub`). |
+| `example-legacy-plugin/` | `permissionsex-example-legacy-plugin` | Separate jar | Sample **classic** hook plugin (`legacy-api` + `legacy-stub`). |
+| `example-plugin/` | `permissionsex-example-plugin` | Separate jar | Sample **modern** hook plugin (`permissionsex-api` only). |
 
 ### Namespace map
 
@@ -132,7 +135,7 @@ For plugins originally written against PermissionsEx 1.23.x (`PermissionsEx.getP
 
 **Runtime:** the server provides the real `ru.tehkode.permissions.bukkit.PermissionsEx` (`JavaPlugin`) and registers `PermissionManager` on `ServicesManager`. Pre-1.23.5 PEX hook JARs should run **without recompiling** if they only used the classic public API.
 
-Working example: [`example-plugin/`](example-plugin/).
+Working example: [`example-legacy-plugin/`](example-legacy-plugin/).
 
 ### Modern (new) API hook — `dev.rono.*`
 
@@ -197,17 +200,64 @@ New features are added on **`dev.rono.permissions.api.*`** only — the legacy `
 
 #### `PermissionService` (`permissionsex-api`)
 
-Read-only introspection token for companion plugins. Register lookup: `ServicesManager.getRegistration(PermissionService.class)`.
+Primary entry point for modern hook plugins. Lookup: `ServicesManager.getRegistration(PermissionService.class)`.
 
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `registeredUserNameCount()` | `int` | Count of registered user **display names** in the active backend |
-| `registeredGroupCount()` | `int` | Count of registered groups in the active backend |
-| `activeBackendSimpleName()` | `String` | Simple class name of the active backend (e.g. `YamlFileBackend`, `SQLBackend`) |
-
-**Not on `PermissionService` (yet):** permission checks (`has`), user/group CRUD, prefix/suffix, events. For those today, also resolve legacy **`PermissionManager`** from `ServicesManager` (see minimal example below) or listen to legacy Bukkit events on Spigot.
+| Method | Description |
+|--------|-------------|
+| `backend()` | Active backend snapshot (`type`, `simpleName`, `diagnosticLabel`) |
+| `userCount()` / `groupCount()` | Registered subject counts in the active backend |
+| `registeredUserNameCount()` / `registeredGroupCount()` | Legacy aliases for the counts above |
+| `activeBackendSimpleName()` | Legacy alias for `backend().simpleName()` |
+| `worlds()` | Known realm/world names from the platform adapter |
+| `isDebug()` | Whether PEX debug mode is enabled |
+| `has(UUID, permission)` / `has(UUID, permission, world)` / `has(name, permission, world)` | Effective permission checks |
+| `findUser(identifier)` / `findUser(uuid)` | Optional lookup without materializing virtual users |
+| `user(identifier)` / `user(uuid)` | Resolve or materialize a user (classic `getUser` semantics) |
+| `userIdentifiers()` | All user identifiers in the backend |
+| `deleteUser(identifier)` | Remove a user from the backend and cache |
+| `findGroup(name)` / `group(name)` | Optional or required group lookup |
+| `groupNames()` | All group names in the backend |
+| `deleteGroup(name)` | Remove a group from the backend and cache |
+| `reload()` | Reload backend data (`PermissionsExException` on failure) |
 
 Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
+
+#### `PermissionSubject`, `User`, `Group` (`permissionsex-api`)
+
+Subject operations are accessed through `User` and `Group` instances from `PermissionService`. Both extend `PermissionSubject`.
+
+| `PermissionSubject` | Description |
+|---------------------|-------------|
+| `type()`, `identifier()`, `name()`, `virtual()` | Subject metadata |
+| `has(permission, world)` | Effective check on this subject only |
+| `permissions(world)` | Direct assignments (not inherited) |
+| `effectivePermissions(world)` | Merged permissions after inheritance |
+| `addPermission` / `removePermission` / `setPermissions` | Direct permission CRUD |
+| `addTimedPermission` / `removeTimedPermission` / `timedPermissions` | Timed permission nodes |
+| `prefix` / `suffix` / `setPrefix` / `setSuffix` | Chat meta |
+| `option` / `setOption` / `options` | Arbitrary options map |
+| `save()` / `delete()` | Persist or remove the subject |
+
+| `User` (additional) | Description |
+|---------------------|-------------|
+| `uniqueId()` | Parsed UUID when identifier is UUID-shaped |
+| `groups(world)` / `groups(world, inherit)` | Group membership |
+| `inGroup(name, world, inherit)` | Membership test |
+| `addGroup` / `removeGroup` | Group membership CRUD (supports timed membership) |
+
+| `Group` (additional) | Description |
+|----------------------|-------------|
+| `weight()` / `setWeight()` | Sort weight |
+| `isDefault(world)` / `setDefault(value, world)` | Default group flag |
+| `parents(world)` | Direct parent groups |
+| `parentTree(world)` | Expanded ancestor groups |
+| `addParent` / `removeParent` / `setParents` | Inheritance CRUD |
+| `isChildOf(name, world, inherit)` | Hierarchy test |
+| `rank()` / `rankLadder()` / `setRank(rank, ladder)` | Rank ladder metadata |
+
+`world` is `null` or empty for the global context (classic PEX `null` world).
+
+Sources: `api/src/main/java/dev/rono/permissions/api/subject/`
 
 #### `PlatformAdapter` (`permissionsex-core-api`)
 
@@ -254,43 +304,41 @@ Sources: `core-api/src/main/java/dev/rono/permissions/api/bus/`
 
 These are used inside PEX platform wiring, not typical hook-plugin entry points.
 
-#### Minimal modern + legacy hook example (Spigot)
+#### Minimal modern hook example (Spigot)
 
-Modern introspection via `PermissionService`; permission checks via legacy `PermissionManager` (same provider object):
+Modern-only integration via `PermissionService`:
 
 ```java
 import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.subject.User;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import ru.tehkode.permissions.PermissionManager;
 
 public void onEnable() {
-    RegisteredServiceProvider<PermissionService> modern =
+    RegisteredServiceProvider<PermissionService> reg =
             getServer().getServicesManager().getRegistration(PermissionService.class);
-    RegisteredServiceProvider<PermissionManager> legacy =
-            getServer().getServicesManager().getRegistration(PermissionManager.class);
-    if (modern == null || legacy == null) {
+    if (reg == null) {
         getLogger().warning("PermissionsEx is not available.");
         return;
     }
-    PermissionService service = modern.getProvider();
-    PermissionManager manager = legacy.getProvider();
-    getLogger().info("PEX " + service.activeBackendSimpleName()
-            + " — " + service.registeredGroupCount() + " groups");
-    // Permission checks still use the classic manager surface:
-    // manager.has(player, "my.permission");
+    PermissionService pex = reg.getProvider();
+    getLogger().info("PEX " + pex.backend().simpleName()
+            + " — " + pex.groupCount() + " groups");
 }
 
-public void onJoin(Player player) {
-    RegisteredServiceProvider<PermissionManager> reg =
-            getServer().getServicesManager().getRegistration(PermissionManager.class);
-    if (reg != null && reg.getProvider().has(player, "my.permission")) {
-        // allowed
+public void onJoin(PlayerJoinEvent event, PermissionService pex) {
+    Player player = event.getPlayer();
+    String world = player.getWorld().getName();
+    if (pex.has(player.getUniqueId(), "my.permission", world)) {
+        User user = pex.user(player.getUniqueId());
+        user.addPermission("joined.today", world);
+        user.save();
     }
 }
 ```
 
-For a full classic-only sample (static `PermissionsEx` entry points), see [`example-plugin/`](example-plugin/).
+For a full modern sample, see [`example-plugin/`](example-plugin/). For classic `PermissionsEx.*` static entry points, see [`example-legacy-plugin/`](example-legacy-plugin/).
 
 ### Which API should I use?
 

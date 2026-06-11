@@ -18,12 +18,18 @@
  */
 package dev.rono.permissions.core;
 
+import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.backend.BackendInfo;
 import dev.rono.permissions.api.bus.EntityDispatch;
 import dev.rono.permissions.api.bus.EntityMutation;
 import dev.rono.permissions.api.bus.SystemDispatch;
 import dev.rono.permissions.api.bus.SystemMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.subject.Group;
+import dev.rono.permissions.api.subject.User;
+import dev.rono.permissions.core.api.ModernGroupAdapter;
+import dev.rono.permissions.core.api.ModernUserAdapter;
 import ru.tehkode.permissions.PEXBackendConfiguration;
 import dev.rono.permissions.core.backends.CorePermissionBackendRegistrar;
 import ru.tehkode.permissions.backends.PermissionBackend;
@@ -624,19 +630,125 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	}
 
 	@Override
-	public int registeredUserNameCount() {
-		return getUserNames().size();
+	public BackendInfo backend() {
+		String type = config.getDefaultBackend();
+		PermissionBackend active = this.backend;
+		String simpleName = active != null ? active.getClass().getSimpleName() : "?";
+		return new BackendInfo(type, simpleName, type + " (" + simpleName + ")");
 	}
 
 	@Override
-	public int registeredGroupCount() {
+	public int userCount() {
+		return getUserIdentifiers().size();
+	}
+
+	@Override
+	public int groupCount() {
 		return getGroupNames().size();
 	}
 
 	@Override
-	public String activeBackendSimpleName() {
-		PermissionBackend b = this.backend;
-		return b != null ? b.getClass().getSimpleName() : "?";
+	public Collection<String> worlds() {
+		return getWorldNames();
+	}
+
+	@Override
+	public boolean has(UUID playerId, String permission) {
+		return has(playerId, permission, null);
+	}
+
+	@Override
+	public Optional<User> findUser(String identifier) {
+		if (identifier == null || identifier.isEmpty()) {
+			return Optional.empty();
+		}
+		if (!backend.hasUser(identifier)) {
+			try {
+				UUID.fromString(identifier);
+			} catch (IllegalArgumentException ignored) {
+				UUID resolved = platform.nameToUuid(identifier);
+				if (resolved == null || !backend.hasUser(resolved.toString())) {
+					return Optional.empty();
+				}
+			}
+		}
+		return Optional.of(wrapUser(getUser(identifier)));
+	}
+
+	@Override
+	public Optional<User> findUser(UUID uuid) {
+		if (uuid == null || !backend.hasUser(uuid.toString())) {
+			return Optional.empty();
+		}
+		return Optional.of(wrapUser(getUser(uuid)));
+	}
+
+	@Override
+	public User user(String identifier) {
+		return wrapUser(getUser(identifier));
+	}
+
+	@Override
+	public User user(UUID uuid) {
+		return wrapUser(getUser(uuid));
+	}
+
+	@Override
+	public Set<String> userIdentifiers() {
+		return Set.copyOf(getUserIdentifiers());
+	}
+
+	@Override
+	public void deleteUser(String identifier) {
+		PermissionUser user = getUser(identifier);
+		user.remove();
+		resetUser(user.getIdentifier());
+	}
+
+	@Override
+	public Optional<Group> findGroup(String name) {
+		if (name == null || name.isEmpty() || !backend.hasGroup(name)) {
+			return Optional.empty();
+		}
+		return Optional.of(wrapGroup(getGroup(name)));
+	}
+
+	@Override
+	public Group group(String name) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("Group name must not be empty");
+		}
+		return wrapGroup(getGroup(name));
+	}
+
+	@Override
+	public Set<String> groupNames() {
+		return Set.copyOf(getGroupNames());
+	}
+
+	@Override
+	public void deleteGroup(String name) {
+		PermissionGroup group = getGroup(name);
+		String id = group.getIdentifier();
+		group.remove();
+		resetGroup(id);
+	}
+
+	@Override
+	public void reload() throws PermissionsExException {
+		try {
+			reset();
+		} catch (PermissionBackendException e) {
+			throw new PermissionsExException("Failed to reload PermissionsEx backend", e);
+		}
+	}
+
+	private User wrapUser(PermissionUser user) {
+		return new ModernUserAdapter(user, this);
+	}
+
+	private Group wrapGroup(PermissionGroup group) {
+		return new ModernGroupAdapter(group, this);
 	}
 
 	/**

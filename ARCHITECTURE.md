@@ -21,10 +21,11 @@ platform/
   permissionsex-bootstrap     Universal shaded jar (plugin.yml + bungee.yml)
 
 plugin/
-  permissionsex-example-plugin Sample classic hook plugin
+  permissionsex-example-legacy-plugin Sample classic hook plugin
+  permissionsex-example-plugin         Sample modern hook plugin
 ```
 
-Dependency direction: **platform** → **legacy-api** / **api** → **core-api**; **plugin** → **legacy-api** (+ **legacy-stub**).
+Dependency direction: **platform** → **legacy-api** / **api** → **core-api**; **plugin** modules depend on **legacy-api** (+ **legacy-stub**) or **api** only.
 
 ## Namespace policy
 

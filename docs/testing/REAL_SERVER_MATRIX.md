@@ -44,5 +44,6 @@ Verify `/pex` on proxy and permission checks for connected players.
 
 ## Regression artifacts
 
-- `example-plugin` JAR — compiles only against legacy API + stub
+- `example-legacy-plugin` JAR — compiles only against legacy API + stub
+- `example-plugin` JAR — compiles only against modern API
 - Optional: drop classic hook plugin JARs into `legacy-compat/src/test/resources/plugin-jars/` and run `mvn -pl legacy-compat test`
