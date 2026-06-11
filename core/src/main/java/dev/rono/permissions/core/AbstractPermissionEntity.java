@@ -33,6 +33,7 @@ import dev.rono.permissions.api.bus.EntityMutation;
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.PermissionsData;
 /**
  * @author code
@@ -298,6 +299,18 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		if (perm.startsWith("-")) {
 			invert = !invert;
 			perm = perm.substring(1);
+		}
+		if (perm.startsWith(PermissionEntity.NON_INHERITABLE_PREFIX)) {
+			perm = perm.substring(1);
+		}
+		if (perm.contains("*") || perm.contains("(")) {
+			return;
+		}
+		String prefix = perm + ".";
+		for (String own : getOwnPermissions(null)) {
+			if (own.startsWith(prefix) && !list.contains(own)) {
+				list.add(invert ? "-" + own : own);
+			}
 		}
 	}
 
@@ -911,6 +924,9 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setParentsIdentifier(List<String> parentNames, String world) {
 		getData().setParents(parentNames, world);
 		clearCache();
+		if (this instanceof PermissionUser user && manager instanceof DefaultPermissionManager dpm) {
+			dpm.onUserGroupMembershipChanged(user, world);
+		}
 		this.callEvent(EntityMutation.INHERITANCE_CHANGED);
 	}
 

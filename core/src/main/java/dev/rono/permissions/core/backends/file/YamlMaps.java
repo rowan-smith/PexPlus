@@ -1,4 +1,4 @@
-package dev.rono.permissions.bungee.backends.file;
+package dev.rono.permissions.core.backends.file;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,24 +8,24 @@ import java.util.Map;
 /**
  * Nested-map helpers aligned with PermissionsEx YAML layout (parity with legacy FileBackend paths).
  */
-final class BungeeYamlMaps {
-    static final String USERS = "users";
-    static final String GROUPS = "groups";
-    static final String WORLDS = "worlds";
-    static final String PERMISSIONS = "permissions";
-    static final String OPTIONS = "options";
-    static final String SCHEMA_VERSION = "schema-version";
+public final class YamlMaps {
+    public static final String USERS = "users";
+    public static final String GROUPS = "groups";
+    public static final String WORLDS = "worlds";
+    public static final String PERMISSIONS = "permissions";
+    public static final String OPTIONS = "options";
+    public static final String SCHEMA_VERSION = "schema-version";
 
-    static final String USER_PARENT_LIST = "group";
-    static final String GROUP_PARENT_LIST = "inheritance";
+    public static final String USER_PARENT_LIST = "group";
+    public static final String GROUP_PARENT_LIST = "inheritance";
 
     /** Legacy top-level world inheritance block (still written for exports / Spigot compatibility). */
-    static final String WORLD_INHERITANCE_LEGACY = "world-inheritance";
+    public static final String WORLD_INHERITANCE_LEGACY = "world-inheritance";
 
-    private BungeeYamlMaps() {}
+    private YamlMaps() {}
 
     @SuppressWarnings("unchecked")
-    static Map<String, Object> requireSection(Map<String, Object> parent, String key) {
+    public static Map<String, Object> requireSection(Map<String, Object> parent, String key) {
         Object cur = parent.get(key);
         if (cur instanceof Map) {
             return (Map<String, Object>) cur;
@@ -36,7 +36,7 @@ final class BungeeYamlMaps {
     }
 
     @SuppressWarnings("unchecked")
-    static Map<String, Object> getSection(Map<String, Object> parent, String key) {
+    public static Map<String, Object> getSection(Map<String, Object> parent, String key) {
         Object cur = parent.get(key);
         if (cur instanceof Map) {
             return (Map<String, Object>) cur;
@@ -44,25 +44,25 @@ final class BungeeYamlMaps {
         return null;
     }
 
-    static Map<String, Object> worldBucket(Map<String, Object> entityRoot, String worldName) {
+    public static Map<String, Object> worldBucket(Map<String, Object> entityRoot, String worldName) {
         Map<String, Object> worldsSec = requireSection(entityRoot, WORLDS);
         return requireSection(worldsSec, worldName);
     }
 
     /** Path for users: {@code worlds/<w>/permissions}; common: {@code permissions}. */
-    static Map<String, Object> bucketForPermissions(Map<String, Object> entityRoot, String worldName) {
+    public static Map<String, Object> bucketForPermissions(Map<String, Object> entityRoot, String worldName) {
         if (worldName == null || worldName.isEmpty()) {
             return entityRoot;
         }
         return worldBucket(entityRoot, worldName);
     }
 
-    static List<String> getStringList(Map<String, Object> bucket, String listKey) {
+    public static List<String> getStringList(Map<String, Object> bucket, String listKey) {
         Object raw = bucket.get(listKey);
         return coerceToStringList(raw);
     }
 
-    static void putStringList(Map<String, Object> bucket, String listKey, List<String> permissions) {
+    public static void putStringList(Map<String, Object> bucket, String listKey, List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             bucket.remove(listKey);
         } else {
@@ -70,7 +70,7 @@ final class BungeeYamlMaps {
         }
     }
 
-    static List<String> coerceToStringList(Object raw) {
+    public static List<String> coerceToStringList(Object raw) {
         if (raw == null) {
             return List.of();
         }
@@ -86,7 +86,7 @@ final class BungeeYamlMaps {
         return List.of();
     }
 
-    static String getNestedString(Map<String, Object> entityRoot, String worldName, String optionsKey,
+    public static String getNestedString(Map<String, Object> entityRoot, String worldName, String optionsKey,
             String optName) {
         Map<String, Object> opts = optionsMap(entityRoot, worldName);
         Object v = opts.get(optName);
@@ -97,7 +97,7 @@ final class BungeeYamlMaps {
      * Returns the {@code options} map for global or world bucket (mutable).
      */
     @SuppressWarnings("unchecked")
-    static Map<String, Object> optionsMap(Map<String, Object> entityRoot, String worldName) {
+    public static Map<String, Object> optionsMap(Map<String, Object> entityRoot, String worldName) {
         Map<String, Object> bucket = bucketForPermissions(entityRoot, worldName);
         Object cur = bucket.get(OPTIONS);
         if (!(cur instanceof Map)) {
@@ -108,7 +108,7 @@ final class BungeeYamlMaps {
         return (Map<String, Object>) cur;
     }
 
-    static void setNestedOption(Map<String, Object> entityRoot, String worldName, String optionsKeyUnused,
+    public static void setNestedOption(Map<String, Object> entityRoot, String worldName, String optionsKeyUnused,
             String optName, String value) {
         Map<String, Object> bucket = bucketForPermissions(entityRoot, worldName);
         Map<String, Object> opts = requireSection(bucket, OPTIONS);
@@ -123,7 +123,7 @@ final class BungeeYamlMaps {
         }
     }
 
-    static Map<String, String> collectLeafOptions(Map<String, Object> optionsSection) {
+    public static Map<String, String> collectLeafOptions(Map<String, Object> optionsSection) {
         Map<String, String> out = new LinkedHashMap<>();
         if (optionsSection == null) {
             return out;
@@ -147,7 +147,7 @@ final class BungeeYamlMaps {
         }
     }
 
-    static void pruneWorldIfEmpty(Map<String, Object> entityRoot, String worldName) {
+    public static void pruneWorldIfEmpty(Map<String, Object> entityRoot, String worldName) {
         if (worldName == null || worldName.isEmpty()) {
             return;
         }

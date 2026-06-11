@@ -62,6 +62,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	protected boolean userAddGroupsLast = false;
 
 	protected PermissionMatcher matcher = new RegExpMatcher();
+	private final GroupMembershipIndex groupMembershipIndex = new GroupMembershipIndex();
 
 	public DefaultPermissionManager(PermissionsExConfig config, Logger logger, PlatformAdapter platform) throws PermissionBackendException {
 		CorePermissionBackendRegistrar.ensureRegistered();
@@ -317,27 +318,19 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	 * @return PermissionUser array for groupnName
 	 */
 	public Set<PermissionUser> getUsers(String groupName, String worldName, boolean inheritance) {
-		Set<PermissionUser> users = new HashSet<>();
-
-		for (PermissionUser user : this.getUsers()) {
-			if (user.inGroup(groupName, worldName, inheritance)) {
-				users.add(user);
-			}
-		}
-
-		return Collections.unmodifiableSet(users);
+		return groupMembershipIndex.resolveUsers(this, groupName, worldName, inheritance);
 	}
 
 	public Set<PermissionUser> getUsers(String groupName, boolean inheritance) {
-		Set<PermissionUser> users = new HashSet<>();
+		return groupMembershipIndex.resolveUsers(this, groupName, null, inheritance);
+	}
 
-		for (PermissionUser user : this.getUsers()) {
-			if (user.inGroup(groupName, inheritance)) {
-				users.add(user);
-			}
-		}
+	void onUserGroupMembershipChanged(PermissionUser user, String world) {
+		groupMembershipIndex.onUserMembershipChanged(user, world);
+	}
 
-		return Collections.unmodifiableSet(users);
+	void onUserRemovedFromIndex(String userId) {
+		groupMembershipIndex.untrackUser(userId);
 	}
 
 	/**
@@ -711,6 +704,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	protected void clearCache() {
 		this.users.clear();
 		this.groups.clear();
+		groupMembershipIndex.markDirty();
 
 		// Close old timed Permission Timer
 		this.initTimer();

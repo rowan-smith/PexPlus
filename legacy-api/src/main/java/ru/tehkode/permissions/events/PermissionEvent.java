@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.events;
+package ru.tehkode.permissions.events;
 
 import java.io.Serializable;
 import java.util.UUID;

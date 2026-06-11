@@ -1,4 +1,4 @@
-package dev.rono.permissions.bungee.backends.file;
+package dev.rono.permissions.core.backends.file;
 
 import java.util.*;
 
@@ -8,12 +8,12 @@ import ru.tehkode.permissions.PermissionsUserData;
 /**
  * User/group subtree stored in YAML-compatible nested maps (Spigot FileBackend-compatible layout).
  */
-final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUserData {
+public final class YamlEntityData implements PermissionsGroupData, PermissionsUserData {
 
-    private final BungeeFileBackend backend;
+    private final YamlFileBackend backend;
     private final Map<String, Object> entitiesRoot;
 
-    /** Key under {@link #entitiesRoot}; user keys match {@link BungeeFileBackend#userKeysLowercase()}. */
+    /** Key under {@link #entitiesRoot}; user keys match {@link YamlFileBackend#userKeysLowercase()}. */
     private String storageKey;
 
     /** Live backing map for this entity. */
@@ -24,7 +24,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     /** User entries use {@code group}; groups use {@code inheritance}. */
     private final String parentListKey;
 
-    private BungeeYamlEntityData(BungeeFileBackend backend, Map<String, Object> entitiesRoot, String lookupName,
+    private YamlEntityData(YamlFileBackend backend, Map<String, Object> entitiesRoot, String lookupName,
             String parentListKey, boolean lowercaseStorageKey) {
         this.backend = backend;
         this.entitiesRoot = entitiesRoot;
@@ -37,15 +37,15 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
         this.virtual = lr.needsInsert();
     }
 
-    static BungeeYamlEntityData forUser(BungeeFileBackend backend, Map<String, Object> entitiesRoot,
+    public static YamlEntityData forUser(YamlFileBackend backend, Map<String, Object> entitiesRoot,
             String userName) {
-        return new BungeeYamlEntityData(backend, entitiesRoot, userName, BungeeYamlMaps.USER_PARENT_LIST,
+        return new YamlEntityData(backend, entitiesRoot, userName, YamlMaps.USER_PARENT_LIST,
                 backend.userKeysLowercase());
     }
 
-    static BungeeYamlEntityData forGroup(BungeeFileBackend backend, Map<String, Object> entitiesRoot,
+    public static YamlEntityData forGroup(YamlFileBackend backend, Map<String, Object> entitiesRoot,
             String groupName) {
-        return new BungeeYamlEntityData(backend, entitiesRoot, groupName, BungeeYamlMaps.GROUP_PARENT_LIST, false);
+        return new YamlEntityData(backend, entitiesRoot, groupName, YamlMaps.GROUP_PARENT_LIST, false);
     }
 
     private record LocateResult(Map<String, Object> node, String storageKey, boolean needsInsert) {}
@@ -97,7 +97,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
 
     @Override
     public boolean setIdentifier(String identifier) {
-        if (!(parentListKey.equals(BungeeYamlMaps.USER_PARENT_LIST))) {
+        if (!(parentListKey.equals(YamlMaps.USER_PARENT_LIST))) {
             return false;
         }
         Objects.requireNonNull(identifier, "identifier");
@@ -123,16 +123,16 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     @Override
     public List<String> getPermissions(String worldName) {
         synchronized (backend.getLock()) {
-            Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
-            return List.copyOf(BungeeYamlMaps.getStringList(bucket, BungeeYamlMaps.PERMISSIONS));
+            Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
+            return List.copyOf(YamlMaps.getStringList(bucket, YamlMaps.PERMISSIONS));
         }
     }
 
     @Override
     public void setPermissions(List<String> permissions, String worldName) {
         synchronized (backend.getLock()) {
-            Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
-            BungeeYamlMaps.putStringList(bucket, BungeeYamlMaps.PERMISSIONS, permissions);
+            Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
+            YamlMaps.putStringList(bucket, YamlMaps.PERMISSIONS, permissions);
             pruneEmptyWorldBucket(bucket, worldName);
             flushVirtualCommitIfNeeded();
             backend.saveLocked();
@@ -145,7 +145,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
             return;
         }
         if (bucket.isEmpty()) {
-            BungeeYamlMaps.pruneWorldIfEmpty(node, worldName);
+            YamlMaps.pruneWorldIfEmpty(node, worldName);
         }
     }
 
@@ -153,16 +153,16 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     public Map<String, List<String>> getPermissionsMap() {
         synchronized (backend.getLock()) {
             Map<String, List<String>> all = new HashMap<>();
-            List<String> common = BungeeYamlMaps.getStringList(node, BungeeYamlMaps.PERMISSIONS);
+            List<String> common = YamlMaps.getStringList(node, YamlMaps.PERMISSIONS);
             if (!common.isEmpty()) {
                 all.put(null, List.copyOf(common));
             }
-            Map<String, Object> worldsSec = BungeeYamlMaps.getSection(node, BungeeYamlMaps.WORLDS);
+            Map<String, Object> worldsSec = YamlMaps.getSection(node, YamlMaps.WORLDS);
             if (worldsSec != null) {
                 for (String world : worldsSec.keySet()) {
-                    Map<String, Object> wbucket = BungeeYamlMaps.getSection(worldsSec, world);
+                    Map<String, Object> wbucket = YamlMaps.getSection(worldsSec, world);
                     if (wbucket != null) {
-                        List<String> wp = BungeeYamlMaps.getStringList(wbucket, BungeeYamlMaps.PERMISSIONS);
+                        List<String> wp = YamlMaps.getStringList(wbucket, YamlMaps.PERMISSIONS);
                         if (!wp.isEmpty()) {
                             all.put(world, List.copyOf(wp));
                         }
@@ -189,7 +189,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     }
 
     private Set<String> optionsWorlds() {
-        Map<String, Object> worldsSec = BungeeYamlMaps.getSection(node, BungeeYamlMaps.WORLDS);
+        Map<String, Object> worldsSec = YamlMaps.getSection(node, YamlMaps.WORLDS);
         if (worldsSec == null) {
             return Set.of();
         }
@@ -199,7 +199,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
                 continue;
             }
             Map<String, Object> w = castMap((Map<?, ?>) e.getValue());
-            Map<String, Object> opts = BungeeYamlMaps.getSection(w, BungeeYamlMaps.OPTIONS);
+            Map<String, Object> opts = YamlMaps.getSection(w, YamlMaps.OPTIONS);
             if (opts != null && !opts.isEmpty()) {
                 out.add(e.getKey());
             }
@@ -208,7 +208,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     }
 
     private Set<String> parentWorldsKeys() {
-        Map<String, Object> worldsSec = BungeeYamlMaps.getSection(node, BungeeYamlMaps.WORLDS);
+        Map<String, Object> worldsSec = YamlMaps.getSection(node, YamlMaps.WORLDS);
         if (worldsSec == null) {
             return Set.of();
         }
@@ -218,7 +218,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
                 continue;
             }
             Map<String, Object> w = castMap((Map<?, ?>) e.getValue());
-            if (!BungeeYamlMaps.getStringList(w, parentListKey).isEmpty()) {
+            if (!YamlMaps.getStringList(w, parentListKey).isEmpty()) {
                 out.add(e.getKey());
             }
         }
@@ -250,8 +250,8 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     }
 
     private Map<String, Object> bucketOptionsSection(String worldName) {
-        Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
-        return BungeeYamlMaps.getSection(bucket, BungeeYamlMaps.OPTIONS);
+        Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
+        return YamlMaps.getSection(bucket, YamlMaps.OPTIONS);
     }
 
     @Override
@@ -260,13 +260,13 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
             if (option == null || option.isEmpty()) {
                 return;
             }
-            Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
-            Map<String, Object> opts = BungeeYamlMaps.requireSection(bucket, BungeeYamlMaps.OPTIONS);
+            Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
+            Map<String, Object> opts = YamlMaps.requireSection(bucket, YamlMaps.OPTIONS);
             applyDeepSet(opts, option.split("\\."), value == null ? null : value);
             if (value == null) {
                 pruneEmptyNested(opts);
                 if (opts.isEmpty()) {
-                    bucket.remove(BungeeYamlMaps.OPTIONS);
+                    bucket.remove(YamlMaps.OPTIONS);
                 }
             }
             pruneEmptyWorldBucket(bucket, worldName);
@@ -325,7 +325,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
             if (opts == null) {
                 return Map.of();
             }
-            return Collections.unmodifiableMap(BungeeYamlMaps.collectLeafOptions(opts));
+            return Collections.unmodifiableMap(YamlMaps.collectLeafOptions(opts));
         }
     }
 
@@ -335,7 +335,7 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
             Map<String, Map<String, String>> out = new HashMap<>();
             out.put(null, getOptions(null));
             Set<String> worldNames =
-                    Optional.ofNullable(BungeeYamlMaps.getSection(node, BungeeYamlMaps.WORLDS))
+                    Optional.ofNullable(YamlMaps.getSection(node, YamlMaps.WORLDS))
                             .map(Map::keySet)
                             .orElse(Collections.emptySet());
             for (String w : worldNames) {
@@ -351,8 +351,8 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     @Override
     public List<String> getParents(String worldName) {
         synchronized (backend.getLock()) {
-            Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
-            return List.copyOf(cleanParents(BungeeYamlMaps.getStringList(bucket, parentListKey)));
+            Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
+            return List.copyOf(cleanParents(YamlMaps.getStringList(bucket, parentListKey)));
         }
     }
 
@@ -369,11 +369,11 @@ final class BungeeYamlEntityData implements PermissionsGroupData, PermissionsUse
     @Override
     public void setParents(List<String> parents, String worldName) {
         synchronized (backend.getLock()) {
-            Map<String, Object> bucket = BungeeYamlMaps.bucketForPermissions(node, worldName);
+            Map<String, Object> bucket = YamlMaps.bucketForPermissions(node, worldName);
             if (parents == null || parents.isEmpty()) {
                 bucket.remove(parentListKey);
             } else {
-                BungeeYamlMaps.putStringList(bucket, parentListKey, parents);
+                YamlMaps.putStringList(bucket, parentListKey, parents);
             }
             pruneEmptyWorldBucket(bucket, worldName);
             flushVirtualCommitIfNeeded();

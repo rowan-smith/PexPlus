@@ -11,7 +11,7 @@
 
     <artifactId>permissionsex-legacy-api</artifactId>
     <name>PermissionsEx Legacy API (thin)</name>
-    <description>Classic ru.tehkode.permissions compile surface for hook plugins (manager, entities, PermissionBackend). Legacy events, YAML/config contracts, and NativeInterface are shipped from permissionsex-core.</description>
+    <description>Classic ru.tehkode.permissions compile surface for hook plugins (manager, entities, PermissionBackend, NativeInterface, Bukkit events).</description>
 
     <dependencies>
         <dependency>

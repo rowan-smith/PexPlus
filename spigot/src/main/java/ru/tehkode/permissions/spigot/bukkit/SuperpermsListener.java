@@ -13,8 +13,8 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionDefault;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
-import dev.rono.permissions.core.events.PermissionEntityEvent;
-import dev.rono.permissions.core.events.PermissionSystemEvent;
+import ru.tehkode.permissions.events.PermissionEntityEvent;
+import ru.tehkode.permissions.events.PermissionSystemEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -211,7 +211,7 @@ public class SuperpermsListener implements Listener {
 						plugin.getLogger().info("Updating superperms permissions for player " + p.getName());
 					}
 					updatePlayerPermission(getCreateWrapper(p, ""), user, p.getWorld().getName());
-					p.recalculatePermissions();
+					invalidatePermissibleCache(p);
 					break;
 
 				case OPTIONS_CHANGED:
@@ -220,13 +220,24 @@ public class SuperpermsListener implements Listener {
 						plugin.getLogger().info("Updating superperms metadata for player " + p.getName());
 					}
 					updatePlayerMetadata(getCreateWrapper(p, ".options"), user, p.getWorld().getName());
-					p.recalculatePermissions();
+					invalidatePermissibleCache(p);
 					break;
 
 				default:
 					updateAttachment(p);
 			}
 		}
+	}
+
+	private void invalidatePermissibleCache(Player player) {
+		if (plugin.getRegexPerms() != null) {
+			var permissible = plugin.getRegexPerms().getInjectedPermissible(player);
+			if (permissible != null) {
+				permissible.clearPermissionCache();
+				return;
+			}
+		}
+		player.recalculatePermissions();
 	}
 
 	private Player resolvePlayer(PermissionUser user) {

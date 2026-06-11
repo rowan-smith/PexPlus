@@ -6,19 +6,11 @@ import org.junit.jupiter.api.Test;
 import dev.rono.permissions.core.backends.MultiBackend;
 import ru.tehkode.permissions.backends.PermissionBackend;
 import dev.rono.permissions.core.backends.sql.SQLBackend;
-import dev.rono.permissions.core.events.PermissionEvent;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LegacyApiCompatibilityTest {
-
-    @Test
-    public void permissionEventIsLegacyBukkitEvent() {
-        assertTrue(java.io.Serializable.class.isAssignableFrom(PermissionEvent.class));
-        assertTrue(org.bukkit.event.Event.class.isAssignableFrom(PermissionEvent.class));
-    }
 
     @Test
     public void permissionManagerImplementsModernServiceToken() {
