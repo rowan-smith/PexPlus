@@ -22,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
  *
  * <p>Registered on Spigot/Paper {@code ServicesManager} under this type. Implemented by the runtime
  * manager alongside legacy {@code ru.tehkode.permissions.PermissionManager}.</p>
+ *
+ * <p>Resolve a subject first, then query it — e.g. {@code service.user(uuid).inGroup("vip", world)},
+ * {@code service.group("vip").members(world)}, {@code service.user(uuid).has(permission, world)}.</p>
  */
 public interface PermissionService {
 
@@ -71,38 +74,6 @@ public interface PermissionService {
     /** Rank-ordered groups on a ladder (key = rank, value = group). */
     Map<Integer, Group> rankLadder(String ladderName);
 
-    /** Direct child groups of {@code groupName} in {@code world}. */
-    List<Group> childGroups(String groupName, String world, boolean inherit);
-
-    default List<Group> childGroups(String groupName, String world) {
-        return childGroups(groupName, world, false);
-    }
-
-    default List<Group> childGroups(String groupName) {
-        return childGroups(groupName, Worlds.GLOBAL, false);
-    }
-
-    /** All descendant groups of {@code groupName} in {@code world}. */
-    default List<Group> descendantGroups(String groupName, String world) {
-        return childGroups(groupName, world, true);
-    }
-
-    default List<Group> descendantGroups(String groupName) {
-        return descendantGroups(groupName, Worlds.GLOBAL);
-    }
-
-    // --- Permission checks ---
-
-    boolean has(UUID playerId, String permission);
-
-    boolean has(UUID playerId, String permission, String world);
-
-    boolean has(String playerName, String permission, String world);
-
-    default boolean has(String playerName, String permission) {
-        return has(playerName, permission, Worlds.GLOBAL);
-    }
-
     // --- Users ---
 
     Optional<User> findUser(String identifier);
@@ -128,21 +99,6 @@ public interface PermissionService {
     Set<String> groupNames();
 
     void deleteGroup(String name);
-
-    /**
-     * Users belonging to {@code groupName} in {@code world}.
-     *
-     * @param inherit when {@code true}, includes users in descendant groups
-     */
-    List<User> usersInGroup(String groupName, String world, boolean inherit);
-
-    default List<User> usersInGroup(String groupName, String world) {
-        return usersInGroup(groupName, world, false);
-    }
-
-    default List<User> usersInGroup(String groupName) {
-        return usersInGroup(groupName, Worlds.GLOBAL, false);
-    }
 
     // --- Backend administration ---
 

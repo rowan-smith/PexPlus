@@ -44,7 +44,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
         assertTrue(user.has("modern.test", null));
         assertTrue(user.inGroup("default", null, false));
         assertTrue(defaultGroup.permissions(null).contains("modern.group"));
-        assertTrue(service.has("modern-api-user", "modern.test", null));
+        assertTrue(user.has("modern.test", null));
 
         user.removePermission("modern.test", null);
         user.removeGroup("default", null);
@@ -118,7 +118,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
         assertTrue(group.memberIdentifiers().contains(user.identifier()));
         assertFalse(group.members().isEmpty());
-        assertFalse(service.usersInGroup("member-group").isEmpty());
+        assertFalse(group.members(Worlds.GLOBAL, true).isEmpty());
         assertNotNull(service.defaultGroups(null));
     }
 
@@ -151,14 +151,14 @@ class ModernPermissionServiceTest extends PEXTestBase {
     }
 
     @Test
-    void childGroupsAndAsyncReload() throws Exception {
+    void groupChildrenAndAsyncReload() throws Exception {
         PermissionService service = (PermissionService) manager;
-        service.group("parent-group");
+        Group parent = service.group("parent-group");
         Group child = service.group("child-group");
         child.addParent("parent-group", null);
         child.save();
-        assertFalse(service.childGroups("parent-group").isEmpty());
-        assertFalse(service.descendantGroups("parent-group").isEmpty());
+        assertFalse(parent.children().isEmpty());
+        assertFalse(parent.descendants().isEmpty());
         service.reloadAsync().get();
     }
 

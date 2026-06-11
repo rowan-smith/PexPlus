@@ -669,11 +669,6 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	}
 
 	@Override
-	public boolean has(UUID playerId, String permission) {
-		return has(playerId, permission, null);
-	}
-
-	@Override
 	public Optional<User> findUser(String identifier) {
 		if (identifier == null || identifier.isEmpty()) {
 			return Optional.empty();
@@ -780,24 +775,6 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 			ladder.put(entry.getKey(), wrapGroup(entry.getValue()));
 		}
 		return Map.copyOf(ladder);
-	}
-
-	@Override
-	public List<User> usersInGroup(String groupName, String world, boolean inherit) {
-		List<User> users = new ArrayList<>();
-		for (PermissionUser user : getUsers(groupName, Worlds.normalize(world), inherit)) {
-			users.add(wrapUser(user));
-		}
-		return List.copyOf(users);
-	}
-
-	@Override
-	public List<Group> childGroups(String groupName, String world, boolean inherit) {
-		List<Group> groups = new ArrayList<>();
-		for (PermissionGroup group : getGroups(groupName, Worlds.normalize(world), inherit)) {
-			groups.add(wrapGroup(group));
-		}
-		return List.copyOf(groups);
 	}
 
 	@Override

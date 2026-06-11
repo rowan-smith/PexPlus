@@ -116,12 +116,37 @@ public final class ModernGroupAdapter extends AbstractModernSubjectAdapter imple
     }
 
     @Override
-    public List<User> members(String world) {
+    public List<User> members(String world, boolean inherit) {
+        String legacyWorld = ModernWorlds.toLegacy(world);
+        LinkedHashSet<String> seen = new LinkedHashSet<>();
         List<User> members = new ArrayList<>();
-        for (PermissionUser member : group.getUsers(ModernWorlds.toLegacy(world))) {
-            members.add(new ModernUserAdapter(member, manager));
+        collectMembers(seen, members, manager.getUsers(group.getIdentifier(), legacyWorld, false));
+        if (inherit) {
+            collectMembers(seen, members, manager.getUsers(group.getIdentifier(), legacyWorld, true));
         }
         return List.copyOf(members);
+    }
+
+    private void collectMembers(LinkedHashSet<String> seen, List<User> members, Set<PermissionUser> source) {
+        for (PermissionUser member : source) {
+            if (seen.add(member.getIdentifier())) {
+                members.add(new ModernUserAdapter(member, manager));
+            }
+        }
+    }
+
+    @Override
+    public List<User> members(String world) {
+        return members(world, false);
+    }
+
+    @Override
+    public List<Group> children(String world, boolean inherit) {
+        List<Group> children = new ArrayList<>();
+        for (PermissionGroup child : manager.getGroups(group.getIdentifier(), ModernWorlds.toLegacy(world), inherit)) {
+            children.add(new ModernGroupAdapter(child, manager));
+        }
+        return List.copyOf(children);
     }
 
     @Override

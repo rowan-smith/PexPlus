@@ -13,7 +13,7 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 | Promote / demote | `User.promote` / `User.demote` (+ `RankingException`) |
 | Backend admin | `setActiveBackend`, `createBackendHandle`, `importFromBackend` |
 | Import / export | `exportData`, `importData(document, ImportMode)` |
-| Hierarchy helpers | `childGroups`, `descendantGroups` |
+| Hierarchy helpers | `Group.children` / `Group.descendants`, `Group.members(world, inherit)` |
 | Batch edits | `openEditSession()` → `PermissionEditSession` |
 | Async reload | `reloadAsync()` → `CompletableFuture<Void>` |
 | Proxy `PermissionService` | `ProxyPermissionServices` on Bungee/Waterfall |

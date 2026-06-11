@@ -1,6 +1,7 @@
 package dev.rono.permissions.bukkit;
 
 import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.world.Worlds;
 import org.bukkit.entity.Player;
 
@@ -13,7 +14,7 @@ public final class BukkitPermissions {
     }
 
     public static boolean has(PermissionService service, Player player, String permission, String world) {
-        return service.has(player.getUniqueId(), permission, world);
+        return service.user(player.getUniqueId()).has(permission, world);
     }
 
     /** Check using the player's current world. */
@@ -23,6 +24,6 @@ public final class BukkitPermissions {
 
     /** Check in the global namespace only. */
     public static boolean hasGlobal(PermissionService service, Player player, String permission) {
-        return service.has(player.getUniqueId(), permission, Worlds.GLOBAL);
+        return service.user(player.getUniqueId()).has(permission, Worlds.GLOBAL);
     }
 }

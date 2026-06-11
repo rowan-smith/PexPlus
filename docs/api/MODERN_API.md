@@ -35,9 +35,10 @@ if (reg == null) {
 }
 PermissionService pex = reg.getProvider();
 
-if (pex.has(player.getUniqueId(), "my.plugin.use", player.getWorld().getName())) {
-    User user = pex.user(player.getUniqueId());
-    user.inWorld(player.getWorld().getName()).addTimedPermission("my.plugin.temp", 3600);
+User user = pex.user(player.getUniqueId());
+String world = player.getWorld().getName();
+if (user.has("my.plugin.use", world)) {
+    user.inWorld(world).addTimedPermission("my.plugin.temp", 3600);
     user.save();
 }
 ```
@@ -81,8 +82,6 @@ Entry point for server-wide operations.
 | `worldInheritanceMap()` | All mappings (`Worlds.GLOBAL` key = global) |
 | `defaultGroups(world)` | Default groups for a world |
 | `rankLadder(ladderName)` | `Map<rank, Group>` on a promotion ladder |
-| `childGroups(name, world, inherit)` | Child groups of a parent |
-| `descendantGroups(name, world)` | All descendant groups (inherit=true) |
 | `events()` | Modern `PermissionEventBus` for entity/system notifications |
 
 ### Backend administration
@@ -95,14 +94,6 @@ Entry point for server-wide operations.
 | `exportData()` | Export active backend as YAML document |
 | `importData(document, ImportMode)` | Import YAML (`MERGE` or `REPLACE`) |
 
-### Permission checks
-
-| Method | Description |
-|--------|-------------|
-| `has(UUID, permission)` | Check in global context |
-| `has(UUID, permission, world)` | Check in world |
-| `has(name, permission[, world])` | Resolve user by name/UUID rules |
-
 ### Users
 
 | Method | Description |
@@ -111,7 +102,8 @@ Entry point for server-wide operations.
 | `user(identifier)` / `user(uuid)` | Resolve or **materialize** (classic `getUser`) |
 | `userIdentifiers()` | All identifiers in backend |
 | `deleteUser(identifier)` | Remove from backend and cache |
-| `usersInGroup(group, world, inherit)` | Members of a group |
+
+Use `user(...).has(permission[, world])` and `user(...).inGroup(name[, world, inherit])` for subject checks — not service-level helpers.
 
 ### Groups
 
@@ -289,7 +281,9 @@ Extends `PermissionSubject`.
 | `isChildOf(name[, world, inherit])` | Hierarchy test |
 | `rank()` / `rankLadder()` / `setRank(rank, ladder)` | Promotion ladder |
 | `memberIdentifiers([world])` | User ids with direct membership |
-| `members([world])` | `List<User>` with direct membership |
+| `members([world,] inherit)` | `List<User>` in this group (`inherit=true` includes descendant groups) |
+| `children([world,] inherit)` | Direct or all descendant child groups |
+| `descendants([world])` | All descendant groups (`children(world, true)`) |
 | `activeMembers([inherit])` | Online members |
 | `inWorld(world)` / `global()` | Returns `GroupWorldContext` |
 

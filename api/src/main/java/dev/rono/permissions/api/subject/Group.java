@@ -93,11 +93,40 @@ public interface Group extends PermissionSubject {
         return memberIdentifiers(Worlds.GLOBAL);
     }
 
+    /**
+     * Users belonging to this group in {@code world}.
+     *
+     * @param inherit when {@code true}, includes users in descendant groups
+     */
+    List<User> members(String world, boolean inherit);
+
     /** Users with direct membership in this group for {@code world}. */
-    List<User> members(String world);
+    default List<User> members(String world) {
+        return members(world, false);
+    }
 
     default List<User> members() {
         return members(Worlds.GLOBAL);
+    }
+
+    /** Direct child groups of this group in {@code world}. */
+    List<Group> children(String world, boolean inherit);
+
+    default List<Group> children(String world) {
+        return children(world, false);
+    }
+
+    default List<Group> children() {
+        return children(Worlds.GLOBAL);
+    }
+
+    /** All descendant groups of this group in {@code world}. */
+    default List<Group> descendants(String world) {
+        return children(world, true);
+    }
+
+    default List<Group> descendants() {
+        return descendants(Worlds.GLOBAL);
     }
 
     /** Currently online users in this group (direct membership). */
