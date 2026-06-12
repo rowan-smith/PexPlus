@@ -1,27 +1,20 @@
 package dev.rono.permissions.bukkit;
 
-import dev.rono.permissions.api.service.PermissionService;
 import org.bukkit.entity.Player;
 
-/** Bukkit {@link Player} convenience helpers for {@link PermissionService}. */
+/**
+ * Bukkit {@link Player} convenience helpers for PermissionsEx.
+ *
+ * <pre>{@code
+ * BukkitPermissions.on(player).has("my.node");
+ * BukkitPermissions.on(player).context().inGroup("vip");
+ * }</pre>
+ */
 public final class BukkitPermissions {
     private BukkitPermissions() {}
 
-    public static boolean has(PermissionService service, Player player, String permission) {
-        return has(service, player, permission, player.getWorld().getName());
-    }
-
-    public static boolean has(PermissionService service, Player player, String permission, String world) {
-        return service.world(world).user(player.getUniqueId()).has(permission);
-    }
-
-    /** Check using the player's current world. */
-    public static boolean hasInCurrentWorld(PermissionService service, Player player, String permission) {
-        return has(service, player, permission);
-    }
-
-    /** Check in the global namespace only. */
-    public static boolean hasGlobal(PermissionService service, Player player, String permission) {
-        return service.global().user(player.getUniqueId()).has(permission);
+    /** Player-scoped entry (resolves {@code PermissionService} from {@code ServicesManager}). */
+    public static PlayerScope on(Player player) {
+        return new PlayerScope(PexServices.require(), player);
     }
 }

@@ -30,6 +30,7 @@ import dev.rono.permissions.api.bus.SystemDispatch;
 import dev.rono.permissions.api.bus.SystemMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.world.Worlds;
@@ -65,7 +66,7 @@ import ru.tehkode.permissions.PermissionsUserData;
 /**
  * @author t3hk0d3
  */
-public class DefaultPermissionManager implements PermissionManager, PermissionService, InternalPermissionManager {
+public class DefaultPermissionManager implements PermissionManager, PermissionService, PermissionServiceBridge, InternalPermissionManager {
 	protected ConcurrentMap<String, PermissionUser> users = new ConcurrentHashMap<>();
 	protected ConcurrentMap<String, PermissionGroup> groups = new ConcurrentHashMap<>();
 	protected PermissionBackend backend = null;
