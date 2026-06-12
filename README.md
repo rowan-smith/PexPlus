@@ -67,7 +67,6 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 |-----------|-------------|----------------------|---------|
 | `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
 | `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PexPermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
-| `api/permissionsex-api-bukkit/` | `permissionsex-api-bukkit` | No (optional compile) | Bukkit `Player` helpers for `PexPermissionService`. |
 
 ### `platform` — engine, runtimes, bootstrap
 
@@ -341,6 +340,7 @@ import dev.rono.permissions.api.subject.PexUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public void onEnable() {
     RegisteredServiceProvider<PexPermissionService> reg =
@@ -356,7 +356,8 @@ public void onEnable() {
 
 public void onJoin(PlayerJoinEvent event, PexPermissionService pex) {
     Player player = event.getPlayer();
-    if (PexBukkitPermissions.on(player).hasPermission("my.permission")) {
+    var manager = PermissionsEx.getApi().getPermissionManager();
+    if (manager.has(player, "my.permission")) {
         pex.world(player.getWorld().getName())
                 .user(player.getUniqueId())
                 .addPermission("joined.today");

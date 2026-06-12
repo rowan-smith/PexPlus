@@ -16,8 +16,6 @@ Runtime: on **Spigot/Paper**, resolve the API via **`PermissionsEx.getApi()`**. 
 
 Add **`permissionsex-legacy-stub`** when calling `ru.tehkode.permissions.bukkit.PermissionsEx` static helpers from a hook plugin.
 
-Optional Bukkit helpers: artifact `permissionsex-api-bukkit` (`PexBukkitPermissions.on(player).hasPermission("node")`).
-
 Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissionsex-example-plugin/)
 
 ---
@@ -44,7 +42,7 @@ var manager = api.getPermissionManager();
 ## Quick start
 
 ```java
-import dev.rono.permissions.bukkit.PexBukkitPermissions;
+import dev.rono.permissions.api.service.PexPermissionService;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 if (!PermissionsEx.isAvailable()) {
@@ -59,9 +57,9 @@ if (manager.hasPermission(user.asHolder(), "my.plugin.use")) {
 }
 
 // Classic + fluent PexPermissionService (same runtime object)
-if (PexBukkitPermissions.on(player).hasPermission("my.plugin.use")) {
-    ((dev.rono.permissions.api.service.PexPermissionService) manager)
-            .world(player.getWorld().getName())
+if (manager.has(player, "my.plugin.use")) {
+    var pex = (PexPermissionService) manager;
+    pex.world(player.getWorld().getName())
             .user(player.getUniqueId())
             .addTimedPermission("my.plugin.temp", 3600);
     manager.getUser(player).save();
@@ -203,27 +201,6 @@ try (var session = pex.session().start()) {
     session.editGroup("vip", group -> group.setPrefix("&6", null));
     session.save();
 }
-```
-
----
-
-## Bukkit helpers (`permissionsex-api-bukkit`)
-
-```xml
-<dependency>
-  <groupId>dev.rono.permissions</groupId>
-  <artifactId>permissionsex-api-bukkit</artifactId>
-  <version>1.23.5</version>
-  <scope>provided</scope>
-</dependency>
-```
-
-```java
-import dev.rono.permissions.bukkit.PexBukkitPermissions;
-
-if (PexBukkitPermissions.on(player).hasPermission("my.node")) { ... }
-PexBukkitPermissions.on(player).context().inGroup("vip");
-PexBukkitPermissions.on(player).hasPermissionGlobal("my.global.node");
 ```
 
 ---
@@ -374,7 +351,6 @@ Obtain via `subject.inWorld("world_nether")`, `user.global()`, or `pex.world("wo
 | `PexPermissionEditSession` | Batch edit helper |
 | `PexWorldScope` / `PexUsersScope` / `PexGroupsScope` / `PexWorldsScope` / `PexBackendScope` / `PexSessionScope` | Flat API scopes |
 | `PexFoundUser` / `PexFoundGroup` | Optional persisted lookups |
-| `PexPlayerScope` | Bukkit `PexBukkitPermissions.on(player)` |
 | `PexSubjectType` | `USER`, `GROUP` |
 
 ---

@@ -1,20 +1,20 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.bukkit.PexBukkitPermissions;
+import dev.rono.permissions.api.service.PexPermissionService;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.tehkode.permissions.PermissionManager;
 
 import java.util.Locale;
 
 /** Sample plugin using {@link PermissionsEx#getApi()}. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
 
-    private PermissionsExApi permissions;
+    private PermissionManager permissions;
 
     @Override
     public void onEnable() {
@@ -25,11 +25,11 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        permissions = PermissionsEx.getApi();
+        permissions = PermissionsEx.getApi().getPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
                 "PEX users=%d groups=%d",
-                permissions.getUserManager().count(),
-                permissions.getGroupManager().count()));
+                PermissionsEx.getApi().getUserManager().count(),
+                PermissionsEx.getApi().getGroupManager().count()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -39,8 +39,9 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         var player = event.getPlayer();
-        var allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
-        var worldContext = PexBukkitPermissions.on(player).context();
+        var allowed = permissions.has(player, "my.node");
+        var pex = (PexPermissionService) permissions;
+        var worldContext = pex.world(player.getWorld().getName()).user(player.getUniqueId());
         var displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();
