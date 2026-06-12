@@ -2,7 +2,6 @@ package dev.rono.permissions.bukkit;
 
 import dev.rono.permissions.api.service.PexPermissionService;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import ru.tehkode.permissions.PermissionManager;
 
 /**
@@ -17,13 +16,11 @@ final class PexServices {
      * @throws IllegalStateException if PermissionsEx is not loaded or the service is not registered
      */
     static PexPermissionService require() {
-        RegisteredServiceProvider<PermissionManager> managerReg =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
+        var managerReg = Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
         if (managerReg != null && managerReg.getProvider() instanceof PexPermissionService service) {
             return service;
         }
-        RegisteredServiceProvider<PexPermissionService> reg =
-                Bukkit.getServer().getServicesManager().getRegistration(PexPermissionService.class);
+        var reg = Bukkit.getServer().getServicesManager().getRegistration(PexPermissionService.class);
         if (reg == null) {
             throw new IllegalStateException("PermissionsEx is not registered — is PermissionsEx loaded?");
         }

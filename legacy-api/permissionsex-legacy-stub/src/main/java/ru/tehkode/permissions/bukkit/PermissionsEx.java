@@ -4,7 +4,6 @@ import dev.rono.permissions.api.PermissionsExApi;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.exceptions.PermissionsNotAvailable;
@@ -13,8 +12,8 @@ import ru.tehkode.permissions.exceptions.PermissionsNotAvailable;
  * Compile-only static entry points for hook plugins.
  *
  * <pre>{@code
- * PermissionsExApi api = PermissionsEx.getApi();
- * PermissionManager manager = api.getPermissionManager();
+ * var api = PermissionsEx.getApi();
+ * var manager = api.getPermissionManager();
  * }</pre>
  */
 public final class PermissionsEx {
@@ -25,17 +24,15 @@ public final class PermissionsEx {
     }
 
     public static boolean isAvailable() {
-        Plugin plugin = getPlugin();
+        var plugin = getPlugin();
         if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
-        RegisteredServiceProvider<PermissionsExApi> modern =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+        var modern = Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
         if (modern != null && modern.getProvider() != null) {
             return true;
         }
-        RegisteredServiceProvider<PermissionManager> legacy =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
+        var legacy = Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
         return legacy != null && legacy.getProvider() != null;
     }
 
@@ -43,13 +40,11 @@ public final class PermissionsEx {
         if (!isAvailable()) {
             throw new PermissionsNotAvailable();
         }
-        RegisteredServiceProvider<PermissionsExApi> reg =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+        var reg = Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
         if (reg != null && reg.getProvider() != null) {
             return reg.getProvider();
         }
-        RegisteredServiceProvider<PermissionManager> legacyReg =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
+        var legacyReg = Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
         if (legacyReg != null && legacyReg.getProvider() instanceof PermissionsExApi api) {
             return api;
         }

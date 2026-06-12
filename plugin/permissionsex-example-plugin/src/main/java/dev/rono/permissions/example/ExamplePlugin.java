@@ -2,9 +2,7 @@ package dev.rono.permissions.example;
 
 import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.bukkit.PexBukkitPermissions;
-import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,7 +26,7 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         permissions = PermissionsEx.getApi();
-        PermissionManager manager = permissions.getPermissionManager();
+        var manager = permissions.getPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
                 "PEX users=%d groups=%d",
                 manager.getUserIdentifiers().size(),
@@ -41,14 +39,14 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
-        boolean allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
+        var player = event.getPlayer();
+        var allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
         var worldContext = PexBukkitPermissions.on(player).context();
-        String displayName = worldContext.option("name");
+        var displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();
         }
-        final String resolvedName = displayName;
+        final var resolvedName = displayName;
 
         getLogger().fine(() -> String.format(Locale.ROOT,
                 "pex uuid=%s user=%s allowed(my.node)=%s groups=%s directPerms=%s timed=%s",
