@@ -25,26 +25,26 @@ Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissions
 ## Entry point
 
 ```java
-PermissionsExApi api = PermissionsEx.getApi();
+PermissionManager api = PermissionsEx.getApi();
 ```
 
 | Method | Role |
 |--------|------|
-| `PermissionsEx.getApi()` | Modern `PermissionsExApi` (managers + holder-based permissions) |
-| `PermissionsEx.getPermissionManager()` | **Deprecated** — `getApi().getLegacyPermissionManager()` |
+| `PermissionsEx.getApi()` | `PermissionManager` with modern manager accessors + deprecated classic methods |
+| `PermissionsEx.getPermissionManager()` | **Deprecated** — alias for `getApi()` |
 
 **Bungee/Waterfall:** `dev.rono.permissions.bungee.PermissionsEx.getApi()`
 
-`PermissionsExApi` provides `getUserManager()`, `getGroupManager()`, `getWorldManager()`, `getLadderManager()`, and `getPermissionService()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`).
+`PermissionManager` provides `getUserManager()`, `getGroupManager()`, `getWorldManager()`, `getLadderManager()`, and `getPermissionService()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`). Classic `getUser` / `getGroup` methods remain for binary compatibility but are deprecated.
 
 ---
 
 ## Quick start
 
 ```java
-import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.bukkit.PexBukkitPermissions;
+import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.entity.Player;
 
@@ -52,7 +52,7 @@ if (!PermissionsEx.isAvailable()) {
     getLogger().warning("PermissionsEx not loaded");
     return;
 }
-PermissionsExApi api = PermissionsEx.getApi();
+PermissionManager api = PermissionsEx.getApi();
 User user = api.getUserManager().getUser(player.getUniqueId());
 
 // Holder-based permission check
@@ -62,11 +62,11 @@ if (api.getPermissionService().hasPermission(user.asHolder(), "my.plugin.use")) 
 
 // Player's current world (Bukkit helper)
 if (PexBukkitPermissions.on(player).hasPermission("my.plugin.use")) {
-    ((dev.rono.permissions.api.service.PexPermissionService) api.getLegacyPermissionManager())
+    ((dev.rono.permissions.api.service.PexPermissionService) api)
             .world(player.getWorld().getName())
             .user(player.getUniqueId())
             .addTimedPermission("my.plugin.temp", 3600);
-    api.getLegacyPermissionManager().getUser(player).save();
+    api.getUser(player).save();
 }
 ```
 
@@ -234,8 +234,9 @@ PexBukkitPermissions.on(player).hasPermissionGlobal("my.global.node");
 
 ```java
 import dev.rono.permissions.bungee.PermissionsEx;
+import ru.tehkode.permissions.PermissionManager;
 
-PermissionsExApi api = PermissionsEx.getApi();
+PermissionManager api = PermissionsEx.getApi();
 ```
 
 Maven artifact: `permissionsex-api-bungee` (optional; includes `ProxyPermissionServices` for advanced use).

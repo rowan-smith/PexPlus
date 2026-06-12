@@ -14,15 +14,15 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 | New plugin | [Modern API](MODERN_API.md) (`PermissionsEx.getApi()`) |
 | Existing PEX 1.23.x hook plugin | [Legacy API](LEGACY_API.md) — no recompile required for typical hooks |
 | Static `PermissionsEx.getUser(...)` calls | Legacy API + `permissionsex-legacy-stub` |
-| Static modern entry | `permissionsex-api-bukkit` + `PermissionsExPlus.getPermissionService()` |
+| Static modern entry | `permissionsex-api` + `PermissionsEx.getApi()` (`PermissionManager`) |
 | Permission change events (modern) | `pex.events()` or legacy Bukkit events on Spigot |
-| Proxy (Bungee/Waterfall) | `PermissionsExPlus.getPermissionService()` (+ legacy `PermissionManager`) |
+| Proxy (Bungee/Waterfall) | `PermissionsEx.getApi()` (+ deprecated classic `PermissionManager` methods) |
 
 ## Documentation
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](MODERN_API.md) | `PermissionsExPlus`, `PexPermissionService`, `PexUser`, `PexGroup`, world contexts, timed permissions, Maven setup, examples |
+| [MODERN_API.md](MODERN_API.md) | `PermissionsEx.getApi()`, managers, holder permissions, `PexPermissionService`, subjects, world contexts |
 | [LEGACY_API.md](LEGACY_API.md) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
 | [FUTURE.md](FUTURE.md) | Recommended additions and known gaps |
 
@@ -31,13 +31,11 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 Both APIs resolve to the **same object** (`DefaultPermissionManager`):
 
 ```java
-// Modern
-PermissionsExApi api = PermissionsEx.getApi();
+// Modern (managers + holder permissions)
+PermissionManager api = PermissionsEx.getApi();
 
-// Legacy
+// Deprecated alias — same runtime object
 PermissionManager legacy = PermissionsEx.getPermissionManager();
-
-// modern and legacy resolve the same runtime object (DefaultPermissionManager)
 ```
 
 ## Sample plugins

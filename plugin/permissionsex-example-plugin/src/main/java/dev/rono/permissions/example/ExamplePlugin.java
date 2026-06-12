@@ -1,7 +1,7 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.bukkit.PexBukkitPermissions;
+import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,7 @@ import java.util.Locale;
 /** Sample plugin using {@link PermissionsEx#getApi()}. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
 
-    private PermissionsExApi permissions;
+    private PermissionManager permissions;
 
     @Override
     public void onEnable() {
@@ -27,11 +27,10 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         permissions = PermissionsEx.getApi();
-        var legacy = permissions.getLegacyPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
                 "PEX users=%d groups=%d",
-                legacy.getUserIdentifiers().size(),
-                legacy.getGroupNames().size()));
+                permissions.getUserIdentifiers().size(),
+                permissions.getGroupNames().size()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -40,15 +39,13 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        var player = event.getPlayer();
-        var allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
+        Player player = event.getPlayer();
+        boolean allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
         var worldContext = PexBukkitPermissions.on(player).context();
-        var displayName = worldContext.option("name");
-
+        String displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();
         }
-
         final String resolvedName = displayName;
 
         getLogger().fine(() -> String.format(Locale.ROOT,

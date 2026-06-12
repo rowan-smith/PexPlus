@@ -1,12 +1,11 @@
 package dev.rono.permissions.bungee;
 
-import dev.rono.permissions.api.PermissionsExApi;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import ru.tehkode.permissions.PermissionManager;
 
 /**
- * Modern static entry points for Bungee/Waterfall hook plugins.
+ * Static entry points for Bungee/Waterfall hook plugins.
  */
 public final class PermissionsEx {
 
@@ -22,16 +21,16 @@ public final class PermissionsEx {
         return getPlugin() != null && ProxyPermissionServices.isRegistered();
     }
 
-    public static PermissionsExApi getApi() {
+    public static PermissionManager getApi() {
         if (!isAvailable()) {
             throw new IllegalStateException(
-                    "PermissionsExApi is not registered on this proxy — is PermissionsEx loaded?");
+                    "PermissionManager is not registered on this proxy — is PermissionsEx loaded?");
         }
-        return ProxyPermissionServices.permissionsExApi();
+        return ProxyPermissionServices.permissionManager();
     }
 
-  @Deprecated(forRemoval = false)
+    @Deprecated(forRemoval = false)
     public static PermissionManager getPermissionManager() {
-        return getApi().getLegacyPermissionManager();
+        return getApi();
     }
 }

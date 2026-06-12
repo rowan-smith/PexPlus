@@ -11,8 +11,8 @@
     <url>https://github.com/rowan-smith/PermissionsExPlus</url>
 
     <modules>
-        <module>legacy-api</module>
         <module>api</module>
+        <module>legacy-api</module>
         <module>platform</module>
         <module>plugin</module>
     </modules>

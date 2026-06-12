@@ -1,6 +1,5 @@
 package dev.rono.permissions.bungee;
 
-import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.service.PexPermissionService;
 import ru.tehkode.permissions.PermissionManager;
 
@@ -10,50 +9,26 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Service registry for Bungee/Waterfall (no Bukkit {@code ServicesManager}).
  *
- * <p>PermissionsEx registers {@link PermissionsExApi}, {@link PexPermissionService}, and
- * {@link PermissionManager} here on enable. Hook plugins should use
- * {@link PermissionsEx#getApi()}.</p>
+ * <p>Hook plugins should use {@link PermissionsEx#getApi()}.</p>
  */
 public final class ProxyPermissionServices {
-    private static final AtomicReference<PermissionsExApi> PERMISSIONS_EX_API = new AtomicReference<>();
-    private static final AtomicReference<PexPermissionService> PERMISSION_SERVICE = new AtomicReference<>();
     private static final AtomicReference<PermissionManager> PERMISSION_MANAGER = new AtomicReference<>();
+    private static final AtomicReference<PexPermissionService> PERMISSION_SERVICE = new AtomicReference<>();
 
     private ProxyPermissionServices() {}
 
-    public static void register(
-            PermissionsExApi api,
-            PexPermissionService service,
-            PermissionManager manager) {
-        PERMISSIONS_EX_API.set(Objects.requireNonNull(api, "api"));
-        PERMISSION_SERVICE.set(Objects.requireNonNull(service, "service"));
+    public static void register(PermissionManager manager, PexPermissionService service) {
         PERMISSION_MANAGER.set(Objects.requireNonNull(manager, "manager"));
+        PERMISSION_SERVICE.set(Objects.requireNonNull(service, "service"));
     }
 
     public static void unregister() {
-        PERMISSIONS_EX_API.set(null);
-        PERMISSION_SERVICE.set(null);
         PERMISSION_MANAGER.set(null);
+        PERMISSION_SERVICE.set(null);
     }
 
     public static boolean isRegistered() {
-        return PERMISSIONS_EX_API.get() != null && PERMISSION_MANAGER.get() != null;
-    }
-
-    public static PermissionsExApi permissionsExApi() {
-        PermissionsExApi api = PERMISSIONS_EX_API.get();
-        if (api == null) {
-            throw new IllegalStateException("PermissionsExApi is not registered on this proxy");
-        }
-        return api;
-    }
-
-    public static PexPermissionService permissionService() {
-        PexPermissionService service = PERMISSION_SERVICE.get();
-        if (service == null) {
-            throw new IllegalStateException("PexPermissionService is not registered on this proxy");
-        }
-        return service;
+        return PERMISSION_MANAGER.get() != null;
     }
 
     public static PermissionManager permissionManager() {
@@ -64,17 +39,22 @@ public final class ProxyPermissionServices {
         return manager;
     }
 
+    public static PexPermissionService permissionService() {
+        PexPermissionService service = PERMISSION_SERVICE.get();
+        if (service == null) {
+            throw new IllegalStateException("PexPermissionService is not registered on this proxy");
+        }
+        return service;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T get(Class<T> type) {
         Objects.requireNonNull(type, "type");
-        if (PermissionsExApi.class.equals(type)) {
-            return (T) permissionsExApi();
+        if (PermissionManager.class.equals(type)) {
+            return (T) permissionManager();
         }
         if (PexPermissionService.class.equals(type)) {
             return (T) permissionService();
-        }
-        if (PermissionManager.class.equals(type)) {
-            return (T) permissionManager();
         }
         throw new IllegalArgumentException("Unsupported service type on proxy: " + type.getName());
     }

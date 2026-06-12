@@ -8,6 +8,7 @@ import dev.rono.permissions.api.subject.PexTimedPermissionEntry;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.world.PexWorlds;
 import org.junit.jupiter.api.Test;
+import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PEXTestBase;
 
 import java.util.List;
@@ -214,7 +215,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void permissionsExApiLifecycle() {
-        var api = ((DefaultPermissionManager) manager).permissionsExApi();
+        PermissionManager api = manager;
         UUID uuid = UUID.randomUUID();
 
         assertFalse(api.getUserManager().exists(uuid));
