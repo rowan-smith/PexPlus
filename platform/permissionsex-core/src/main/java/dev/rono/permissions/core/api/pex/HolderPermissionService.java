@@ -3,7 +3,6 @@ package dev.rono.permissions.core.api.pex;
 import dev.rono.permissions.api.permission.PermissionAddRequest;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.permission.PermissionNode;
-import dev.rono.permissions.api.permission.PermissionService;
 import dev.rono.permissions.api.permission.PermissionSource;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.PermissionEntity;
@@ -14,22 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-final class HolderPermissionService implements PermissionService {
+public final class HolderPermissionService {
 
     private final DefaultPermissionManager manager;
     private final HolderEntityResolver resolver;
 
-    HolderPermissionService(DefaultPermissionManager manager) {
+    public HolderPermissionService(DefaultPermissionManager manager) {
         this.manager = manager;
         this.resolver = new HolderEntityResolver(manager);
     }
 
-    @Override
     public PermissionNode addPermission(PermissionHolder holder, String permission) {
         return addPermission(holder, permission, null);
     }
 
-    @Override
     public PermissionNode addPermission(PermissionHolder holder, String permission, Duration duration) {
         PermissionEntity entity = resolver.resolve(holder);
         String world = null;
@@ -43,7 +40,6 @@ final class HolderPermissionService implements PermissionService {
         return new PermissionNodeImpl(holder, permission, expiresAt, Map.of(), PermissionSource.SYSTEM);
     }
 
-    @Override
     public PermissionNode addPermission(PermissionAddRequest request) {
         PermissionEntity entity = resolver.resolve(request.holder());
         String world = resolver.worldContext(request.context());
@@ -62,19 +58,16 @@ final class HolderPermissionService implements PermissionService {
                 request.source());
     }
 
-    @Override
     public void removePermission(PermissionHolder holder, String permission) {
         PermissionEntity entity = resolver.resolve(holder);
         entity.removePermission(permission, null);
     }
 
-    @Override
     public boolean hasPermission(PermissionHolder holder, String permission) {
         PermissionEntity entity = resolver.resolve(holder);
         return entity.has(permission, null);
     }
 
-    @Override
     public List<PermissionNode> getPermissions(PermissionHolder holder) {
         PermissionEntity entity = resolver.resolve(holder);
         List<PermissionNode> nodes = new ArrayList<>();

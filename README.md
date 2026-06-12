@@ -211,7 +211,7 @@ Summary below; see the linked docs for complete method lists and examples.
 
 #### `PexPermissionService` (`permissionsex-api`)
 
-Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with `getUserManager()`, `getGroupManager()`, `getWorldManager()`, `getLadderManager()`, holder-based `getPermissionService()`, and classic `getPermissionManager()`. The same runtime object also implements the fluent `PexPermissionService` surface.
+Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers and `getPermissionManager()` (classic + holder-based permission ops). The same runtime object also implements the fluent `PexPermissionService` surface.
 
 | Method | Description |
 |--------|-------------|

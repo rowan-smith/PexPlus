@@ -68,11 +68,24 @@ public class LegacyApiContractTest {
         assertMethod(PermissionManager.class, "getExecutor");
         assertMethod(PermissionManager.class, "shouldSaveDefaultGroup");
 
+        assertMethod(PermissionManager.class, "addPermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class);
+        assertMethod(PermissionManager.class, "addPermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class, java.time.Duration.class);
+        assertMethod(PermissionManager.class, "addPermission", dev.rono.permissions.api.permission.PermissionAddRequest.class);
+        assertMethod(PermissionManager.class, "removePermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class);
+        assertMethod(PermissionManager.class, "hasPermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class);
+        assertMethod(PermissionManager.class, "getPermissions", dev.rono.permissions.api.permission.PermissionHolder.class);
+
         Set<String> declared = Arrays.stream(PermissionManager.class.getMethods())
                 .filter(m -> m.getDeclaringClass() == PermissionManager.class)
                 .map(LegacyApiContractTest::signature)
                 .collect(Collectors.toSet());
         Set<String> expected = Set.of(
+                "addPermission(PermissionHolder,String)",
+                "addPermission(PermissionHolder,String,Duration)",
+                "addPermission(PermissionAddRequest)",
+                "removePermission(PermissionHolder,String)",
+                "hasPermission(PermissionHolder,String)",
+                "getPermissions(PermissionHolder)",
                 "shouldCreateUserRecords()",
                 "getConfiguration()",
                 "has(Player,String)",

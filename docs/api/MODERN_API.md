@@ -33,12 +33,11 @@ PermissionManager manager = api.getPermissionManager();
 |--------|------|
 | `PermissionsEx.getApi()` | Modern `PermissionsExApi` (managers + holder-based permissions) |
 | `PermissionsEx.getPermissionManager()` | **Deprecated** — `getApi().getPermissionManager()` |
-| `PermissionsExApi.getPermissionManager()` | Classic `ru.tehkode.permissions.PermissionManager` |
-| `PermissionsExApi.getPermissionService()` | Holder-based `dev.rono.permissions.api.permission.PermissionService` |
+| `PermissionsExApi.getPermissionManager()` | Classic + holder-based operations on `ru.tehkode.permissions.PermissionManager` |
 
 **Bungee/Waterfall:** `dev.rono.permissions.bungee.PermissionsEx.getApi()`
 
-`PermissionsExApi` provides `getUserManager()`, `getGroupManager()`, `getWorldManager()`, `getLadderManager()`, and `getPermissionService()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`).
+`PermissionsExApi` provides `getUserManager()`, `getGroupManager()`, `getWorldManager()`, and `getLadderManager()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`). Holder-based permission edits use `getPermissionManager().addPermission(holder, …)` / `hasPermission(holder, …)`.
 
 ---
 

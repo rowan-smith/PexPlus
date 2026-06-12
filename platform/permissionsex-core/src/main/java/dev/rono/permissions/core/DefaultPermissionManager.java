@@ -36,6 +36,7 @@ import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.world.PexWorlds;
 import dev.rono.permissions.core.api.*;
+import dev.rono.permissions.core.api.pex.HolderPermissionService;
 import dev.rono.permissions.core.api.pex.PermissionsExApiImpl;
 import dev.rono.permissions.core.backends.CorePermissionBackendRegistrar;
 import org.bukkit.entity.Player;
@@ -43,6 +44,10 @@ import ru.tehkode.permissions.*;
 import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
+import dev.rono.permissions.api.permission.PermissionAddRequest;
+import dev.rono.permissions.api.permission.PermissionHolder;
+import dev.rono.permissions.api.permission.PermissionNode;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -67,6 +72,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	private final GroupMembershipIndex groupMembershipIndex = new GroupMembershipIndex();
 	private final DefaultPermissionEventBus eventBus = new DefaultPermissionEventBus();
 	private final PermissionsExApiImpl permissionsExApi;
+	private final HolderPermissionService holderPermissions;
 
 	public DefaultPermissionManager(PermissionsExConfig config, Logger logger, PlatformAdapter platform) throws PermissionBackendException {
 		CorePermissionBackendRegistrar.ensureRegistered();
@@ -77,11 +83,42 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		this.allowOps = config.allowOps();
 		this.userAddGroupsLast = config.userAddGroupsLast();
 		this.initBackend();
+		this.holderPermissions = new HolderPermissionService(this);
 		this.permissionsExApi = new PermissionsExApiImpl(this);
 	}
 
 	public PermissionsExApi permissionsExApi() {
 		return permissionsExApi;
+	}
+
+	@Override
+	public PermissionNode addPermission(PermissionHolder holder, String permission) {
+		return holderPermissions.addPermission(holder, permission);
+	}
+
+	@Override
+	public PermissionNode addPermission(PermissionHolder holder, String permission, Duration duration) {
+		return holderPermissions.addPermission(holder, permission, duration);
+	}
+
+	@Override
+	public PermissionNode addPermission(PermissionAddRequest request) {
+		return holderPermissions.addPermission(request);
+	}
+
+	@Override
+	public void removePermission(PermissionHolder holder, String permission) {
+		holderPermissions.removePermission(holder, permission);
+	}
+
+	@Override
+	public boolean hasPermission(PermissionHolder holder, String permission) {
+		return holderPermissions.hasPermission(holder, permission);
+	}
+
+	@Override
+	public List<PermissionNode> getPermissions(PermissionHolder holder) {
+		return holderPermissions.getPermissions(holder);
 	}
 
 	UUID getServerUUID() {

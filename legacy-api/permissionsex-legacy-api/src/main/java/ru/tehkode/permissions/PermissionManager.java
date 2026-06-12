@@ -1,10 +1,14 @@
 package ru.tehkode.permissions;
 
+import dev.rono.permissions.api.permission.PermissionAddRequest;
+import dev.rono.permissions.api.permission.PermissionHolder;
+import dev.rono.permissions.api.permission.PermissionNode;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.bukkit.PermissionsExConfig;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
@@ -58,6 +62,18 @@ public interface PermissionManager {
      * <p>Passed to {@link PermissionEntity#addTimedPermission(String, String, int)} as {@code lifeTime}.</p>
      */
     int TRANSIENT_PERMISSION = 0;
+
+    PermissionNode addPermission(PermissionHolder holder, String permission);
+
+    PermissionNode addPermission(PermissionHolder holder, String permission, Duration duration);
+
+    PermissionNode addPermission(PermissionAddRequest request);
+
+    void removePermission(PermissionHolder holder, String permission);
+
+    boolean hasPermission(PermissionHolder holder, String permission);
+
+    List<PermissionNode> getPermissions(PermissionHolder holder);
 
     /**
      * Returns whether the engine should create user records automatically when unknown players are resolved.

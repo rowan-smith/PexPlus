@@ -2,7 +2,6 @@ package dev.rono.permissions.api;
 
 import dev.rono.permissions.api.group.GroupManager;
 import dev.rono.permissions.api.ladder.LadderManager;
-import dev.rono.permissions.api.permission.PermissionService;
 import dev.rono.permissions.api.user.UserManager;
 import dev.rono.permissions.api.world.WorldManager;
 import ru.tehkode.permissions.PermissionManager;
@@ -24,13 +23,8 @@ public interface PermissionsExApi {
     LadderManager getLadderManager();
 
     /**
-     * Holder-based permission operations (add / remove / has).
-     */
-    PermissionService getPermissionService();
-
-    /**
-     * Classic {@code ru.tehkode.permissions} manager ({@link ru.tehkode.permissions.PermissionUser},
-     * {@link ru.tehkode.permissions.PermissionGroup}, etc.).
+     * Classic and holder-based permission operations ({@link ru.tehkode.permissions.PermissionUser},
+     * {@link ru.tehkode.permissions.PermissionGroup}, {@link dev.rono.permissions.api.permission.PermissionHolder}, etc.).
      */
     PermissionManager getPermissionManager();
 }
