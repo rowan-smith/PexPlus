@@ -39,7 +39,7 @@ public final class ProxyPermissionServices {
     }
 
     public static PermissionsExApi permissionsExApi() {
-        PermissionsExApi api = PERMISSIONS_EX_API.get();
+        var api = PERMISSIONS_EX_API.get();
         if (api == null) {
             throw new IllegalStateException("PermissionsExApi is not registered on this proxy");
         }
@@ -47,7 +47,7 @@ public final class ProxyPermissionServices {
     }
 
     public static PexPermissionService permissionService() {
-        PexPermissionService service = PERMISSION_SERVICE.get();
+        var service = PERMISSION_SERVICE.get();
         if (service == null) {
             throw new IllegalStateException("PexPermissionService is not registered on this proxy");
         }
@@ -55,7 +55,7 @@ public final class ProxyPermissionServices {
     }
 
     public static PermissionManager permissionManager() {
-        PermissionManager manager = PERMISSION_MANAGER.get();
+        var manager = PERMISSION_MANAGER.get();
         if (manager == null) {
             throw new IllegalStateException("PermissionManager is not registered on this proxy");
         }

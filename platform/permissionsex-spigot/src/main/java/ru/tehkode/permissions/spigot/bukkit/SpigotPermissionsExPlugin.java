@@ -242,7 +242,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			PlayerEventsListener cleaner = new PlayerEventsListener();
 			this.getServer().getPluginManager().registerEvents(cleaner, this);
 
-			PermissionsExApi permissionsExApi =
+			var permissionsExApi =
 					((DefaultPermissionManager) this.permissionsManager).permissionsExApi();
 			this.getServer().getServicesManager().register(PermissionManager.class, this.permissionsManager, this, ServicePriority.Normal);
 			this.getServer().getServicesManager().register(PexPermissionService.class, (PexPermissionService) this.permissionsManager, this, ServicePriority.Normal);
@@ -275,7 +275,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 	public void onDisable() {
 		try {
 			if (this.permissionsManager != null) {
-				PermissionsExApi permissionsExApi =
+				var permissionsExApi =
 						((DefaultPermissionManager) this.permissionsManager).permissionsExApi();
 				this.permissionsManager.end();
 				this.getServer().getServicesManager().unregister(PexPermissionService.class, this.permissionsManager);

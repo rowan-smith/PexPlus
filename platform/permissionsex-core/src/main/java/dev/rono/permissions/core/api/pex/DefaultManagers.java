@@ -10,9 +10,7 @@ import dev.rono.permissions.api.user.UserManager;
 import dev.rono.permissions.api.user.UserNotFoundException;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.commands.CoreCommandService;
-import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.backends.PermissionBackend;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -43,7 +41,7 @@ final class DefaultUserManager implements UserManager {
             return Optional.of(wrapUser(resolved, manager.getUser(resolved)));
         }
         if (manager.getBackend().hasUser(name)) {
-            PermissionUser user = manager.getUser(name);
+            var user = manager.getUser(name);
             return Optional.of(wrapUser(parseId(user.getIdentifier()), user));
         }
         return Optional.empty();
@@ -59,7 +57,7 @@ final class DefaultUserManager implements UserManager {
 
     @Override
     public User getUser(String name) throws UserNotFoundException {
-        Optional<User> found = findUser(name);
+        var found = findUser(name);
         if (found.isEmpty()) {
             throw new UserNotFoundException(name);
         }
@@ -71,9 +69,9 @@ final class DefaultUserManager implements UserManager {
         if (exists(uuid)) {
             throw new UserAlreadyExistsException(uuid);
         }
-        PermissionBackend backend = manager.getBackend();
+        var backend = manager.getBackend();
         backend.getUserData(uuid.toString());
-        PermissionUser created = manager.getUser(uuid);
+        var created = manager.getUser(uuid);
         created.save();
         return wrapUser(uuid, created);
     }
@@ -83,9 +81,9 @@ final class DefaultUserManager implements UserManager {
         if (exists(name)) {
             throw new UserAlreadyExistsException(name);
         }
-        PermissionBackend backend = manager.getBackend();
+        var backend = manager.getBackend();
         backend.getUserData(name);
-        PermissionUser created = manager.getUser(name);
+        var created = manager.getUser(name);
         created.save();
         return wrapUser(parseId(created.getIdentifier()), created);
     }
@@ -158,7 +156,7 @@ final class DefaultGroupManager implements GroupManager {
             throw new GroupAlreadyExistsException(name);
         }
         manager.getBackend().getGroupData(name);
-        PermissionGroup created = manager.getGroup(name);
+        var created = manager.getGroup(name);
         created.save();
         return new GroupImpl(name, created);
     }

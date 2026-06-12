@@ -25,8 +25,8 @@ Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissions
 ## Entry point
 
 ```java
-PermissionsExApi api = PermissionsEx.getApi();
-PermissionManager manager = api.getPermissionManager();
+var api = PermissionsEx.getApi();
+var manager = api.getPermissionManager();
 ```
 
 | Method | Role |
@@ -44,27 +44,21 @@ PermissionManager manager = api.getPermissionManager();
 ## Quick start
 
 ```java
-import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.bukkit.PexBukkitPermissions;
-import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-import org.bukkit.entity.Player;
 
 if (!PermissionsEx.isAvailable()) {
     getLogger().warning("PermissionsEx not loaded");
     return;
 }
-PermissionsExApi api = PermissionsEx.getApi();
-User user = api.getUserManager().getUser(player.getUniqueId());
-
-// Holder-based permission check
-if (api.getPermissionService().hasPermission(user.asHolder(), "my.plugin.use")) {
+var api = PermissionsEx.getApi();
+var user = api.getUserManager().getUser(player.getUniqueId());
+var manager = api.getPermissionManager();
+if (manager.hasPermission(user.asHolder(), "my.plugin.use")) {
     ...
 }
 
-// Classic manager (deprecated methods on PermissionManager)
-PermissionManager manager = api.getPermissionManager();
+// Classic + fluent PexPermissionService (same runtime object)
 if (PexBukkitPermissions.on(player).hasPermission("my.plugin.use")) {
     ((dev.rono.permissions.api.service.PexPermissionService) manager)
             .world(player.getWorld().getName())
