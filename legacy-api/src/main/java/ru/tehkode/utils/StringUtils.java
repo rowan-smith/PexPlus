@@ -24,14 +24,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+/**
+ * General-purpose string manipulation utilities used by PermissionsEx.
+ */
 public class StringUtils {
 
 	/**
 	 * Returns the given array joined by a separator.
 	 *
-	 * @param array     an array of strings to join
-	 * @param separator a string to insert between the array elements
-	 * @return the full string result
+	 * @param array     an array of strings to join; must not be {@code null}
+	 * @param separator a string to insert between the array elements; must not be {@code null}
+	 * @return the joined string, or an empty string when {@code array} is empty
 	 */
 	public static String implode(String[] array, String separator) {
 		if (array.length == 0) {
@@ -51,9 +54,9 @@ public class StringUtils {
 	/**
 	 * Returns the elements joined by a separator.
 	 *
-	 * @param list      a List object to join together
-	 * @param separator a string to insert between the list elements
-	 * @return the full string result
+	 * @param list      a list of objects to join; must not be {@code null}
+	 * @param separator a string to insert between the list elements; must not be {@code null}
+	 * @return the joined string, or an empty string when {@code list} is empty
 	 */
 	public static String implode(List<?> list, String separator) {
 		if (list.isEmpty()) {
@@ -75,10 +78,13 @@ public class StringUtils {
 	}
 
 	/**
-	 * Return a stream's complete input as a string, or null if the InputStream is null
+	 * Reads an input stream's complete contents as a UTF-8 string.
 	 *
-	 * @param is an InputStream to read from
-	 * @return a String representing the input read from the InputStream
+	 * <p>The stream is closed after reading, including when an I/O error occurs.</p>
+	 *
+	 * @param is an input stream to read from; may be {@code null}
+	 * @return the full string content, or {@code null} if {@code is} is {@code null}
+	 * @throws IOException if reading from the stream fails
 	 */
 	public static String readStream(InputStream is) throws IOException {
 		if (is != null) {
@@ -103,11 +109,11 @@ public class StringUtils {
 	}
 
 	/**
-	 * Repeat a string a given number of times.
+	 * Repeats a string a given number of times.
 	 *
-	 * @param str   the string to repeat
-	 * @param times the number of times to repeat the string
-	 * @return the completed repeating
+	 * @param str   the string to repeat; must not be {@code null}
+	 * @param times the number of repetitions; must be non-negative
+	 * @return the concatenated result
 	 */
 	public static String repeat(String str, int times) {
 		StringBuilder buffer = new StringBuilder(times * str.length());
@@ -119,11 +125,11 @@ public class StringUtils {
 	}
 
 	/**
-	 * Parse a string to an integer value, using a given default on fail
+	 * Parses a string to an integer value, returning a default on failure.
 	 *
-	 * @param value        a String to parse to an int
-	 * @param defaultValue the default, used when 'value' is not an integer
-	 * @return the parsed value
+	 * @param value        a string to parse to an int; may be {@code null}
+	 * @param defaultValue the value returned when {@code value} is not a valid integer
+	 * @return the parsed integer, or {@code defaultValue} on parse failure
 	 */
 	public static int toInteger(String value, int defaultValue) {
 		int ret = defaultValue;

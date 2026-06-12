@@ -15,12 +15,27 @@ import dev.rono.permissions.api.query.PermissionQuery;
  */
 public interface PermissionService {
 
-    /** Entry point for checks, edits, registry, backend, and maintenance. */
+    /**
+     * Returns the fluent entry point for permission checks, subject edits, registry access,
+     * backend administration, and maintenance operations.
+     *
+     * @return a {@link PermissionQuery} bound to this service instance
+     */
     default PermissionQuery query() {
         return PermissionQuery.of(this);
     }
 
-    /** @throws IllegalStateException if the runtime does not expose {@link PermissionServiceBridge} */
+    /**
+     * Casts {@code service} to {@link PermissionServiceBridge} when the runtime implementation
+     * exposes the full bridge API.
+     *
+     * <p>The modern query layer requires {@link PermissionServiceBridge}; plugin code should
+     * normally use {@link #query()} instead of calling this directly.</p>
+     *
+     * @param service the registered {@link PermissionService} instance
+     * @return the same instance as a {@link PermissionServiceBridge}
+     * @throws IllegalStateException if {@code service} does not implement {@link PermissionServiceBridge}
+     */
     static PermissionServiceBridge requireBridge(PermissionService service) {
         if (service instanceof PermissionServiceBridge bridge) {
             return bridge;

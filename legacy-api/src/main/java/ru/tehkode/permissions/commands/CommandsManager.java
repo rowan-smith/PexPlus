@@ -8,11 +8,20 @@ package ru.tehkode.permissions.commands;
  */
 public interface CommandsManager {
 
+    /**
+     * No-op implementation used when the legacy command manager is not active.
+     */
     enum Noop implements CommandsManager {
+        /** Singleton no-op instance. */
         INSTANCE
     }
 
-    /** @deprecated Compatibility no-op. */
+    /**
+     * Returns the legacy command manager singleton.
+     *
+     * @return the no-op {@link Noop#INSTANCE}; never {@code null}
+     * @deprecated Compatibility no-op; PEXPlus does not expose a live {@code CommandsManager}.
+     */
     @Deprecated
     static CommandsManager getInstance() {
         return Noop.INSTANCE;
