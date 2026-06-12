@@ -2,14 +2,19 @@ package dev.rono.permissions.bukkit;
 
 import dev.rono.permissions.api.service.PermissionService;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-/** Resolves {@link PermissionService} from Bukkit {@code ServicesManager}. */
+/**
+ * Internal helper that resolves {@link PermissionService} from Bukkit {@code ServicesManager}.
+ */
 final class PexServices {
 
     private PexServices() {}
 
+    /**
+     * @return registered {@link PermissionService} provider
+     * @throws IllegalStateException if PermissionsEx is not loaded or the service is not registered
+     */
     static PermissionService require() {
         RegisteredServiceProvider<PermissionService> reg =
                 Bukkit.getServer().getServicesManager().getRegistration(PermissionService.class);

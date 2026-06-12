@@ -5,15 +5,32 @@ import dev.rono.permissions.api.PermissionsExException;
 /**
  * Non-active backend instance for inspection and data transfer.
  *
- * <p>Created via {@link dev.rono.permissions.api.service.PermissionService#createBackendHandle(String)}.</p>
+ * <p>Created via {@link dev.rono.permissions.api.query.BackendScope#createHandle(String)} or
+ * {@link dev.rono.permissions.api.service.PermissionServiceBridge#createBackendHandle(String)}.
+ * The handle targets a configured backend without making it active.</p>
  */
 public interface BackendHandle {
 
+    /**
+     * Returns metadata describing this backend instance.
+     *
+     * @return backend type, implementation name, and diagnostic label
+     */
     BackendInfo info();
 
-    /** Copy all users, groups, and world inheritance from the active backend into this backend. */
+    /**
+     * Copies all users, groups, and world inheritance from the active backend into this backend.
+     *
+     * @throws PermissionsExException if the copy operation fails
+     */
     void copyFromActive() throws PermissionsExException;
 
-    /** Replace active backend data with contents of this backend (merge semantics of {@code loadFrom}). */
+    /**
+     * Replaces active-backend data with the contents of this backend.
+     *
+     * <p>Uses the merge semantics of the underlying {@code loadFrom} implementation.</p>
+     *
+     * @throws PermissionsExException if applying data to the active backend fails
+     */
     void applyToActive() throws PermissionsExException;
 }

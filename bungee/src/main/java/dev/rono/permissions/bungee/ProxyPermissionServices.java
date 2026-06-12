@@ -16,11 +16,18 @@ public final class ProxyPermissionServices {
 
     private ProxyPermissionServices() {}
 
+    /**
+     * Called by PermissionsEx on proxy enable.
+     *
+     * @param service modern permission service (same instance as {@code manager})
+     * @param manager legacy permission manager facade
+     */
     public static void register(PermissionService service, PermissionManager manager) {
         PERMISSION_SERVICE.set(Objects.requireNonNull(service, "service"));
         PERMISSION_MANAGER.set(Objects.requireNonNull(manager, "manager"));
     }
 
+    /** Clears registered services on proxy disable. */
     public static void unregister() {
         PERMISSION_SERVICE.set(null);
         PERMISSION_MANAGER.set(null);
