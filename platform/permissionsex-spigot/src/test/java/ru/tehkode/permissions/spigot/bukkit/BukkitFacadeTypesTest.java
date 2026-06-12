@@ -39,9 +39,6 @@ public final class BukkitFacadeTypesTest {
         SpigotPermissionsExPlugin.class.getDeclaredMethod("has", Player.class, String.class);
         SpigotPermissionsExPlugin.class.getDeclaredMethod("has", Player.class, String.class, String.class);
 
-        dev.rono.permissions.bukkit.PermissionsExPlus.class.getMethod("getPlugin");
-        dev.rono.permissions.bukkit.PermissionsExPlus.class.getMethod("isAvailable");
-        dev.rono.permissions.bukkit.PermissionsExPlus.class.getMethod("getPermissionService");
-        dev.rono.permissions.bukkit.PermissionsExPlus.class.getMethod("getUser", Player.class);
+        ru.tehkode.permissions.bukkit.PermissionsEx.class.getMethod("getApi");
     }
 }

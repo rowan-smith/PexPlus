@@ -18,6 +18,7 @@
  */
 package dev.rono.permissions.core;
 
+import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.PexPermissionsExException;
 import dev.rono.permissions.api.backend.PexBackendHandle;
 import dev.rono.permissions.api.backend.PexBackendInfo;
@@ -35,6 +36,7 @@ import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.world.PexWorlds;
 import dev.rono.permissions.core.api.*;
+import dev.rono.permissions.core.api.pex.PermissionsExApiImpl;
 import dev.rono.permissions.core.backends.CorePermissionBackendRegistrar;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.*;
@@ -64,6 +66,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	protected PermissionMatcher matcher = new RegExpMatcher();
 	private final GroupMembershipIndex groupMembershipIndex = new GroupMembershipIndex();
 	private final DefaultPermissionEventBus eventBus = new DefaultPermissionEventBus();
+	private final PermissionsExApiImpl permissionsExApi;
 
 	public DefaultPermissionManager(PermissionsExConfig config, Logger logger, PlatformAdapter platform) throws PermissionBackendException {
 		CorePermissionBackendRegistrar.ensureRegistered();
@@ -74,6 +77,11 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		this.allowOps = config.allowOps();
 		this.userAddGroupsLast = config.userAddGroupsLast();
 		this.initBackend();
+		this.permissionsExApi = new PermissionsExApiImpl(this);
+	}
+
+	public PermissionsExApi permissionsExApi() {
+		return permissionsExApi;
 	}
 
 	UUID getServerUUID() {

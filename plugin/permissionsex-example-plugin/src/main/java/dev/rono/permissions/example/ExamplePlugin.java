@@ -1,8 +1,8 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.bukkit.PexBukkitPermissions;
-import dev.rono.permissions.bukkit.PermissionsExPlus;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,28 +12,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Locale;
 
-/** Sample plugin using the modern {@link PermissionsExPlus} entry point. */
+/** Sample plugin using {@link PermissionsEx#getApi()}. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
 
-    private PexPermissionService permissions;
+    private PermissionsExApi permissions;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
 
-        if (!PermissionsExPlus.isAvailable()) {
-            getLogger().warning("PexPermissionService is not registered — is PermissionsEx loaded?");
+        if (!PermissionsEx.isAvailable()) {
+            getLogger().warning("PermissionsEx is not available — is PermissionsEx loaded?");
             return;
         }
 
-        permissions = PermissionsExPlus.getPermissionService();
+        permissions = PermissionsEx.getApi();
+        var legacy = permissions.getLegacyPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
-                "PEX backend: %s (%s), users=%d groups=%d worlds=%d",
-                permissions.backend().type(),
-                permissions.backend().simpleName(),
-                permissions.users().count(),
-                permissions.groups().count(),
-                permissions.worlds().count()));
+                "PEX users=%d groups=%d",
+                legacy.getUserIdentifiers().size(),
+                legacy.getGroupNames().size()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

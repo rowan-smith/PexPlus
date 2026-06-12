@@ -13,8 +13,8 @@ legacy-api/
 api/
   permissionsex-core-api      Platform-neutral SPI (PlatformAdapter, bus dispatches)
   permissionsex-api           PexPermissionService façade for modern hook plugins
-  permissionsex-api-bukkit    PermissionsExPlus + optional Bukkit Player helpers
-  permissionsex-api-bungee    PermissionsExPlus + proxy service registry
+  permissionsex-api-bukkit    PermissionsEx.getApi() helpers + Bukkit Player helpers
+  permissionsex-api-bungee    PermissionsEx.getApi() + proxy service registry
 
 platform/
   permissionsex-core          Engine (manager, backends, commands, hierarchy)

@@ -211,4 +211,24 @@ class ModernPermissionServiceTest extends PEXTestBase {
         assertNotNull(pex().backend().exportData());
         assertNotNull(pex().backend().createHandle("mock").info());
     }
+
+    @Test
+    void permissionsExApiLifecycle() {
+        var api = ((DefaultPermissionManager) manager).permissionsExApi();
+        UUID uuid = UUID.randomUUID();
+
+        assertFalse(api.getUserManager().exists(uuid));
+        assertTrue(api.getUserManager().findUser(uuid).isEmpty());
+
+        var created = api.getUserManager().createUser(uuid);
+        assertEquals(uuid, created.getId());
+        assertTrue(api.getUserManager().exists(uuid));
+        assertEquals(created.getId(), api.getUserManager().getUser(uuid).getId());
+
+        api.getPermissionService().addPermission(created.asHolder(), "lifecycle.test");
+        assertTrue(api.getPermissionService().hasPermission(created.asHolder(), "lifecycle.test"));
+
+        assertThrows(dev.rono.permissions.api.user.UserAlreadyExistsException.class,
+                () -> api.getUserManager().createUser(uuid));
+    }
 }

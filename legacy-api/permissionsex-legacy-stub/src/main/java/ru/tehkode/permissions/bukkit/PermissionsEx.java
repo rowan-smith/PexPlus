@@ -1,5 +1,6 @@
 package ru.tehkode.permissions.bukkit;
 
+import dev.rono.permissions.api.PermissionsExApi;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -14,6 +15,11 @@ import ru.tehkode.permissions.exceptions.PermissionsNotAvailable;
  * <p>The live {@code JavaPlugin} implementation ships in {@code permissionsex-spigot} and is
  * registered via {@code plugin.yml}. Hook plugins depend on this class for stable static accessors
  * without linking against the full plugin module.</p>
+ *
+ * <pre>{@code
+ * PermissionsExApi api = PermissionsEx.getApi();
+ * User user = api.getUserManager().getUser(uuid);
+ * }</pre>
  */
 public final class PermissionsEx {
     private PermissionsEx() {}
@@ -28,33 +34,59 @@ public final class PermissionsEx {
     }
 
     /**
-     * Returns whether PermissionsEx is loaded, enabled, and exposing a {@link PermissionManager}.
+     * Returns whether PermissionsEx is loaded, enabled, and exposing services.
      *
-     * @return {@code true} if the plugin and its service provider are available
+     * @return {@code true} if the plugin and its service providers are available
      */
     public static boolean isAvailable() {
         Plugin plugin = getPlugin();
         if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
-        RegisteredServiceProvider<PermissionManager> reg =
+        RegisteredServiceProvider<PermissionsExApi> modern =
+                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+        if (modern != null && modern.getProvider() != null) {
+            return true;
+        }
+        RegisteredServiceProvider<PermissionManager> legacy =
                 Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
-        return reg != null && reg.getProvider() != null;
+        return legacy != null && legacy.getProvider() != null;
     }
 
     /**
-     * Returns the registered {@link PermissionManager} service.
+     * Returns the modern PermissionsEx hook API.
      *
-     * @return active permission manager; never {@code null}
-     * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the manager is not registered
+     * @return active API facade; never {@code null}
+     * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the API is not registered
      */
-    public static PermissionManager getPermissionManager() {
+    public static PermissionsExApi getApi() {
         if (!isAvailable()) {
             throw new PermissionsNotAvailable();
         }
-        RegisteredServiceProvider<PermissionManager> reg =
+        RegisteredServiceProvider<PermissionsExApi> reg =
+                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+        if (reg != null && reg.getProvider() != null) {
+            return reg.getProvider();
+        }
+        RegisteredServiceProvider<PermissionManager> legacyReg =
                 Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
-        return reg.getProvider();
+        if (legacyReg != null && legacyReg.getProvider() instanceof PermissionsExApi api) {
+            return api;
+        }
+        throw new PermissionsNotAvailable();
+    }
+
+    /**
+     * Returns the registered legacy {@link PermissionManager} service.
+     *
+     * @return active permission manager; never {@code null}
+     * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the manager is not registered
+     * @deprecated Use {@link #getApi()} and {@link PermissionsExApi#getLegacyPermissionManager()} for
+     *             classic integrations.
+     */
+    @Deprecated(forRemoval = false)
+    public static PermissionManager getPermissionManager() {
+        return getApi().getLegacyPermissionManager();
     }
 
     /**

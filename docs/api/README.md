@@ -11,7 +11,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Situation | Use |
 |-----------|-----|
-| New plugin | [Modern API](MODERN_API.md) (`PermissionsExPlus.getPermissionService()`) |
+| New plugin | [Modern API](MODERN_API.md) (`PermissionsEx.getApi()`) |
 | Existing PEX 1.23.x hook plugin | [Legacy API](LEGACY_API.md) — no recompile required for typical hooks |
 | Static `PermissionsEx.getUser(...)` calls | Legacy API + `permissionsex-legacy-stub` |
 | Static modern entry | `permissionsex-api-bukkit` + `PermissionsExPlus.getPermissionService()` |
@@ -32,7 +32,7 @@ Both APIs resolve to the **same object** (`DefaultPermissionManager`):
 
 ```java
 // Modern
-PexPermissionService modern = PermissionsExPlus.getPermissionService();
+PermissionsExApi api = PermissionsEx.getApi();
 
 // Legacy
 PermissionManager legacy = PermissionsEx.getPermissionManager();

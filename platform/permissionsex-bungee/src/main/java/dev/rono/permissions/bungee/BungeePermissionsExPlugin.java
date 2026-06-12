@@ -3,6 +3,7 @@ package dev.rono.permissions.bungee;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import dev.rono.permissions.api.bus.PexPermissionDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
+import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.bungee.backends.file.BungeeFileBackend;
 import dev.rono.permissions.bungee.backends.memory.BungeeMemoryBackend;
@@ -65,7 +66,10 @@ public class BungeePermissionsExPlugin extends Plugin implements PlatformAdapter
                             CoreCloudPlatform.PROXY)
                     .register();
             this.manager.initTimer();
-            ProxyPermissionServices.register((PexPermissionService) this.manager, this.manager);
+            ProxyPermissionServices.register(
+                    ((DefaultPermissionManager) this.manager).permissionsExApi(),
+                    (PexPermissionService) this.manager,
+                    this.manager);
             BungeePermissionBootstrapReporter.log(this, this.manager);
         } catch (PermissionBackendException ex) {
             getLogger().severe("Failed to initialize PermissionsExPlus Bungee adapter: " + ex.getMessage());

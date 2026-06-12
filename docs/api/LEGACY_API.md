@@ -326,7 +326,7 @@ Most hook plugins should **not** depend on backend types — use `PermissionMana
 
 | Legacy | Modern |
 |--------|--------|
-| `PermissionsEx.getPermissionManager()` | `PermissionsExPlus.getPermissionService()` |
+| `PermissionsEx.getPermissionManager()` | `PermissionsEx.getApi()` |
 | `getUser(...)` | `service.user(...)` |
 | `PermissionUser.addPermission` | `user.addPermission(...)` or `user.inWorld(w).addPermission(...)` |
 | `getWorldInheritance` | `service.worldInheritance(...)` |
