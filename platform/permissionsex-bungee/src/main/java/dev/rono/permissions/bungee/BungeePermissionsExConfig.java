@@ -1,5 +1,15 @@
 package dev.rono.permissions.bungee;
 
+import dev.rono.permissions.core.PermissionsExConfig;
+import dev.rono.permissions.core.config.PexConfigData;
+import dev.rono.permissions.core.config.PexConfigFlavor;
+import dev.rono.permissions.core.config.PexRef;
+import dev.rono.permissions.core.configuration.PexYamlConfig;
+import dev.rono.permissions.core.runtime.PexVolatileRef;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import ru.tehkode.permissions.PEXBackendConfiguration;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -8,15 +18,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import ru.tehkode.permissions.PEXBackendConfiguration;
-import dev.rono.permissions.core.PermissionsExConfig;
-import dev.rono.permissions.core.config.PexConfigData;
-import dev.rono.permissions.core.config.PexRef;
-import dev.rono.permissions.core.config.PexConfigFlavor;
-import dev.rono.permissions.core.configuration.PexYamlConfig;
-import dev.rono.permissions.core.runtime.PexVolatileRef;
 
 @SuppressWarnings("unchecked")
 final class BungeePermissionsExConfig implements PermissionsExConfig {

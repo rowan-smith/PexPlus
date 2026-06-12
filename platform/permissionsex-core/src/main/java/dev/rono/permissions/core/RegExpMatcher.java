@@ -3,6 +3,7 @@ package dev.rono.permissions.core;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import ru.tehkode.permissions.PermissionMatcher;
 
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -11,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import ru.tehkode.permissions.PermissionMatcher;
 public class RegExpMatcher implements PermissionMatcher {
 	public static final String RAW_REGEX_CHAR = "$";
 	private static final Logger LOGGER = Logger.getLogger(RegExpMatcher.class.getName());

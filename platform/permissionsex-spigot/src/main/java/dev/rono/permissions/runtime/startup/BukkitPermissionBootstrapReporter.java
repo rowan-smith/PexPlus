@@ -3,16 +3,17 @@ package dev.rono.permissions.runtime.startup;
 import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.bootstrap.PlatformDescriptor;
 import dev.rono.permissions.bootstrap.PlatformFamily;
+import dev.rono.permissions.core.InternalPermissionManager;
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin;
+
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
-import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import dev.rono.permissions.core.InternalPermissionManager;
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin;
 
 /**
  * Emits structured {@code [Permissions]} lines once the core engine, services and compatibility shims are up.

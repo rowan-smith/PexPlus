@@ -18,33 +18,24 @@
  */
 package ru.tehkode.permissions.spigot.bukkit;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.stream.Collectors;
-
+import cloud.commandframework.bukkit.BukkitCommandManager;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
 import com.mojang.api.profiles.ProfileRepository;
-import com.google.common.cache.CacheBuilder;
-import cloud.commandframework.bukkit.BukkitCommandManager;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
+import dev.rono.permissions.api.bus.PermissionDispatch;
+import dev.rono.permissions.api.runtime.PlatformAdapter;
+import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.core.DefaultPermissionManager;
+import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
+import dev.rono.permissions.core.commands.CoreCommandService;
+import dev.rono.permissions.runtime.startup.BukkitPermissionBootstrapReporter;
+import dev.rono.permissions.spigot.platform.SpigotEventPublisher;
+import dev.rono.permissions.spigot.platform.SpigotPlatformBridge;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -59,29 +50,26 @@ import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NonNull;
-import dev.rono.permissions.api.bus.EntityDispatch;
-import dev.rono.permissions.api.bus.PermissionDispatch;
-import dev.rono.permissions.api.bus.SystemDispatch;
-import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.runtime.startup.BukkitPermissionBootstrapReporter;
-import dev.rono.permissions.spigot.platform.SpigotEventPublisher;
-import dev.rono.permissions.spigot.platform.SpigotPlatformBridge;
-import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.NativeInterface;
 import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionsUserData;
 import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.PermissionsUserData;
 import ru.tehkode.permissions.backends.PermissionBackend;
+import ru.tehkode.permissions.events.PermissionEvent;
+import ru.tehkode.permissions.exceptions.PermissionBackendException;
 import ru.tehkode.permissions.spigot.backends.FileBackend;
 import ru.tehkode.permissions.spigot.backends.MemoryBackend;
-import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
-import dev.rono.permissions.core.commands.CoreCommandService;
 import ru.tehkode.permissions.spigot.bukkit.regexperms.RegexPermissions;
-import ru.tehkode.permissions.events.PermissionEntityEvent;
-import ru.tehkode.permissions.events.PermissionEvent;
-import ru.tehkode.permissions.events.PermissionSystemEvent;
-import ru.tehkode.permissions.exceptions.PermissionBackendException;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.stream.Collectors;
 
 /**
  * @author code

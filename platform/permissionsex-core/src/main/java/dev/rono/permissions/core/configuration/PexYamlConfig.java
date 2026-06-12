@@ -1,9 +1,10 @@
 package dev.rono.permissions.core.configuration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import dev.rono.permissions.core.config.PexConfigData;
 import dev.rono.permissions.core.config.PexConfigFlavor;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /** Locates {@code permissions:} in a loaded {@code config.yml} tree; delegates binding to {@link PexConfigData}. */
 public final class PexYamlConfig {

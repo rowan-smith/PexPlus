@@ -3,17 +3,11 @@ package dev.rono.permissions.core.api;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.subject.User;
-import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.DefaultPermissionManager;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
+
+import java.util.*;
 
 public final class ModernGroupAdapter extends AbstractModernSubjectAdapter implements Group {
     private final PermissionGroup group;

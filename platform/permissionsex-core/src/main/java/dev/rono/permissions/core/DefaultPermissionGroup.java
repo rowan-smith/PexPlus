@@ -19,13 +19,8 @@
 package dev.rono.permissions.core;
 
 import dev.rono.permissions.api.bus.EntityMutation;
-import dev.rono.permissions.core.InternalPermissionManager;
+import ru.tehkode.permissions.*;
 
-import ru.tehkode.permissions.PermissionEntity;
-import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.PermissionsGroupData;
 import java.util.*;
 
 /**

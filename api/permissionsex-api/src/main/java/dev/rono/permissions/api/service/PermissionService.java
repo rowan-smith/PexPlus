@@ -2,17 +2,11 @@ package dev.rono.permissions.api.service;
 
 import dev.rono.permissions.api.PermissionsExException;
 import dev.rono.permissions.api.event.PermissionEventBus;
-import dev.rono.permissions.api.query.BackendScope;
-import dev.rono.permissions.api.query.FoundGroup;
-import dev.rono.permissions.api.query.FoundUser;
-import dev.rono.permissions.api.query.GroupsScope;
-import dev.rono.permissions.api.query.SessionScope;
-import dev.rono.permissions.api.query.UsersScope;
-import dev.rono.permissions.api.query.WorldScope;
-import dev.rono.permissions.api.query.WorldsScope;
+import dev.rono.permissions.api.query.*;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.world.Worlds;
+
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

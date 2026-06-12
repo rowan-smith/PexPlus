@@ -1,7 +1,8 @@
 package dev.rono.permissions.core.config;
 
-import java.util.Map;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
+
+import java.util.Map;
 
 /**
  * Validates root {@code config.yml} {@code permissions} section values.

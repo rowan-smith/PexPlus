@@ -1,7 +1,8 @@
 package ru.tehkode.permissions;
 
-import java.util.UUID;
 import ru.tehkode.permissions.events.PermissionEvent;
+
+import java.util.UUID;
 
 /**
  * Classic PermissionsEx host SPI ({@code 1.23.x}-era surface).

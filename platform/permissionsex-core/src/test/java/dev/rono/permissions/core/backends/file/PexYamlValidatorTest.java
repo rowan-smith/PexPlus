@@ -1,10 +1,11 @@
 package dev.rono.permissions.core.backends.file;
 
+import org.junit.jupiter.api.Test;
+import ru.tehkode.permissions.exceptions.PermissionBackendException;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;

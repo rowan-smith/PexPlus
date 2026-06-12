@@ -2,10 +2,11 @@ package dev.rono.permissions.core.commands.cloud;
 
 import cloud.commandframework.annotations.suggestions.Suggestions;
 import cloud.commandframework.context.CommandContext;
-import java.util.List;
-import ru.tehkode.permissions.backends.PermissionBackend;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 import dev.rono.permissions.core.commands.CoreCloudSuggestionHelper;
+import ru.tehkode.permissions.backends.PermissionBackend;
+
+import java.util.List;
 
 /**
  * Registers named suggestion providers for annotation arguments ({@link cloud.commandframework.annotations.Argument#suggestions}).

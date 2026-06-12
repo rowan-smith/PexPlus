@@ -1,20 +1,18 @@
 package ru.tehkode.permissions.spigot;
 
+import dev.rono.permissions.core.backends.MultiBackend;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
-import dev.rono.permissions.core.backends.MultiBackend;
 import ru.tehkode.permissions.backends.PermissionBackend;
+import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 

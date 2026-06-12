@@ -1,13 +1,12 @@
 package ru.tehkode.permissions;
 
-import java.lang.reflect.Modifier;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LegacyStubContractTest {
 

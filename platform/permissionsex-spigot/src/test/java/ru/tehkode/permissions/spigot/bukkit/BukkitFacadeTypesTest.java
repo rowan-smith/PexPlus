@@ -1,15 +1,14 @@
 package ru.tehkode.permissions.spigot.bukkit;
 
-import java.lang.reflect.Modifier;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import ru.tehkode.permissions.spigot.backends.FileBackend;
 import ru.tehkode.permissions.spigot.backends.MemoryBackend;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Validates classic surface types that live in {@code ru.tehkode.permissions.backends} alongside Spigot.

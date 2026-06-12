@@ -1,9 +1,10 @@
 package dev.rono.permissions.bungee;
 
 import dev.rono.permissions.api.service.PermissionService;
+import ru.tehkode.permissions.PermissionManager;
+
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import ru.tehkode.permissions.PermissionManager;
 
 /**
  * Service registry for Bungee/Waterfall (no Bukkit {@code ServicesManager}).

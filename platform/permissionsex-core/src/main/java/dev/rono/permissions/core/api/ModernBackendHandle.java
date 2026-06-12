@@ -5,7 +5,6 @@ import dev.rono.permissions.api.backend.BackendHandle;
 import dev.rono.permissions.api.backend.BackendInfo;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.backends.PermissionBackend;
-import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 public final class ModernBackendHandle implements BackendHandle {
     private final PermissionBackend backend;

@@ -1,9 +1,10 @@
 package dev.rono.permissions.core.legacy;
 
-import java.util.Collections;
-import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import ru.tehkode.permissions.bukkit.PermissionsExConfig;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Bridges {@link dev.rono.permissions.core.PermissionsExConfig} to the classic

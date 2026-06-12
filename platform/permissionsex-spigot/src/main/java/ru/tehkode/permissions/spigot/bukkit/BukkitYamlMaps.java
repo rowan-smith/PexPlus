@@ -1,10 +1,11 @@
 package ru.tehkode.permissions.spigot.bukkit;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Converts Bukkit {@link ConfigurationSection} subtrees into nested {@link Map}s for core configuration binding.

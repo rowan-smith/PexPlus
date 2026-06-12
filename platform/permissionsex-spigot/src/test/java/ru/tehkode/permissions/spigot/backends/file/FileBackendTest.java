@@ -1,12 +1,12 @@
 package ru.tehkode.permissions.spigot.backends.file;
 
+import dev.rono.permissions.core.DefaultPermissionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import ru.tehkode.permissions.spigot.PermissionsExSpigotTestBase;
 import ru.tehkode.permissions.PermissionGroup;
-import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.spigot.PermissionsExSpigotTestBase;
 
 import java.nio.file.Path;
 import java.util.Arrays;

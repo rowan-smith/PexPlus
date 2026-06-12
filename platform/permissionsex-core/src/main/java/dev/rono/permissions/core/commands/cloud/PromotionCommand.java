@@ -2,8 +2,8 @@ package dev.rono.permissions.core.commands.cloud;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
-import ru.tehkode.permissions.PermissionUser;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
+import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.exceptions.RankingException;
 
 public final class PromotionCommand<C> extends AbstractPexCloudCommand<C> {

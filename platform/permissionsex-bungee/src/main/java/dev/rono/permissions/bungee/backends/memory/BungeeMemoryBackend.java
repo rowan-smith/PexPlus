@@ -1,5 +1,12 @@
 package dev.rono.permissions.bungee.backends.memory;
 
+import dev.rono.permissions.core.backends.AbstractPermissionBackend;
+import ru.tehkode.permissions.PEXBackendConfiguration;
+import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.PermissionsGroupData;
+import ru.tehkode.permissions.PermissionsUserData;
+import ru.tehkode.permissions.exceptions.PermissionBackendException;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
@@ -7,12 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import ru.tehkode.permissions.PEXBackendConfiguration;
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionsGroupData;
-import ru.tehkode.permissions.PermissionsUserData;
-import dev.rono.permissions.core.backends.AbstractPermissionBackend;
-import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 /**
  * Bungee memory backend with no persistence.

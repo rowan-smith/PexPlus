@@ -1,8 +1,8 @@
 package dev.rono.permissions.api.session;
 
-import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.User;
+
 import java.util.UUID;
 import java.util.function.Consumer;
 

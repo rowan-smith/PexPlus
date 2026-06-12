@@ -1,8 +1,9 @@
 package ru.tehkode.permissions.events;
 
+import org.bukkit.event.Event;
+
 import java.io.Serializable;
 import java.util.UUID;
-import org.bukkit.event.Event;
 
 /**
  * Base class for classic PermissionsEx Bukkit-rooted notifications.

@@ -1,8 +1,9 @@
 package dev.rono.permissions.core.backends.file;
 
+import ru.tehkode.permissions.exceptions.PermissionBackendException;
+
 import java.util.List;
 import java.util.Map;
-import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 /**
  * Validates classic {@code permissions.yml} shape before the file backend loads data.

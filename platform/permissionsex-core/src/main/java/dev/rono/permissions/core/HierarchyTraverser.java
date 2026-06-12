@@ -1,13 +1,10 @@
 package dev.rono.permissions.core;
 
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionGroup;
+
+import java.util.*;
+
 /**
  * Class created to simplify hierarchy traversal for entities
  */

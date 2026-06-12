@@ -1,9 +1,9 @@
 package ru.tehkode.permissions;
 
+import ru.tehkode.permissions.exceptions.RankingException;
+
 import java.util.List;
 import java.util.Map;
-
-import ru.tehkode.permissions.exceptions.RankingException;
 
 /**
  * Classic online-subject facade for a PermissionsEx user.

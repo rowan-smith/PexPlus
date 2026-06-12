@@ -4,13 +4,11 @@ import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.InternalPermissionManager;
 import dev.rono.permissions.core.backends.MultiBackend;
+import dev.rono.permissions.core.backends.sql.SQLBackend;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.backends.PermissionBackend;
-import dev.rono.permissions.core.backends.sql.SQLBackend;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LegacyApiCompatibilityTest {
 

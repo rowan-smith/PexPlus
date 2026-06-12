@@ -1,15 +1,15 @@
 package ru.tehkode.permissions.spigot.backends.sql;
 
+import dev.rono.permissions.core.backends.sql.SQLBackend;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import dev.rono.permissions.core.backends.sql.SQLBackend;
-import ru.tehkode.permissions.spigot.PermissionsExSpigotTestBase;
-import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
 import ru.tehkode.permissions.PermissionsGroupData;
 import ru.tehkode.permissions.PermissionsUserData;
+import ru.tehkode.permissions.spigot.PermissionsExSpigotTestBase;
+import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;

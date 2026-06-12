@@ -2,12 +2,13 @@ package dev.rono.permissions.core;
 
 import dev.rono.permissions.api.bus.EntityMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import java.util.Collection;
-import java.util.Set;
-import java.util.TimerTask;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.TimerTask;
 
 /**
  * Core-runtime hooks not part of the classic {@link PermissionManager} compile surface ({@code 628215f}).

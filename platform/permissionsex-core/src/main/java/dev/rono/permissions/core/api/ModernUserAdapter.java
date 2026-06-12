@@ -7,12 +7,9 @@ import dev.rono.permissions.api.subject.TimedGroupMembership;
 import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.DefaultPermissionManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import ru.tehkode.permissions.PermissionUser;
+
+import java.util.*;
 
 public final class ModernUserAdapter extends AbstractModernSubjectAdapter implements User {
     private final PermissionUser user;

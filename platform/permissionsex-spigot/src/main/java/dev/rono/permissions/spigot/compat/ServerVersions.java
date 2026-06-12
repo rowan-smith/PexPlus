@@ -1,8 +1,9 @@
 package dev.rono.permissions.spigot.compat;
 
+import org.bukkit.Server;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.bukkit.Server;
 
 /**
  * Parses Bukkit version strings and checks support for the declared Minecraft range ({@value #MIN_MC}–{@value #MAX_MC}).

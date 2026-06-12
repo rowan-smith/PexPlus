@@ -1,14 +1,14 @@
 package dev.rono.permissions.legacy;
 
-import java.io.IOException;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
  * Optional regression probe: drop classic third-party plugin JARs into

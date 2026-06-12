@@ -2,19 +2,20 @@ package ru.tehkode.permissions.spigot;
 
 import dev.rono.permissions.api.bus.PermissionDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
+import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.PermissionsExConfig;
+import dev.rono.permissions.core.config.PexConfigData;
+import dev.rono.permissions.core.config.PexRef;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import ru.tehkode.permissions.PEXBackendConfiguration;
 import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
+import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.spigot.backends.FileBackend;
 import ru.tehkode.permissions.spigot.backends.MemoryBackend;
-import ru.tehkode.permissions.backends.PermissionBackend;
-import dev.rono.permissions.core.DefaultPermissionManager;
-import dev.rono.permissions.core.config.PexConfigData;
-import dev.rono.permissions.core.config.PexRef;
+import ru.tehkode.permissions.spigot.bukkit.BukkitPEXBackendConfiguration;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;

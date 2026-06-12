@@ -1,16 +1,11 @@
 package dev.rono.permissions.core;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.PermissionsUserData;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Reverse index of direct group membership for fast {@code getUsers(group)} queries.

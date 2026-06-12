@@ -2,17 +2,7 @@ package dev.rono.permissions.core.commands;
 
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.meta.SimpleCommandMeta;
-import dev.rono.permissions.core.commands.cloud.GroupCommand;
-import dev.rono.permissions.core.commands.cloud.GroupScopedCommand;
-import dev.rono.permissions.core.commands.cloud.PexCloudSuggestions;
-import dev.rono.permissions.core.commands.cloud.PromotionCommand;
-import dev.rono.permissions.core.commands.cloud.ProxyServerSubtreeCommand;
-import dev.rono.permissions.core.commands.cloud.RootCommand;
-import dev.rono.permissions.core.commands.cloud.SystemCommand;
-import dev.rono.permissions.core.commands.cloud.UserCommand;
-import dev.rono.permissions.core.commands.cloud.UserScopedCommand;
-import dev.rono.permissions.core.commands.cloud.WorldCommand;
-import dev.rono.permissions.core.commands.cloud.WorldGameSubtreeCommand;
+import dev.rono.permissions.core.commands.cloud.*;
 
 final class CoreCloudAnnotationCommands {
     private CoreCloudAnnotationCommands() {}

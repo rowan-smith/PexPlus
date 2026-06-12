@@ -1,7 +1,8 @@
 package dev.rono.permissions.core.runtime;
 
-import java.util.Objects;
 import dev.rono.permissions.core.config.PexRef;
+
+import java.util.Objects;
 
 /** Thread-safe holder updated on reload. */
 public final class PexVolatileRef<T> implements PexRef<T> {

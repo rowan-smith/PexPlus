@@ -1,14 +1,9 @@
 package dev.rono.permissions.bungee.backends.memory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import ru.tehkode.permissions.PermissionsGroupData;
 import ru.tehkode.permissions.PermissionsUserData;
+
+import java.util.*;
 
 final class BungeeMemoryData implements PermissionsGroupData, PermissionsUserData {
     private String identifier;

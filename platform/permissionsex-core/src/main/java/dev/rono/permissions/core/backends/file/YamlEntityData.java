@@ -1,9 +1,9 @@
 package dev.rono.permissions.core.backends.file;
 
-import java.util.*;
-
 import ru.tehkode.permissions.PermissionsGroupData;
 import ru.tehkode.permissions.PermissionsUserData;
+
+import java.util.*;
 
 /**
  * User/group subtree stored in YAML-compatible nested maps (Spigot FileBackend-compatible layout).

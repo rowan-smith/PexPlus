@@ -8,8 +8,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.Permissible;
 import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin;
 import ru.tehkode.permissions.events.PermissionSystemEvent;
+import ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin;
 
 import java.util.Map;
 import java.util.UUID;

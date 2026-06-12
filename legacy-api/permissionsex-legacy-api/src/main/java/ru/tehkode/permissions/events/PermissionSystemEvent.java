@@ -1,7 +1,8 @@
 package ru.tehkode.permissions.events;
 
-import java.util.UUID;
 import org.bukkit.event.HandlerList;
+
+import java.util.UUID;
 
 /**
  * Bukkit event fired when the permission system itself changes state.

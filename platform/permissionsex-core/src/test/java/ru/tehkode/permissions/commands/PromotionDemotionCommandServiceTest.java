@@ -1,16 +1,15 @@
 package ru.tehkode.permissions.commands;
 
 import dev.rono.permissions.core.commands.CoreCommandService;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.PEXTestBase;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.exceptions.RankingException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class PromotionDemotionCommandServiceTest extends PEXTestBase {
 

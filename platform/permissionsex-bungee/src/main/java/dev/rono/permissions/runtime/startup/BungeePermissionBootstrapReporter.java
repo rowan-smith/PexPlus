@@ -2,16 +2,16 @@ package dev.rono.permissions.runtime.startup;
 
 import dev.rono.permissions.bootstrap.PlatformDescriptor;
 import dev.rono.permissions.bootstrap.PlatformFamily;
+import dev.rono.permissions.bungee.BungeePermissionsExPlugin;
+import dev.rono.permissions.core.InternalPermissionManager;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
+import ru.tehkode.permissions.PermissionManager;
+
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import dev.rono.permissions.bungee.BungeePermissionsExPlugin;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import dev.rono.permissions.core.InternalPermissionManager;
-import ru.tehkode.permissions.PermissionManager;
 
 /**
  * Proxy-side variant of the startup banner (no Bukkit {@code ServicesManager}).

@@ -1,11 +1,5 @@
 package ru.tehkode.permissions.spigot.bukkit;
 
-import java.io.*;
-import java.net.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -16,6 +10,13 @@ import org.yaml.snakeyaml.Yaml;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.utils.StringUtils;
+
+import java.io.*;
+import java.net.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Error report builder for PEX that provides additional information on top of report

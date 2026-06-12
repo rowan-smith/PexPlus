@@ -1,7 +1,8 @@
 package ru.tehkode.permissions.bukkit;
 
-import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
+
+import java.util.List;
 
 /**
  * Classic PermissionsEx plugin configuration view.

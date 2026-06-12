@@ -1,8 +1,5 @@
 package dev.rono.proxychat.exampleLegacyPlugin;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Sample plugin compiling only against {@code permissionsex-legacy-api} (+ {@code spigot-api}): classic static

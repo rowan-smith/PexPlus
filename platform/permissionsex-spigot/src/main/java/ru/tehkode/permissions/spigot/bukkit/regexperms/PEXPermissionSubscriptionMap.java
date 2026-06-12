@@ -7,12 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin;
 import ru.tehkode.utils.FieldReplacer;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

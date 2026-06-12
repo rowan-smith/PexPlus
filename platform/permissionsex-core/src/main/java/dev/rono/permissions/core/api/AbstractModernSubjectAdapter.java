@@ -5,13 +5,9 @@ import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.subject.TimedPermissionEntry;
 import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.DefaultPermissionManager;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import ru.tehkode.permissions.PermissionEntity;
+
+import java.util.*;
 
 abstract class AbstractModernSubjectAdapter implements PermissionSubject {
     protected final PermissionEntity delegate;

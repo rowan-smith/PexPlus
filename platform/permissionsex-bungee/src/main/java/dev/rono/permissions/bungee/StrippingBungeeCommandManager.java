@@ -4,11 +4,12 @@ import cloud.commandframework.CommandTree;
 import cloud.commandframework.bungee.BungeeCommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.execution.CommandResult;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import dev.rono.permissions.core.commands.PexCommandInput;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
-import dev.rono.permissions.core.commands.PexCommandInput;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 /**
  * Strips leading/trailing Unicode whitespace from the raw command line before Cloud tokenizes it

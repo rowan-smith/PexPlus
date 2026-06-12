@@ -2,7 +2,6 @@ package dev.rono.permissions.example;
 
 import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.bukkit.BukkitPermissions;
-import java.util.Locale;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Locale;
 
 /** Sample plugin using the modern {@link PermissionService} API. */
 public class ExamplePlugin extends JavaPlugin implements Listener {

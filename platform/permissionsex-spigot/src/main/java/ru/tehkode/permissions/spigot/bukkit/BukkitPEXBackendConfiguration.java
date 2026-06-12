@@ -1,9 +1,10 @@
 package ru.tehkode.permissions.spigot.bukkit;
 
-import java.util.List;
-import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import ru.tehkode.permissions.PEXBackendConfiguration;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Wraps Bukkit {@link ConfigurationSection} as {@link PEXBackendConfiguration} for core/backends.

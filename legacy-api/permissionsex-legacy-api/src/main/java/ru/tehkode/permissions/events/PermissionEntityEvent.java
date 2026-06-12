@@ -1,11 +1,12 @@
 package ru.tehkode.permissions.events;
 
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionManager;
+
+import java.util.UUID;
 
 /**
  * Bukkit event fired when a permission user or group is created, modified, or removed.

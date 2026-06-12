@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.backends.PermissionBackend;
 
 import java.nio.file.Path;
