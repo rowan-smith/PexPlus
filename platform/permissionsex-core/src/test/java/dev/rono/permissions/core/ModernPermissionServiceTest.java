@@ -227,4 +227,25 @@ class ModernPermissionServiceTest extends PEXTestBase {
         assertThrows(dev.rono.permissions.api.user.UserAlreadyExistsException.class,
                 () -> api.getUserManager().createUser(uuid));
     }
+
+    @Test
+    void managerCounts() {
+        var api = ((DefaultPermissionManager) manager).permissionsExApi();
+
+        var user = api.getUserManager().createUser(UUID.randomUUID());
+        assertEquals(1, api.getUserManager().count());
+        assertEquals(1, api.getUserManager().count(u -> u.getId().equals(user.getId())));
+        assertEquals(0, api.getUserManager().count(u -> u.getName().equals("nonexistent-name")));
+
+        var group = api.getGroupManager().createGroup("count-test-group");
+        assertTrue(api.getGroupManager().count() >= 1);
+        assertEquals(1, api.getGroupManager().count(g -> g.getName().equals(group.getName())));
+
+        api.getWorldManager().createWorld("count-test-world");
+        assertTrue(api.getWorldManager().count() >= 1);
+        assertEquals(1, api.getWorldManager().count(w -> w.getName().equals("count-test-world")));
+
+        assertTrue(api.getLadderManager().count() >= 1);
+        assertTrue(api.getLadderManager().count(l -> l.getName().equals("default")) >= 1);
+    }
 }

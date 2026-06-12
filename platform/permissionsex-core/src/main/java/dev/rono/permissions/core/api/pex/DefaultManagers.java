@@ -12,8 +12,11 @@ import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.commands.CoreCommandService;
 import ru.tehkode.permissions.PermissionUser;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 final class DefaultUserManager implements UserManager {
 
@@ -105,6 +108,24 @@ final class DefaultUserManager implements UserManager {
         return manager.getBackend().hasUser(name);
     }
 
+    @Override
+    public int count() {
+        return manager.getBackend().getUserIdentifiers().size();
+    }
+
+    @Override
+    public int count(Predicate<User> filter) {
+        Objects.requireNonNull(filter, "filter");
+        int matched = 0;
+        for (String identifier : manager.getBackend().getUserIdentifiers()) {
+            var user = findUser(identifier);
+            if (user.isPresent() && filter.test(user.get())) {
+                matched++;
+            }
+        }
+        return matched;
+    }
+
     private User wrapUser(UUID id, PermissionUser delegate) {
         return new UserImpl(id, delegate);
     }
@@ -165,6 +186,24 @@ final class DefaultGroupManager implements GroupManager {
     public boolean exists(String name) {
         return name != null && !name.isEmpty() && manager.getBackend().hasGroup(name);
     }
+
+    @Override
+    public int count() {
+        return manager.getBackend().getGroupNames().size();
+    }
+
+    @Override
+    public int count(Predicate<Group> filter) {
+        Objects.requireNonNull(filter, "filter");
+        int matched = 0;
+        for (String name : manager.getBackend().getGroupNames()) {
+            var group = findGroup(name);
+            if (group.isPresent() && filter.test(group.get())) {
+                matched++;
+            }
+        }
+        return matched;
+    }
 }
 
 final class DefaultWorldManager implements dev.rono.permissions.api.world.WorldManager {
@@ -210,6 +249,31 @@ final class DefaultWorldManager implements dev.rono.permissions.api.world.WorldM
         return manager.getWorldNames().contains(name)
                 || manager.getBackend().getAllWorldInheritance().containsKey(name);
     }
+
+    @Override
+    public int count() {
+        return allWorldNames().size();
+    }
+
+    @Override
+    public int count(Predicate<dev.rono.permissions.api.world.World> filter) {
+        Objects.requireNonNull(filter, "filter");
+        int matched = 0;
+        for (String name : allWorldNames()) {
+            var world = findWorld(name);
+            if (world.isPresent() && filter.test(world.get())) {
+                matched++;
+            }
+        }
+        return matched;
+    }
+
+    private java.util.Set<String> allWorldNames() {
+        var names = new HashSet<String>();
+        names.addAll(manager.getWorldNames());
+        names.addAll(manager.getBackend().getAllWorldInheritance().keySet());
+        return names;
+    }
 }
 
 final class DefaultLadderManager implements dev.rono.permissions.api.ladder.LadderManager {
@@ -251,6 +315,28 @@ final class DefaultLadderManager implements dev.rono.permissions.api.ladder.Ladd
         if (name == null || name.isEmpty()) {
             return false;
         }
-        return new CoreCommandService(manager).knownLadders().contains(name);
+        return commandService().knownLadders().contains(name);
+    }
+
+    @Override
+    public int count() {
+        return commandService().knownLadders().size();
+    }
+
+    @Override
+    public int count(Predicate<dev.rono.permissions.api.ladder.Ladder> filter) {
+        Objects.requireNonNull(filter, "filter");
+        int matched = 0;
+        for (String name : commandService().knownLadders()) {
+            var ladder = findLadder(name);
+            if (ladder.isPresent() && filter.test(ladder.get())) {
+                matched++;
+            }
+        }
+        return matched;
+    }
+
+    private CoreCommandService commandService() {
+        return new CoreCommandService(manager);
     }
 }

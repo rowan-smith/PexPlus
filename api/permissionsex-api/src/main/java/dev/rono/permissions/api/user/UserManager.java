@@ -2,6 +2,7 @@ package dev.rono.permissions.api.user;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * User registry with an explicit lifecycle: {@code find} never materializes, {@code get} requires
@@ -24,4 +25,19 @@ public interface UserManager {
     boolean exists(UUID uuid);
 
     boolean exists(String name);
+
+    /**
+     * Returns the number of user records stored in the active backend.
+     *
+     * @return total persisted user count
+     */
+    int count();
+
+    /**
+     * Returns how many persisted users match {@code filter}.
+     *
+     * @param filter predicate applied to each stored user; must not be {@code null}
+     * @return count of users for which the predicate is {@code true}
+     */
+    int count(Predicate<User> filter);
 }

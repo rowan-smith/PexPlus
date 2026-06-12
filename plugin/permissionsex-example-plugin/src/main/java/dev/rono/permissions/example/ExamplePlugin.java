@@ -26,11 +26,10 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         permissions = PermissionsEx.getApi();
-        var manager = permissions.getPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
                 "PEX users=%d groups=%d",
-                manager.getUserIdentifiers().size(),
-                manager.getGroupNames().size()));
+                permissions.getUserManager().count(),
+                permissions.getGroupManager().count()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
