@@ -12,9 +12,9 @@ Maven artifact: `permissionsex-api`
 </dependency>
 ```
 
-Runtime: on **Spigot/Paper**, `PermissionService` is registered on Bukkit `ServicesManager`. On **Bungee/Waterfall**, use `dev.rono.permissions.bungee.ProxyPermissionServices.permissionService()`.
+Runtime: on **Spigot/Paper**, `PexPermissionService` is registered on Bukkit `ServicesManager`. On **Bungee/Waterfall**, use `dev.rono.permissions.bungee.ProxyPermissionServices.permissionService()`.
 
-Optional Bukkit helpers: artifact `permissionsex-api-bukkit` (`BukkitPermissions.on(player).hasPermission("node")`).
+Optional Bukkit helpers: artifact `permissionsex-api-bukkit` (`PexBukkitPermissions.on(player).hasPermission("node")`).
 
 Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissionsex-example-plugin/)
 
@@ -23,18 +23,18 @@ Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissions
 ## Quick start
 
 ```java
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.api.subject.PexUser;
-import dev.rono.permissions.bukkit.BukkitPermissions;
+import dev.rono.permissions.bukkit.PexBukkitPermissions;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-RegisteredServiceProvider<PermissionService> reg =
-        getServer().getServicesManager().getRegistration(PermissionService.class);
+RegisteredServiceProvider<PexPermissionService> reg =
+        getServer().getServicesManager().getRegistration(PexPermissionService.class);
 if (reg == null) {
     getLogger().warning("PermissionsEx not loaded");
     return;
 }
-PermissionService pex = reg.getProvider();
+PexPermissionService pex = reg.getProvider();
 
 // Global permission (all worlds unless overridden per world)
 if (pex.user(player.getUniqueId()).hasPermission("my.plugin.use")) {
@@ -42,7 +42,7 @@ if (pex.user(player.getUniqueId()).hasPermission("my.plugin.use")) {
 }
 
 // Player's current world (Bukkit helper)
-if (BukkitPermissions.on(player).hasPermission("my.plugin.use")) {
+if (PexBukkitPermissions.on(player).hasPermission("my.plugin.use")) {
     pex.world(player.getWorld().getName())
             .user(player.getUniqueId())
             .addTimedPermission("my.plugin.temp", 3600);
@@ -54,7 +54,7 @@ if (BukkitPermissions.on(player).hasPermission("my.plugin.use")) {
 
 ## Flat API (canonical entry)
 
-All operations are methods on `PermissionService`:
+All operations are methods on `PexPermissionService`:
 
 ```java
 // Global checks (PexWorlds.GLOBAL — applies to all worlds unless overridden)
@@ -86,7 +86,7 @@ pex.session().start();
 pex.events();
 ```
 
-### `PermissionService`
+### `PexPermissionService`
 
 | Method | Returns | Role |
 |--------|---------|------|
@@ -101,7 +101,7 @@ pex.events();
 | `worlds()` | `PexWorldsScope` | Registered realms |
 | `backend()` | `PexBackendScope` | Backend admin |
 | `session()` | `PexSessionScope` | Batch edit sessions |
-| `events()` | `PermissionEventBus` | Notifications |
+| `events()` | `PexPermissionEventBus` | Notifications |
 | `isDebug()` | `boolean` | Debug flag |
 | `reload()` / `reloadAsync()` | — | Reload backend |
 
@@ -142,7 +142,7 @@ pex.events();
 | `importFrom(alias)` | Copy from configured backend |
 | `exportData()` / `importData(doc, mode)` | YAML import/export |
 
-Runtime implementors use {@link dev.rono.permissions.api.service.PermissionServiceBridge}; plugins use `PermissionService` only.
+Runtime implementors use {@link dev.rono.permissions.api.service.PexPermissionServiceBridge}; plugins use `PexPermissionService` only.
 
 ---
 
@@ -159,25 +159,25 @@ Helpers in `dev.rono.permissions.api.world.PexWorlds`: `normalize`, `isGlobal`, 
 
 ---
 
-## Events (`PermissionEventBus`)
+## Events (`PexPermissionEventBus`)
 
 Subscribe via `pex.events()`:
 
 ```java
-var sub = pex.events().subscribe(new PermissionEventListener() {
+var sub = pex.events().subscribe(new PexPermissionEventListener() {
     @Override
-    public void onEntity(EntityDispatch dispatch) {
+    public void onEntity(PexEntityDispatch dispatch) {
         // entityIdentifier, entityType, mutation
     }
 });
 pex.events().unsubscribe(sub);
 ```
 
-Uses types from `permissionsex-core-api`: `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
+Uses types from `permissionsex-core-api`: `PexEntityDispatch`, `PexSystemDispatch`, `PexEntityMutation`, `PexSystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
 
 ---
 
-## Batch edits (`PermissionEditSession`)
+## Batch edits (`PexPermissionEditSession`)
 
 ```java
 try (var session = pex.session().start()) {
@@ -201,11 +201,11 @@ try (var session = pex.session().start()) {
 ```
 
 ```java
-import dev.rono.permissions.bukkit.BukkitPermissions;
+import dev.rono.permissions.bukkit.PexBukkitPermissions;
 
-if (BukkitPermissions.on(player).hasPermission("my.node")) { ... }
-BukkitPermissions.on(player).context().inGroup("vip");
-BukkitPermissions.on(player).hasPermissionGlobal("my.global.node");
+if (PexBukkitPermissions.on(player).hasPermission("my.node")) { ... }
+PexBukkitPermissions.on(player).context().inGroup("vip");
+PexBukkitPermissions.on(player).hasPermissionGlobal("my.global.node");
 ```
 
 ---
@@ -215,8 +215,8 @@ BukkitPermissions.on(player).hasPermissionGlobal("my.global.node");
 ```java
 import dev.rono.permissions.bungee.ProxyPermissionServices;
 
-PermissionService pex = ProxyPermissionServices.permissionService();
-// or ProxyPermissionServices.get(PermissionService.class);
+PexPermissionService pex = ProxyPermissionServices.permissionService();
+// or ProxyPermissionServices.get(PexPermissionService.class);
 ```
 
 ---
@@ -346,15 +346,15 @@ Obtain via `subject.inWorld("world_nether")`, `user.global()`, or `pex.world("wo
 | `PexBackendInfo` | Record: backend alias, implementation class name, label |
 | `PexTimedPermissionEntry` | Record: permission, world, remainingSeconds |
 | `PexTimedGroupMembership` | Record: groupName, world, remainingSeconds |
-| `PermissionsExException` | Checked exception for reload/backend failures |
+| `PexPermissionsExException` | Checked exception for reload/backend failures |
 | `PexRankingException` | Promotion/demotion failures |
 | `PexBackendHandle` | Non-active backend for copy/apply |
 | `PexImportMode` | `MERGE` / `REPLACE` for `importData` |
-| `PermissionEventBus` / `PermissionEventListener` | Modern event subscription |
-| `PermissionEditSession` | Batch edit helper |
+| `PexPermissionEventBus` / `PexPermissionEventListener` | Modern event subscription |
+| `PexPermissionEditSession` | Batch edit helper |
 | `PexWorldScope` / `PexUsersScope` / `PexGroupsScope` / `PexWorldsScope` / `PexBackendScope` / `PexSessionScope` | Flat API scopes |
 | `PexFoundUser` / `PexFoundGroup` | Optional persisted lookups |
-| `PexPlayerScope` | Bukkit `BukkitPermissions.on(player)` |
+| `PexPlayerScope` | Bukkit `PexBukkitPermissions.on(player)` |
 | `PexSubjectType` | `USER`, `GROUP` |
 
 ---
@@ -366,8 +366,8 @@ Not required for typical hook plugins. Used by platform modules and deep integra
 | Type | Role |
 |------|------|
 | `PlatformAdapter` | Host bridge (UUID/name, realms, event publish) |
-| `PermissionDispatch` | `EntityDispatch` / `SystemDispatch` notifications |
-| `EntityMutation` / `SystemMutation` | Change kinds |
+| `PexPermissionDispatch` | `PexEntityDispatch` / `PexSystemDispatch` notifications |
+| `PexEntityMutation` / `PexSystemMutation` | Change kinds |
 | `SchedulerBridge` | Sync/async scheduling |
 | `ContextResolver` | `realmFor(UUID)` |
 

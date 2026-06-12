@@ -1,20 +1,20 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import java.util.Set;
 
 /**
- * PexGroup registry — obtain via {@link dev.rono.permissions.api.service.PermissionService#groups()}.
+ * PexGroup registry — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#groups()}.
  *
- * <p>For subject lookup, use top-level {@link dev.rono.permissions.api.service.PermissionService#group(String)}
- * (resolve/materialize) or {@link dev.rono.permissions.api.service.PermissionService#findGroup(String)}
+ * <p>For subject lookup, use top-level {@link dev.rono.permissions.api.service.PexPermissionService#group(String)}
+ * (resolve/materialize) or {@link dev.rono.permissions.api.service.PexPermissionService#findGroup(String)}
  * (persisted only).</p>
  */
 public final class PexGroupsScope {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
 
-    public PexGroupsScope(PermissionServiceBridge service) {
+    public PexGroupsScope(PexPermissionServiceBridge service) {
         this.service = service;
     }
 

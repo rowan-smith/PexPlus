@@ -1,32 +1,32 @@
 package dev.rono.permissions.bukkit;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.subject.PexUserWorldContext;
 import org.bukkit.entity.Player;
 
 /**
- * Player-scoped fluent permissions — obtain via {@link BukkitPermissions#on(Player)}.
+ * Player-scoped fluent permissions — obtain via {@link PexBukkitPermissions#on(Player)}.
  *
  * <p>Checks default to the player's <strong>current world</strong>. Use
  * {@link #hasPermissionGlobal(String)} for the global namespace
  * ({@link dev.rono.permissions.api.world.PexWorlds#GLOBAL}).</p>
  *
  * <pre>{@code
- * if (BukkitPermissions.on(player).hasPermission("my.node")) { ... }
- * BukkitPermissions.on(player).context().inGroup("vip");
+ * if (PexBukkitPermissions.on(player).hasPermission("my.node")) { ... }
+ * PexBukkitPermissions.on(player).context().inGroup("vip");
  * }</pre>
  */
 public final class PexPlayerScope {
 
-    private final PermissionService service;
+    private final PexPermissionService service;
     private final Player player;
 
     /**
      * @param service registered permission service
      * @param player  bound player
      */
-    PexPlayerScope(PermissionService service, Player player) {
+    PexPlayerScope(PexPermissionService service, Player player) {
         this.service = service;
         this.player = player;
     }
@@ -39,9 +39,9 @@ public final class PexPlayerScope {
     }
 
     /**
-     * @return the underlying {@link PermissionService}
+     * @return the underlying {@link PexPermissionService}
      */
-    public PermissionService service() {
+    public PexPermissionService service() {
         return service;
     }
 

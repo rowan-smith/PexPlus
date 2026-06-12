@@ -6,14 +6,14 @@ package dev.rono.permissions.api;
  * <p>Checked exception type for operations that can fail due to configuration, I/O, or data
  * integrity problems in the permission layer.</p>
  */
-public class PermissionsExException extends Exception {
+public class PexPermissionsExException extends Exception {
 
     /**
      * Creates an exception with the given message.
      *
      * @param message human-readable description of the failure
      */
-    public PermissionsExException(String message) {
+    public PexPermissionsExException(String message) {
         super(message);
     }
 
@@ -23,7 +23,7 @@ public class PermissionsExException extends Exception {
      * @param message human-readable description of the failure
      * @param cause the underlying throwable that triggered this failure
      */
-    public PermissionsExException(String message, Throwable cause) {
+    public PexPermissionsExException(String message, Throwable cause) {
         super(message, cause);
     }
 }

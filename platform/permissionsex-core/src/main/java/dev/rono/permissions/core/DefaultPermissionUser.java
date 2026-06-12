@@ -19,7 +19,7 @@
 package dev.rono.permissions.core;
 
 import com.google.common.collect.Maps;
-import dev.rono.permissions.api.bus.EntityMutation;
+import dev.rono.permissions.api.bus.PexEntityMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import org.apache.commons.lang3.Validate;
 import ru.tehkode.permissions.*;
@@ -351,7 +351,7 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 
 		this.swapGroups(sourceGroup, targetGroup);
 
-		this.callEvent(EntityMutation.RANK_CHANGED);
+		this.callEvent(PexEntityMutation.RANK_CHANGED);
 
 		return targetGroup;
 	}
@@ -401,7 +401,7 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 
 		this.swapGroups(sourceGroup, targetGroup);
 
-		this.callEvent(EntityMutation.RANK_CHANGED);
+		this.callEvent(PexEntityMutation.RANK_CHANGED);
 
 		return targetGroup;
 	}

@@ -11,7 +11,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Situation | Use |
 |-----------|-----|
-| New plugin | [Modern API](MODERN_API.md) (`PermissionService`) |
+| New plugin | [Modern API](MODERN_API.md) (`PexPermissionService`) |
 | Existing PEX 1.23.x hook plugin | [Legacy API](LEGACY_API.md) — no recompile required for typical hooks |
 | Static `PermissionsEx.getUser(...)` calls | Legacy API + `permissionsex-legacy-stub` |
 | Permission change events (modern) | `pex.events()` or legacy Bukkit events on Spigot |
@@ -21,7 +21,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](MODERN_API.md) | `PermissionService`, `PexUser`, `PexGroup`, world contexts, timed permissions, Maven setup, examples |
+| [MODERN_API.md](MODERN_API.md) | `PexPermissionService`, `PexUser`, `PexGroup`, world contexts, timed permissions, Maven setup, examples |
 | [LEGACY_API.md](LEGACY_API.md) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
 | [FUTURE.md](FUTURE.md) | Recommended additions and known gaps |
 
@@ -31,8 +31,8 @@ Both APIs resolve to the **same object** (`DefaultPermissionManager`):
 
 ```java
 // Modern
-RegisteredServiceProvider<PermissionService> modern =
-        getServer().getServicesManager().getRegistration(PermissionService.class);
+RegisteredServiceProvider<PexPermissionService> modern =
+        getServer().getServicesManager().getRegistration(PexPermissionService.class);
 
 // Legacy
 RegisteredServiceProvider<PermissionManager> legacy =

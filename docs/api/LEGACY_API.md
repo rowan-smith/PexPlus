@@ -318,7 +318,7 @@ For plugins that implement custom backends (rare):
 - `PermissionsUserData` / `PermissionsGroupData`
 - `PEXBackendConfiguration`
 
-Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PermissionService` only.
+Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PexPermissionService` only.
 
 ---
 
@@ -326,7 +326,7 @@ Most hook plugins should **not** depend on backend types — use `PermissionMana
 
 | Legacy | Modern |
 |--------|--------|
-| `PermissionsEx.getPermissionManager()` | `ServicesManager` → `PermissionService` |
+| `PermissionsEx.getPermissionManager()` | `ServicesManager` → `PexPermissionService` |
 | `getUser(...)` | `service.user(...)` |
 | `PermissionUser.addPermission` | `user.addPermission(...)` or `user.inWorld(w).addPermission(...)` |
 | `getWorldInheritance` | `service.worldInheritance(...)` |

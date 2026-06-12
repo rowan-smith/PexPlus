@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.subject.PexUserWorldContext;
 import dev.rono.permissions.api.world.PexWorlds;
@@ -9,11 +9,11 @@ import java.util.UUID;
 
 final class UserRef {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
     private final UUID uuid;
     private final String identifier;
 
-    UserRef(PermissionServiceBridge service, UUID uuid, String identifier) {
+    UserRef(PexPermissionServiceBridge service, UUID uuid, String identifier) {
         this.service = service;
         this.uuid = uuid;
         this.identifier = identifier;

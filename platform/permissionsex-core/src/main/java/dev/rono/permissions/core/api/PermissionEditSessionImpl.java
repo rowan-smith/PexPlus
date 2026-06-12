@@ -1,6 +1,6 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.session.PermissionEditSession;
+import dev.rono.permissions.api.session.PexPermissionEditSession;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.core.DefaultPermissionManager;
@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public final class PermissionEditSessionImpl implements PermissionEditSession {
+public final class PermissionEditSessionImpl implements PexPermissionEditSession {
     private final DefaultPermissionManager manager;
     private final Set<String> userIds = new LinkedHashSet<>();
     private final Set<String> groupNames = new LinkedHashSet<>();
@@ -59,7 +59,7 @@ public final class PermissionEditSessionImpl implements PermissionEditSession {
 
     private void ensureOpen() {
         if (closed) {
-            throw new IllegalStateException("PermissionEditSession is closed");
+            throw new IllegalStateException("PexPermissionEditSession is closed");
         }
     }
 }

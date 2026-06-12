@@ -1,6 +1,6 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.PexPermissionsExException;
 import dev.rono.permissions.api.backend.PexBackendHandle;
 import dev.rono.permissions.api.backend.PexBackendInfo;
 import dev.rono.permissions.core.DefaultPermissionManager;
@@ -23,20 +23,20 @@ public final class ModernBackendHandle implements PexBackendHandle {
     }
 
     @Override
-    public void copyFromActive() throws PermissionsExException {
+    public void copyFromActive() throws PexPermissionsExException {
         try {
             backend.loadFrom(manager.getBackend());
         } catch (RuntimeException e) {
-            throw new PermissionsExException("Failed to copy active backend into " + alias, e);
+            throw new PexPermissionsExException("Failed to copy active backend into " + alias, e);
         }
     }
 
     @Override
-    public void applyToActive() throws PermissionsExException {
+    public void applyToActive() throws PexPermissionsExException {
         try {
             manager.applyBackendData(backend);
         } catch (RuntimeException e) {
-            throw new PermissionsExException("Failed to apply backend " + alias + " to active store", e);
+            throw new PexPermissionsExException("Failed to apply backend " + alias + " to active store", e);
         }
     }
 

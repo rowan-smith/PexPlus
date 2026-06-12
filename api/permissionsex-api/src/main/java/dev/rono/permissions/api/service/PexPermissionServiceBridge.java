@@ -1,11 +1,11 @@
 package dev.rono.permissions.api.service;
 
-import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.PexPermissionsExException;
 import dev.rono.permissions.api.backend.PexBackendHandle;
 import dev.rono.permissions.api.backend.PexBackendInfo;
 import dev.rono.permissions.api.data.PexImportMode;
-import dev.rono.permissions.api.event.PermissionEventBus;
-import dev.rono.permissions.api.session.PermissionEditSession;
+import dev.rono.permissions.api.event.PexPermissionEventBus;
+import dev.rono.permissions.api.session.PexPermissionEditSession;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
 
@@ -13,22 +13,22 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Runtime operations backing {@link PermissionService}.
+ * Runtime operations backing {@link PexPermissionService}.
  *
  * <p>Implemented by the core manager; not intended for direct use in plugins. Prefer the fluent
- * {@link PermissionService} flat entry points, which wrap this bridge.</p>
+ * {@link PexPermissionService} flat entry points, which wrap this bridge.</p>
  *
  * <h2>Resolve vs find</h2>
  * <ul>
  *   <li><strong>Resolve</strong> ({@link #user(String)}, {@link #user(UUID)}, {@link #group(String)}):
  *       returns a live subject handle, creating or materializing a record when none exists yet.</li>
- *   <li><strong>Find</strong> ({@link PermissionService#findUser(String)},
- *       {@link PermissionService#findUser(UUID)}, {@link PermissionService#findGroup(String)} via
+ *   <li><strong>Find</strong> ({@link PexPermissionService#findUser(String)},
+ *       {@link PexPermissionService#findUser(UUID)}, {@link PexPermissionService#findGroup(String)} via
  *       {@link #lookupUser(String)}, {@link #lookupUser(UUID)}, {@link #lookupGroup(String)}):
  *       returns {@link Optional#empty()} when the subject is not persisted in the active backend.</li>
  * </ul>
  */
-public interface PermissionServiceBridge {
+public interface PexPermissionServiceBridge {
 
     /**
      * Returns the number of user records stored in the active backend.
@@ -55,50 +55,50 @@ public interface PermissionServiceBridge {
      * Switches the active backend to the configured alias.
      *
      * @param alias configured backend alias (for example {@code "file"} or {@code "sql"})
-     * @throws PermissionsExException if the alias is unknown or activation fails
+     * @throws PexPermissionsExException if the alias is unknown or activation fails
      */
-    void setActiveBackend(String alias) throws PermissionsExException;
+    void setActiveBackend(String alias) throws PexPermissionsExException;
 
     /**
      * Opens a handle to a non-active backend for inspection or data transfer.
      *
      * @param alias configured backend alias
      * @return a {@link PexBackendHandle} for the requested backend
-     * @throws PermissionsExException if the alias is unknown or the handle cannot be created
+     * @throws PexPermissionsExException if the alias is unknown or the handle cannot be created
      */
-    PexBackendHandle createBackendHandle(String alias) throws PermissionsExException;
+    PexBackendHandle createBackendHandle(String alias) throws PexPermissionsExException;
 
     /**
      * Replaces active-backend data with the contents of another configured backend.
      *
      * @param backendAlias source backend alias to import from
-     * @throws PermissionsExException if the alias is unknown or import fails
+     * @throws PexPermissionsExException if the alias is unknown or import fails
      */
-    void importFromBackend(String backendAlias) throws PermissionsExException;
+    void importFromBackend(String backendAlias) throws PexPermissionsExException;
 
     /**
      * Serializes all users, groups, and world inheritance from the active backend.
      *
      * @return exported document (format depends on the active backend)
-     * @throws PermissionsExException if export fails
+     * @throws PexPermissionsExException if export fails
      */
-    String exportData() throws PermissionsExException;
+    String exportData() throws PexPermissionsExException;
 
     /**
      * Merges or replaces active-backend data from a serialized document.
      *
      * @param document serialized permission data
      * @param mode merge strategy ({@link PexImportMode#MERGE} or {@link PexImportMode#REPLACE})
-     * @throws PermissionsExException if the document is invalid or import fails
+     * @throws PexPermissionsExException if the document is invalid or import fails
      */
-    void importData(String document, PexImportMode mode) throws PermissionsExException;
+    void importData(String document, PexImportMode mode) throws PexPermissionsExException;
 
     /**
      * Returns the permission-domain event bus for subscribing to entity and system dispatches.
      *
-     * @return the shared {@link PermissionEventBus}
+     * @return the shared {@link PexPermissionEventBus}
      */
-    PermissionEventBus events();
+    PexPermissionEventBus events();
 
     /**
      * Returns the names of worlds registered on the platform.
@@ -232,9 +232,9 @@ public interface PermissionServiceBridge {
     /**
      * Reloads permission data from the active backend synchronously.
      *
-     * @throws PermissionsExException if reload fails
+     * @throws PexPermissionsExException if reload fails
      */
-    void reload() throws PermissionsExException;
+    void reload() throws PexPermissionsExException;
 
     /**
      * Reloads permission data from the active backend asynchronously.
@@ -244,9 +244,9 @@ public interface PermissionServiceBridge {
     CompletableFuture<Void> reloadAsync();
 
     /**
-     * Opens a batch edit session that tracks touched subjects until {@link PermissionEditSession#save()}.
+     * Opens a batch edit session that tracks touched subjects until {@link PexPermissionEditSession#save()}.
      *
-     * @return a new {@link PermissionEditSession}
+     * @return a new {@link PexPermissionEditSession}
      */
-    PermissionEditSession openEditSession();
+    PexPermissionEditSession openEditSession();
 }

@@ -12,7 +12,7 @@
 
     <artifactId>permissionsex-api</artifactId>
     <name>PermissionsExPlus Public API</name>
-    <description>Modern hook integration surface: PermissionService, PexUser, PexGroup, and PexPermissionSubject on Bukkit ServicesManager.</description>
+    <description>Modern hook integration surface: PexPermissionService, PexUser, PexGroup, and PexPermissionSubject on Bukkit ServicesManager.</description>
 
     <dependencies>
         <dependency>

@@ -18,7 +18,7 @@
  */
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.bus.EntityMutation;
+import dev.rono.permissions.api.bus.PexEntityMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import ru.tehkode.permissions.*;
 
@@ -141,7 +141,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setPrefix(String prefix, String worldName) {
 		getData().setOption("prefix", prefix, worldName);
 		clearCache();
-		this.callEvent(EntityMutation.INFO_CHANGED);
+		this.callEvent(PexEntityMutation.INFO_CHANGED);
 	}
 
 	/**
@@ -172,7 +172,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setSuffix(String suffix, String worldName) {
 		getData().setOption("suffix", suffix, worldName);
 		clearCache();
-		this.callEvent(EntityMutation.INFO_CHANGED);
+		this.callEvent(PexEntityMutation.INFO_CHANGED);
 	}
 
 	/**
@@ -365,7 +365,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setPermissions(List<String> permissions, String world) {
 		getData().setPermissions(permissions, world);
 		clearCache();
-		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
 	}
 
 	/**
@@ -488,7 +488,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setOption(String option, String value, String world) {
 		getData().setOption(option, value, world);
 		clearCache();
-		this.callEvent(EntityMutation.OPTIONS_CHANGED);
+		this.callEvent(PexEntityMutation.OPTIONS_CHANGED);
 	}
 
 	/**
@@ -595,7 +595,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void save() {
 		getData().save();
 		clearCache();
-		this.callEvent(EntityMutation.SAVED);
+		this.callEvent(PexEntityMutation.SAVED);
 	}
 
 	/**
@@ -604,7 +604,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void remove() {
 		getData().remove();
 		clearCache();
-		this.callEvent(EntityMutation.REMOVED);
+		this.callEvent(PexEntityMutation.REMOVED);
 	}
 
 	/**
@@ -697,7 +697,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		}
 
 		clearCache();
-		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
 	}
 
 	/**
@@ -719,10 +719,10 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		this.timedPermissionsTime.remove(world + ":" + permission);
 
 		clearCache();
-		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
 	}
 
-	protected void callEvent(EntityMutation action) {
+	protected void callEvent(PexEntityMutation action) {
 		if (manager instanceof InternalPermissionManager internal) {
 			internal.publishEntity(this.getIdentifier(), this.getType().toString(), action);
 		}
@@ -925,7 +925,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		if (this instanceof PermissionUser user && manager instanceof DefaultPermissionManager dpm) {
 			dpm.onUserGroupMembershipChanged(user, world);
 		}
-		this.callEvent(EntityMutation.INHERITANCE_CHANGED);
+		this.callEvent(PexEntityMutation.INHERITANCE_CHANGED);
 	}
 
 	public void setParentsIdentifier(List<String> parentNames) {

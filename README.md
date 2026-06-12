@@ -66,8 +66,8 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
 | `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
-| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
-| `api/permissionsex-api-bukkit/` | `permissionsex-api-bukkit` | No (optional compile) | Bukkit `Player` helpers for `PermissionService`. |
+| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PexPermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
+| `api/permissionsex-api-bukkit/` | `permissionsex-api-bukkit` | No (optional compile) | Bukkit `Player` helpers for `PexPermissionService`. |
 
 ### `platform` — engine, runtimes, bootstrap
 
@@ -178,20 +178,20 @@ Add **`permissionsex-core-api`** only if you implement a **custom platform host*
 
 #### Runtime registration (Spigot/Paper only)
 
-On game servers, PEX registers **`PermissionService`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
+On game servers, PEX registers **`PexPermissionService`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
 
 ```java
-RegisteredServiceProvider<PermissionService> reg =
-        getServer().getServicesManager().getRegistration(PermissionService.class);
+RegisteredServiceProvider<PexPermissionService> reg =
+        getServer().getServicesManager().getRegistration(PexPermissionService.class);
 if (reg != null) {
-    PermissionService pex = reg.getProvider();
+    PexPermissionService pex = reg.getProvider();
     getLogger().info("PEX backend: " + pex.backend().simpleName());
     getLogger().info("Users: " + pex.users().count()
             + ", groups: " + pex.groups().count());
 }
 ```
 
-**Bungee/Waterfall:** `PermissionService` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
+**Bungee/Waterfall:** `PexPermissionService` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
 
 New features are added on **`dev.rono.permissions.api.*`** only — the legacy `PermissionManager` interface is not expanded.
 
@@ -203,15 +203,15 @@ Detailed documentation lives under **[`docs/api/`](docs/api/README.md)**:
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](docs/api/MODERN_API.md) | `PermissionService`, subjects, world contexts, timed permissions |
+| [MODERN_API.md](docs/api/MODERN_API.md) | `PexPermissionService`, subjects, world contexts, timed permissions |
 | [LEGACY_API.md](docs/api/LEGACY_API.md) | Classic `PermissionManager`, events, stub |
 | [FUTURE.md](docs/api/FUTURE.md) | Recommended API additions and gaps |
 
 Summary below; see the linked docs for complete method lists and examples.
 
-#### `PermissionService` (`permissionsex-api`)
+#### `PexPermissionService` (`permissionsex-api`)
 
-Primary entry: flat methods on **`PermissionService`**. Lookup: `ServicesManager.getRegistration(PermissionService.class)`.
+Primary entry: flat methods on **`PexPermissionService`**. Lookup: `ServicesManager.getRegistration(PexPermissionService.class)`.
 
 | Method | Description |
 |--------|-------------|
@@ -225,11 +225,11 @@ Primary entry: flat methods on **`PermissionService`**. Lookup: `ServicesManager
 
 See [Flat API](docs/api/MODERN_API.md#flat-api-canonical-entry) for the full reference.
 
-Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
+Source: `api/src/main/java/dev/rono/permissions/api/service/PexPermissionService.java`
 
 #### `PexPermissionSubject`, `PexUser`, `PexGroup` (`permissionsex-api`)
 
-Subject operations are accessed through `PexUser` and `PexGroup` instances from `PermissionService`. Both extend `PexPermissionSubject`.
+Subject operations are accessed through `PexUser` and `PexGroup` instances from `PexPermissionService`. Both extend `PexPermissionSubject`.
 
 | `PexPermissionSubject` | Description |
 |---------------------|-------------|
@@ -297,7 +297,7 @@ Platform-neutral host bridge implemented by Spigot/Bungee runtimes. **Not regist
 | `isOnline(UUID)` | Whether the holder is connected |
 | `serverId()` | Logical server / container UUID |
 | `realmNames()` | World names (game server) or backend ids (proxy) |
-| `publish(PermissionDispatch)` | Emit engine notification (see bus types below) |
+| `publish(PexPermissionDispatch)` | Emit engine notification (see bus types below) |
 | `onlineRealm(UUID)` | Current world/realm when online, else `null` |
 | `onlineDisplayName(UUID)` | Display name when online, else `null` |
 | `isOperator(UUID)` | Operator flag when online |
@@ -312,11 +312,11 @@ Immutable notifications from the engine to the active `PlatformAdapter`. On **Sp
 
 | Type | Role |
 |------|------|
-| `PermissionDispatch` | Sealed root: `EntityDispatch` \| `SystemDispatch` |
-| `EntityDispatch` | Record: `(sourceId, entityIdentifier, entityType, mutation)` — user/group change |
-| `SystemDispatch` | Record: `(sourceId, mutation)` — engine/system change |
-| `EntityMutation` | `PERMISSIONS_CHANGED`, `OPTIONS_CHANGED`, `INHERITANCE_CHANGED`, `INFO_CHANGED`, `TIMEDPERMISSION_EXPIRED`, `RANK_CHANGED`, `DEFAULTGROUP_CHANGED`, `WEIGHT_CHANGED`, `SAVED`, `REMOVED` |
-| `SystemMutation` | `BACKEND_CHANGED`, `RELOADED`, `WORLDINHERITANCE_CHANGED`, `DEFAULTGROUP_CHANGED`, `DEBUGMODE_TOGGLE`, `REINJECT_PERMISSIBLES` |
+| `PexPermissionDispatch` | Sealed root: `PexEntityDispatch` \| `PexSystemDispatch` |
+| `PexEntityDispatch` | Record: `(sourceId, entityIdentifier, entityType, mutation)` — user/group change |
+| `PexSystemDispatch` | Record: `(sourceId, mutation)` — engine/system change |
+| `PexEntityMutation` | `PERMISSIONS_CHANGED`, `OPTIONS_CHANGED`, `INHERITANCE_CHANGED`, `INFO_CHANGED`, `TIMEDPERMISSION_EXPIRED`, `RANK_CHANGED`, `DEFAULTGROUP_CHANGED`, `WEIGHT_CHANGED`, `SAVED`, `REMOVED` |
+| `PexSystemMutation` | `BACKEND_CHANGED`, `RELOADED`, `WORLDINHERITANCE_CHANGED`, `DEFAULTGROUP_CHANGED`, `DEBUGMODE_TOGGLE`, `REINJECT_PERMISSIBLES` |
 
 **Listening from a hook plugin today:** subscribe to legacy **`PermissionEntityEvent`** / **`PermissionSystemEvent`** on Spigot rather than consuming bus records directly.
 
@@ -333,30 +333,30 @@ These are used inside PEX platform wiring, not typical hook-plugin entry points.
 
 #### Minimal modern hook example (Spigot)
 
-Modern-only integration via `PermissionService`:
+Modern-only integration via `PexPermissionService`:
 
 ```java
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.api.subject.PexUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public void onEnable() {
-    RegisteredServiceProvider<PermissionService> reg =
-            getServer().getServicesManager().getRegistration(PermissionService.class);
+    RegisteredServiceProvider<PexPermissionService> reg =
+            getServer().getServicesManager().getRegistration(PexPermissionService.class);
     if (reg == null) {
         getLogger().warning("PermissionsEx is not available.");
         return;
     }
-    PermissionService pex = reg.getProvider();
+    PexPermissionService pex = reg.getProvider();
     getLogger().info("PEX " + pex.backend().simpleName()
             + " — " + pex.groups().count() + " groups");
 }
 
-public void onJoin(PlayerJoinEvent event, PermissionService pex) {
+public void onJoin(PlayerJoinEvent event, PexPermissionService pex) {
     Player player = event.getPlayer();
-    if (BukkitPermissions.on(player).hasPermission("my.permission")) {
+    if (PexBukkitPermissions.on(player).hasPermission("my.permission")) {
         pex.world(player.getWorld().getName())
                 .user(player.getUniqueId())
                 .addPermission("joined.today");
@@ -372,7 +372,7 @@ For a full modern sample, see [`plugin/permissionsex-example-plugin/`](plugin/pe
 | Situation | Use |
 |-----------|-----|
 | Maintaining an existing PEX hook plugin | **Legacy API** + **legacy stub** (if you call `PermissionsEx.*`) |
-| Brand-new plugin on a PEX server | **Modern API** (`PermissionService`) |
+| Brand-new plugin on a PEX server | **Modern API** (`PexPermissionService`) |
 | Listening to permission change events on Spigot | **Legacy API** events (`ru.tehkode.permissions.events.*`) — still published on game servers |
 | Proxy (Bungee) integration | **Modern / core** paths; Bukkit events are not fired on proxy |
 
@@ -419,7 +419,7 @@ MockBukkit full-server tests **skip automatically** when the test Paper API does
 
 ### Done
 
-- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PermissionService`)
+- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PexPermissionService`)
 - [x] **Automated tests for core permission logic** — hierarchy, matcher, backends, commands, concurrency, legacy contract tests (~30 test classes)
 - [x] **Legacy API cleanup and isolation** — `legacy-api` + `legacy-stub` split, `InternalPermissionManager`, `legacy-compat` module, utils in `legacy-api`
 - [x] **Documentation** — `ARCHITECTURE.md`, `docs/COMPATIBILITY.md`, `docs/testing/REAL_SERVER_MATRIX.md`, `docs/examples/`

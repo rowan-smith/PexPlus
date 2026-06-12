@@ -1,7 +1,7 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.bukkit.BukkitPermissions;
+import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.bukkit.PexBukkitPermissions;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,19 +12,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Locale;
 
-/** Sample plugin using the modern {@link PermissionService} API. */
+/** Sample plugin using the modern {@link PexPermissionService} API. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
 
-    private PermissionService permissions;
+    private PexPermissionService permissions;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
 
-        RegisteredServiceProvider<PermissionService> registration =
-                getServer().getServicesManager().getRegistration(PermissionService.class);
+        RegisteredServiceProvider<PexPermissionService> registration =
+                getServer().getServicesManager().getRegistration(PexPermissionService.class);
         if (registration == null) {
-            getLogger().warning("PermissionService is not registered — is PermissionsEx loaded?");
+            getLogger().warning("PexPermissionService is not registered — is PermissionsEx loaded?");
             return;
         }
 
@@ -45,8 +45,8 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         Player player = event.getPlayer();
-        boolean allowed = BukkitPermissions.on(player).hasPermission("my.node");
-        var worldContext = BukkitPermissions.on(player).context();
+        boolean allowed = PexBukkitPermissions.on(player).hasPermission("my.node");
+        var worldContext = PexBukkitPermissions.on(player).context();
         String displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();

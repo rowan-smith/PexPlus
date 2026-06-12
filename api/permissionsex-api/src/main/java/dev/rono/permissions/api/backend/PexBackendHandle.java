@@ -1,12 +1,12 @@
 package dev.rono.permissions.api.backend;
 
-import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.PexPermissionsExException;
 
 /**
  * Non-active backend instance for inspection and data transfer.
  *
  * <p>Created via {@link dev.rono.permissions.api.query.PexBackendScope#createHandle(String)} or
- * {@link dev.rono.permissions.api.service.PermissionServiceBridge#createBackendHandle(String)}.
+ * {@link dev.rono.permissions.api.service.PexPermissionServiceBridge#createBackendHandle(String)}.
  * The handle targets a configured backend without making it active.</p>
  */
 public interface PexBackendHandle {
@@ -21,16 +21,16 @@ public interface PexBackendHandle {
     /**
      * Copies all users, groups, and world inheritance from the active backend into this backend.
      *
-     * @throws PermissionsExException if the copy operation fails
+     * @throws PexPermissionsExException if the copy operation fails
      */
-    void copyFromActive() throws PermissionsExException;
+    void copyFromActive() throws PexPermissionsExException;
 
     /**
      * Replaces active-backend data with the contents of this backend.
      *
      * <p>Uses the merge semantics of the underlying {@code loadFrom} implementation.</p>
      *
-     * @throws PermissionsExException if applying data to the active backend fails
+     * @throws PexPermissionsExException if applying data to the active backend fails
      */
-    void applyToActive() throws PermissionsExException;
+    void applyToActive() throws PexPermissionsExException;
 }

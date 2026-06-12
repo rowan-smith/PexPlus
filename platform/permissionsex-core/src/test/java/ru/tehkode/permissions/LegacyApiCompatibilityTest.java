@@ -1,6 +1,6 @@
 package ru.tehkode.permissions;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.InternalPermissionManager;
 import dev.rono.permissions.core.backends.MultiBackend;
@@ -14,7 +14,7 @@ public class LegacyApiCompatibilityTest {
 
     @Test
     public void permissionManagerImplementsModernServiceToken() {
-        assertTrue(PermissionService.class.isAssignableFrom(DefaultPermissionManager.class));
+        assertTrue(PexPermissionService.class.isAssignableFrom(DefaultPermissionManager.class));
     }
 
     @Test
@@ -22,7 +22,7 @@ public class LegacyApiCompatibilityTest {
         assertTrue(InternalPermissionManager.class.isAssignableFrom(DefaultPermissionManager.class));
         InternalPermissionManager.class.getMethod("getPlatform");
         InternalPermissionManager.class.getMethod("publishEntity", String.class, String.class,
-                dev.rono.permissions.api.bus.EntityMutation.class);
+                dev.rono.permissions.api.bus.PexEntityMutation.class);
         InternalPermissionManager.class.getMethod("getBasedir");
         InternalPermissionManager.class.getMethod("getWorldNames");
         assertThrows(NoSuchMethodException.class, () ->

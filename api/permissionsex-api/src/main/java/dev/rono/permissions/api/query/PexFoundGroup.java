@@ -1,13 +1,13 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexGroupWorldContext;
 import dev.rono.permissions.api.world.PexWorlds;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-/** Optional group lookup — obtain via {@link dev.rono.permissions.api.service.PermissionService#findGroup(String)}. */
+/** Optional group lookup — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#findGroup(String)}. */
 public final class PexFoundGroup {
 
     private final GroupRef ref;
@@ -16,7 +16,7 @@ public final class PexFoundGroup {
         this.ref = ref;
     }
 
-    public static PexFoundGroup of(PermissionServiceBridge service, String name) {
+    public static PexFoundGroup of(PexPermissionServiceBridge service, String name) {
         return new PexFoundGroup(SubjectRefs.group(service, name));
     }
 

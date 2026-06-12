@@ -5,24 +5,24 @@ import org.bukkit.entity.Player;
 /**
  * Bukkit {@link Player} convenience helpers for PermissionsEx.
  *
- * <p>Resolves {@link dev.rono.permissions.api.service.PermissionService} from Bukkit
+ * <p>Resolves {@link dev.rono.permissions.api.service.PexPermissionService} from Bukkit
  * {@code ServicesManager} automatically — hook plugins do not pass the service explicitly.</p>
  *
  * <pre>{@code
- * BukkitPermissions.on(player).hasPermission("my.node");
- * BukkitPermissions.on(player).context().inGroup("vip");
+ * PexBukkitPermissions.on(player).hasPermission("my.node");
+ * PexBukkitPermissions.on(player).context().inGroup("vip");
  * }</pre>
  */
-public final class BukkitPermissions {
+public final class PexBukkitPermissions {
 
-    private BukkitPermissions() {}
+    private PexBukkitPermissions() {}
 
     /**
      * Begin a player-scoped permission chain.
      *
      * @param player online player to query or edit
      * @return fluent scope bound to the player
-     * @throws IllegalStateException if {@code PermissionService} is not registered
+     * @throws IllegalStateException if {@code PexPermissionService} is not registered
      */
     public static PexPlayerScope on(Player player) {
         return new PexPlayerScope(PexServices.require(), player);

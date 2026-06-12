@@ -1,6 +1,6 @@
 package dev.rono.permissions.runtime.startup;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PexPermissionService;
 import dev.rono.permissions.bootstrap.PlatformDescriptor;
 import dev.rono.permissions.bootstrap.PlatformFamily;
 import dev.rono.permissions.core.InternalPermissionManager;
@@ -49,12 +49,12 @@ public final class BukkitPermissionBootstrapReporter {
     }
 
     private static void logModernApi(SpigotPermissionsExPlugin plugin, PermissionManager manager, Logger log) {
-        RegisteredServiceProvider<PermissionService> reg =
-                plugin.getServer().getServicesManager().getRegistration(PermissionService.class);
+        RegisteredServiceProvider<PexPermissionService> reg =
+                plugin.getServer().getServicesManager().getRegistration(PexPermissionService.class);
         if (reg != null && reg.getProvider() == manager) {
             log.info(PREFIX + "API: modern v2 registered via ServicesManager");
         } else {
-            log.warning(PREFIX + "API: modern v2 PermissionService registration missing or superseded");
+            log.warning(PREFIX + "API: modern v2 PexPermissionService registration missing or superseded");
         }
     }
 

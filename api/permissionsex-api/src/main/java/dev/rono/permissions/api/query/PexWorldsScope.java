@@ -1,14 +1,14 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import java.util.Collection;
 
-/** Registered server realms — obtain via {@link dev.rono.permissions.api.service.PermissionService#worlds()}. */
+/** Registered server realms — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#worlds()}. */
 public final class PexWorldsScope {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
 
-    public PexWorldsScope(PermissionServiceBridge service) {
+    public PexWorldsScope(PexPermissionServiceBridge service) {
         this.service = service;
     }
 

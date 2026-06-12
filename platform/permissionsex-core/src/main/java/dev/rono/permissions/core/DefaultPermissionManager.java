@@ -18,19 +18,19 @@
  */
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.PexPermissionsExException;
 import dev.rono.permissions.api.backend.PexBackendHandle;
 import dev.rono.permissions.api.backend.PexBackendInfo;
-import dev.rono.permissions.api.bus.EntityDispatch;
-import dev.rono.permissions.api.bus.EntityMutation;
-import dev.rono.permissions.api.bus.SystemDispatch;
-import dev.rono.permissions.api.bus.SystemMutation;
+import dev.rono.permissions.api.bus.PexEntityDispatch;
+import dev.rono.permissions.api.bus.PexEntityMutation;
+import dev.rono.permissions.api.bus.PexSystemDispatch;
+import dev.rono.permissions.api.bus.PexSystemMutation;
 import dev.rono.permissions.api.data.PexImportMode;
-import dev.rono.permissions.api.event.PermissionEventBus;
+import dev.rono.permissions.api.event.PexPermissionEventBus;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.api.service.PermissionServiceBridge;
-import dev.rono.permissions.api.session.PermissionEditSession;
+import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
+import dev.rono.permissions.api.session.PexPermissionEditSession;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.world.PexWorlds;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * @author t3hk0d3
  */
-public class DefaultPermissionManager implements PermissionManager, PermissionService, PermissionServiceBridge, InternalPermissionManager {
+public class DefaultPermissionManager implements PermissionManager, PexPermissionService, PexPermissionServiceBridge, InternalPermissionManager {
 	protected ConcurrentMap<String, PermissionUser> users = new ConcurrentHashMap<>();
 	protected ConcurrentMap<String, PermissionGroup> groups = new ConcurrentHashMap<>();
 	protected PermissionBackend backend = null;
@@ -556,7 +556,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	 */
 	public void setDebug(boolean debug) {
 		this.debugMode = debug;
-		this.publishSystem(SystemMutation.DEBUGMODE_TOGGLE);
+		this.publishSystem(PexSystemMutation.DEBUGMODE_TOGGLE);
 	}
 
 	/**
@@ -611,7 +611,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 		for (PermissionUser user : getActiveUsers()) { // Clear user cache
 			user.clearCache();
 		}
-		this.publishSystem(SystemMutation.WORLDINHERITANCE_CHANGED);
+		this.publishSystem(PexSystemMutation.WORLDINHERITANCE_CHANGED);
 	}
 
 	/**
@@ -632,7 +632,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	}
 
 	@Override
-	public PermissionEventBus events() {
+	public PexPermissionEventBus events() {
 		return eventBus;
 	}
 
@@ -761,57 +761,57 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	}
 
 	@Override
-	public void setActiveBackend(String alias) throws PermissionsExException {
+	public void setActiveBackend(String alias) throws PexPermissionsExException {
 		try {
 			setBackend(alias);
 		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to activate backend " + alias, e);
+			throw new PexPermissionsExException("Failed to activate backend " + alias, e);
 		}
 	}
 
 	@Override
-	public PexBackendHandle createBackendHandle(String alias) throws PermissionsExException {
+	public PexBackendHandle createBackendHandle(String alias) throws PexPermissionsExException {
 		try {
 			PermissionBackend created = createBackend(alias);
 			return new ModernBackendHandle(created, alias, this);
 		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to create backend " + alias, e);
+			throw new PexPermissionsExException("Failed to create backend " + alias, e);
 		}
 	}
 
 	@Override
-	public void importFromBackend(String backendAlias) throws PermissionsExException {
+	public void importFromBackend(String backendAlias) throws PexPermissionsExException {
 		try {
 			PermissionBackend source = createBackend(backendAlias);
 			backend.loadFrom(source);
 			clearCache();
-			publishSystem(SystemMutation.RELOADED);
+			publishSystem(PexSystemMutation.RELOADED);
 		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to import from backend " + backendAlias, e);
+			throw new PexPermissionsExException("Failed to import from backend " + backendAlias, e);
 		}
 	}
 
 	@Override
-	public String exportData() throws PermissionsExException {
+	public String exportData() throws PexPermissionsExException {
 		return BackendSnapshotSupport.export(backend);
 	}
 
 	@Override
-	public void importData(String document, PexImportMode mode) throws PermissionsExException {
+	public void importData(String document, PexImportMode mode) throws PexPermissionsExException {
 		PermissionBackend snapshot = BackendSnapshotSupport.snapshotFromYaml(this, document);
         if (mode == PexImportMode.REPLACE) {
             clearCache();
         }
         backend.loadFrom(snapshot);
-        publishSystem(SystemMutation.RELOADED);
+        publishSystem(PexSystemMutation.RELOADED);
     }
 
 	@Override
-	public void reload() throws PermissionsExException {
+	public void reload() throws PexPermissionsExException {
 		try {
 			reset();
 		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to reload PermissionsEx backend", e);
+			throw new PexPermissionsExException("Failed to reload PermissionsEx backend", e);
 		}
 	}
 
@@ -835,14 +835,14 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 	}
 
 	@Override
-	public PermissionEditSession openEditSession() {
+	public PexPermissionEditSession openEditSession() {
 		return new PermissionEditSessionImpl(this);
 	}
 
 	public void applyBackendData(PermissionBackend source) {
 		backend.loadFrom(source);
 		clearCache();
-		publishSystem(SystemMutation.RELOADED);
+		publishSystem(PexSystemMutation.RELOADED);
 	}
 
 	private PexUser wrapUser(PermissionUser user) {
@@ -870,7 +870,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 			this.preloadGroups();
 		}
 
-		this.publishSystem(SystemMutation.BACKEND_CHANGED);
+		this.publishSystem(PexSystemMutation.BACKEND_CHANGED);
 	}
 
 	/**
@@ -920,7 +920,7 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 		if (this.backend != null) {
 			this.backend.reload();
 		}
-		if (callEvent) this.publishSystem(SystemMutation.RELOADED);
+		if (callEvent) this.publishSystem(PexSystemMutation.RELOADED);
 	}
 
 	public void end() {
@@ -958,15 +958,15 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 		this.setBackend(config.getDefaultBackend());
 	}
 
-	protected void publishSystem(SystemMutation mutation) {
-		SystemDispatch dispatch = new SystemDispatch(getServerUUID(), mutation);
+	protected void publishSystem(PexSystemMutation mutation) {
+		PexSystemDispatch dispatch = new PexSystemDispatch(getServerUUID(), mutation);
 		eventBus.dispatch(dispatch);
 		platform.publish(dispatch);
 	}
 
 	@Override
-	public void publishEntity(String entityIdentifier, String entityType, EntityMutation mutation) {
-		EntityDispatch dispatch = new EntityDispatch(getServerUUID(), entityIdentifier, entityType, mutation);
+	public void publishEntity(String entityIdentifier, String entityType, PexEntityMutation mutation) {
+		PexEntityDispatch dispatch = new PexEntityDispatch(getServerUUID(), entityIdentifier, entityType, mutation);
 		eventBus.dispatch(dispatch);
 		platform.publish(dispatch);
 	}

@@ -7,5 +7,5 @@ import java.util.UUID;
  * @param entityIdentifier stable user or group key
  * @param entityType      e.g. USER or GROUP
  */
-public record EntityDispatch(UUID sourceId, String entityIdentifier, String entityType, EntityMutation mutation)
-        implements PermissionDispatch {}
+public record PexEntityDispatch(UUID sourceId, String entityIdentifier, String entityType, PexEntityMutation mutation)
+        implements PexPermissionDispatch {}

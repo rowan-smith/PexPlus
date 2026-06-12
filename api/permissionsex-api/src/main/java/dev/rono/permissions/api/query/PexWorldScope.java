@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexGroupWorldContext;
 import dev.rono.permissions.api.subject.PexUserWorldContext;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * World-scoped chain — obtain via {@link dev.rono.permissions.api.service.PermissionService#world(String)}.
+ * World-scoped chain — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#world(String)}.
  *
  * <h2>Resolve vs find</h2>
  * <ul>
@@ -30,10 +30,10 @@ import java.util.UUID;
  */
 public final class PexWorldScope {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
     private final String world;
 
-    public PexWorldScope(PermissionServiceBridge service, String world) {
+    public PexWorldScope(PexPermissionServiceBridge service, String world) {
         this.service = service;
         this.world = PexWorlds.normalize(world);
     }

@@ -1,7 +1,7 @@
 package dev.rono.permissions.api.bus;
 
 /** Domain entity mutation kinds (mirrors classic PEX entity event actions). */
-public enum EntityMutation {
+public enum PexEntityMutation {
     PERMISSIONS_CHANGED,
     OPTIONS_CHANGED,
     INHERITANCE_CHANGED,

@@ -1,7 +1,7 @@
 package dev.rono.permissions.api.service;
 
-import dev.rono.permissions.api.PermissionsExException;
-import dev.rono.permissions.api.event.PermissionEventBus;
+import dev.rono.permissions.api.PexPermissionsExException;
+import dev.rono.permissions.api.event.PexPermissionEventBus;
 import dev.rono.permissions.api.query.*;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexUser;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
  * pex.session().start();
  * }</pre>
  */
-public interface PermissionService {
+public interface PexPermissionService {
 
     /**
      * Returns the user registry ({@link PexUsersScope#count()}, {@link PexUsersScope#identifiers()}).
@@ -164,18 +164,18 @@ public interface PermissionService {
     /**
      * Returns the permission-domain event bus.
      *
-     * @return shared {@link PermissionEventBus}
+     * @return shared {@link PexPermissionEventBus}
      */
-    default PermissionEventBus events() {
+    default PexPermissionEventBus events() {
         return requireBridge(this).events();
     }
 
     /**
      * Reloads permission data from the active backend synchronously.
      *
-     * @throws PermissionsExException if reload fails
+     * @throws PexPermissionsExException if reload fails
      */
-    default void reload() throws PermissionsExException {
+    default void reload() throws PexPermissionsExException {
         requireBridge(this).reload();
     }
 
@@ -198,17 +198,17 @@ public interface PermissionService {
     }
 
     /**
-     * Casts {@code service} to {@link PermissionServiceBridge} when the runtime exposes the bridge API.
+     * Casts {@code service} to {@link PexPermissionServiceBridge} when the runtime exposes the bridge API.
      *
-     * @param service registered {@link PermissionService} instance
-     * @return the same instance as a {@link PermissionServiceBridge}
-     * @throws IllegalStateException if {@code service} does not implement {@link PermissionServiceBridge}
+     * @param service registered {@link PexPermissionService} instance
+     * @return the same instance as a {@link PexPermissionServiceBridge}
+     * @throws IllegalStateException if {@code service} does not implement {@link PexPermissionServiceBridge}
      */
-    static PermissionServiceBridge requireBridge(PermissionService service) {
-        if (service instanceof PermissionServiceBridge bridge) {
+    static PexPermissionServiceBridge requireBridge(PexPermissionService service) {
+        if (service instanceof PexPermissionServiceBridge bridge) {
             return bridge;
         }
         throw new IllegalStateException(
-                "PermissionService must implement PermissionServiceBridge: " + service.getClass().getName());
+                "PexPermissionService must implement PexPermissionServiceBridge: " + service.getClass().getName());
     }
 }

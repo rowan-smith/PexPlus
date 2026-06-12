@@ -1,7 +1,7 @@
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexTimedGroupMembership;
 import dev.rono.permissions.api.subject.PexTimedPermissionEntry;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ModernPermissionServiceTest extends PEXTestBase {
 
-    private PermissionService pex() {
-        return (PermissionService) manager;
+    private PexPermissionService pex() {
+        return (PexPermissionService) manager;
     }
 
-    private PermissionServiceBridge bridge() {
-        return PermissionService.requireBridge(pex());
+    private PexPermissionServiceBridge bridge() {
+        return PexPermissionService.requireBridge(pex());
     }
 
     @Test
@@ -133,9 +133,9 @@ class ModernPermissionServiceTest extends PEXTestBase {
     @Test
     void eventBusNotifiesListeners() {
         var received = new java.util.concurrent.atomic.AtomicInteger(0);
-        var subscription = pex().events().subscribe(new dev.rono.permissions.api.event.PermissionEventListener() {
+        var subscription = pex().events().subscribe(new dev.rono.permissions.api.event.PexPermissionEventListener() {
             @Override
-            public void onEntity(dev.rono.permissions.api.bus.EntityDispatch dispatch) {
+            public void onEntity(dev.rono.permissions.api.bus.PexEntityDispatch dispatch) {
                 received.incrementAndGet();
             }
         });
@@ -207,7 +207,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
     }
 
     @Test
-    void exportDataAndBackendHandle() throws dev.rono.permissions.api.PermissionsExException {
+    void exportDataAndBackendHandle() throws dev.rono.permissions.api.PexPermissionsExException {
         assertNotNull(pex().backend().exportData());
         assertNotNull(pex().backend().createHandle("mock").info());
     }

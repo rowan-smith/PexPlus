@@ -12,7 +12,7 @@ legacy-api/
 
 api/
   permissionsex-core-api      Platform-neutral SPI (PlatformAdapter, bus dispatches)
-  permissionsex-api           PermissionService façade for modern hook plugins
+  permissionsex-api           PexPermissionService façade for modern hook plugins
   permissionsex-api-bukkit    Optional Bukkit Player helpers
 
 platform/
@@ -56,7 +56,7 @@ Two paths coexist:
 - **Direct API**: `PermissionManager.has()` / `PermissionUser.has()`
 - **Superperms bridge**: `SuperpermsListener` materializes PEX data into synthetic Bukkit permissions; `PermissiblePEX` regex-matches on `hasPermission()` with a per-player cache
 
-Bus dispatches (`EntityDispatch`, `SystemDispatch`) are translated to legacy `ru.tehkode.permissions.events.*` Bukkit events on game servers via `SpigotEventPublisher`.
+Bus dispatches (`PexEntityDispatch`, `PexSystemDispatch`) are translated to legacy `ru.tehkode.permissions.events.*` Bukkit events on game servers via `SpigotEventPublisher`.
 
 ### Bungee runtime
 

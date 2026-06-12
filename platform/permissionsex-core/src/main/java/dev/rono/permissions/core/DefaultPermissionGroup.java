@@ -18,7 +18,7 @@
  */
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.bus.EntityMutation;
+import dev.rono.permissions.api.bus.PexEntityMutation;
 import ru.tehkode.permissions.*;
 
 import java.util.*;
@@ -68,7 +68,7 @@ public class DefaultPermissionGroup extends AbstractPermissionEntity implements 
 		this.setOption("weight", Integer.toString(weight));
 
 		this.dirtyWeight = true;
-		this.callEvent(EntityMutation.WEIGHT_CHANGED);
+		this.callEvent(PexEntityMutation.WEIGHT_CHANGED);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class DefaultPermissionGroup extends AbstractPermissionEntity implements 
 			this.setOption("rank", null);
 		}
 
-		this.callEvent(EntityMutation.RANK_CHANGED);
+		this.callEvent(PexEntityMutation.RANK_CHANGED);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class DefaultPermissionGroup extends AbstractPermissionEntity implements 
 
 		this.setOption("rank-ladder", rankLadder);
 
-		this.callEvent(EntityMutation.RANK_CHANGED);
+		this.callEvent(PexEntityMutation.RANK_CHANGED);
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class DefaultPermissionGroup extends AbstractPermissionEntity implements 
 
 	public void setDefault(boolean def, String worldName) {
 		setOption("default", String.valueOf(def), worldName);
-		callEvent(EntityMutation.DEFAULTGROUP_CHANGED);
+		callEvent(PexEntityMutation.DEFAULTGROUP_CHANGED);
 	}
 
 	@Override

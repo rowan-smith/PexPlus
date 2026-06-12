@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexUser;
 import dev.rono.permissions.api.subject.PexUserWorldContext;
 import dev.rono.permissions.api.world.PexWorlds;
@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-/** Optional user lookup — obtain via {@link dev.rono.permissions.api.service.PermissionService#findUser(String)}. */
+/** Optional user lookup — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#findUser(String)}. */
 public final class PexFoundUser {
 
     private final UserRef ref;
@@ -17,7 +17,7 @@ public final class PexFoundUser {
         this.ref = ref;
     }
 
-    public static PexFoundUser of(PermissionServiceBridge service, UUID uuid, String identifier) {
+    public static PexFoundUser of(PexPermissionServiceBridge service, UUID uuid, String identifier) {
         return new PexFoundUser(SubjectRefs.user(service, uuid, identifier));
     }
 

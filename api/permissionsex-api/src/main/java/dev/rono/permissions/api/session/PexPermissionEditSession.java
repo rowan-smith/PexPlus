@@ -9,10 +9,10 @@ import java.util.function.Consumer;
 /**
  * Batch edit helper: track subjects touched in a session and {@link #save()} once.
  *
- * <p>Obtain via {@link dev.rono.permissions.api.service.PermissionService#session()}. Subjects
+ * <p>Obtain via {@link dev.rono.permissions.api.service.PexPermissionService#session()}. Subjects
  * retrieved through this session are tracked for a single deferred {@link #save()} call.</p>
  */
-public interface PermissionEditSession extends AutoCloseable {
+public interface PexPermissionEditSession extends AutoCloseable {
 
     /**
      * Resolves a user by string identifier and registers the subject for batch persistence.

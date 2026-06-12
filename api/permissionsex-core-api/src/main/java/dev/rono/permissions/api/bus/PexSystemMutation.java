@@ -1,7 +1,7 @@
 package dev.rono.permissions.api.bus;
 
 /** System-level permission engine notifications. */
-public enum SystemMutation {
+public enum PexSystemMutation {
     BACKEND_CHANGED,
     RELOADED,
     WORLDINHERITANCE_CHANGED,

@@ -1,13 +1,13 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.PexPermissionsExException;
 import dev.rono.permissions.api.backend.PexBackendHandle;
 import dev.rono.permissions.api.backend.PexBackendInfo;
 import dev.rono.permissions.api.data.PexImportMode;
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 
 /**
- * Backend administration — obtain via {@link dev.rono.permissions.api.service.PermissionService#backend()}.
+ * Backend administration — obtain via {@link dev.rono.permissions.api.service.PexPermissionService#backend()}.
  *
  * <pre>{@code
  * pex.backend().getActive();
@@ -17,9 +17,9 @@ import dev.rono.permissions.api.service.PermissionServiceBridge;
  */
 public final class PexBackendScope {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
 
-    public PexBackendScope(PermissionServiceBridge service) {
+    public PexBackendScope(PexPermissionServiceBridge service) {
         this.service = service;
     }
 
@@ -82,9 +82,9 @@ public final class PexBackendScope {
      * Switches the active backend to the given configured alias.
      *
      * @param alias configured backend alias (for example {@code "file"} or {@code "sql"})
-     * @throws PermissionsExException if the alias is unknown or activation fails
+     * @throws PexPermissionsExException if the alias is unknown or activation fails
      */
-    public void activate(String alias) throws PermissionsExException {
+    public void activate(String alias) throws PexPermissionsExException {
         service.setActiveBackend(alias);
     }
 
@@ -93,9 +93,9 @@ public final class PexBackendScope {
      *
      * @param alias configured backend alias
      * @return a {@link PexBackendHandle} for the requested backend
-     * @throws PermissionsExException if the alias is unknown or the handle cannot be created
+     * @throws PexPermissionsExException if the alias is unknown or the handle cannot be created
      */
-    public PexBackendHandle createHandle(String alias) throws PermissionsExException {
+    public PexBackendHandle createHandle(String alias) throws PexPermissionsExException {
         return service.createBackendHandle(alias);
     }
 
@@ -103,9 +103,9 @@ public final class PexBackendScope {
      * Replaces active-backend data with the contents of another configured backend.
      *
      * @param backendAlias source backend alias to import from
-     * @throws PermissionsExException if the alias is unknown or import fails
+     * @throws PexPermissionsExException if the alias is unknown or import fails
      */
-    public void importFrom(String backendAlias) throws PermissionsExException {
+    public void importFrom(String backendAlias) throws PexPermissionsExException {
         service.importFromBackend(backendAlias);
     }
 
@@ -113,9 +113,9 @@ public final class PexBackendScope {
      * Serializes all users, groups, and world inheritance from the active backend.
      *
      * @return exported document (format depends on the active backend)
-     * @throws PermissionsExException if export fails
+     * @throws PexPermissionsExException if export fails
      */
-    public String exportData() throws PermissionsExException {
+    public String exportData() throws PexPermissionsExException {
         return service.exportData();
     }
 
@@ -124,9 +124,9 @@ public final class PexBackendScope {
      *
      * @param document serialized permission data
      * @param mode merge strategy ({@link PexImportMode#MERGE} or {@link PexImportMode#REPLACE})
-     * @throws PermissionsExException if the document is invalid or import fails
+     * @throws PexPermissionsExException if the document is invalid or import fails
      */
-    public void importData(String document, PexImportMode mode) throws PermissionsExException {
+    public void importData(String document, PexImportMode mode) throws PexPermissionsExException {
         service.importData(document, mode);
     }
 }

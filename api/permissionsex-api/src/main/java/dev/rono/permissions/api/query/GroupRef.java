@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
 import dev.rono.permissions.api.subject.PexGroup;
 import dev.rono.permissions.api.subject.PexGroupWorldContext;
 import dev.rono.permissions.api.world.PexWorlds;
@@ -8,10 +8,10 @@ import java.util.Optional;
 
 final class GroupRef {
 
-    private final PermissionServiceBridge service;
+    private final PexPermissionServiceBridge service;
     private final String name;
 
-    GroupRef(PermissionServiceBridge service, String name) {
+    GroupRef(PexPermissionServiceBridge service, String name) {
         this.service = service;
         this.name = name;
     }

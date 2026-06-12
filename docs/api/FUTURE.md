@@ -8,17 +8,17 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 
 | Feature | API |
 |---------|-----|
-| Modern event bus | `pex.events()` → `PermissionEventBus` |
-| Player checks (Bukkit) | `BukkitPermissions.on(player).hasPermission(...)` |
+| Modern event bus | `pex.events()` → `PexPermissionEventBus` |
+| Player checks (Bukkit) | `PexBukkitPermissions.on(player).hasPermission(...)` |
 | Global permission checks | `pex.user(id).hasPermission("node")` |
 | Promote / demote | `PexUser.promote` / `PexUser.demote` (+ `PexRankingException`) |
 | Backend admin | `pex.backend().activate`, `createHandle`, `importFrom` |
 | Import / export | `pex.backend().exportData`, `importData(document, PexImportMode)` |
 | Hierarchy helpers | `PexGroup.children` / `PexGroup.descendants`, `PexGroup.members(world, inherit)` |
 | Flat API | `pex.user()`, `pex.world()`, `pex.users()`, `pex.groups()`, `pex.backend()` |
-| Batch edits | `pex.session().start()` → `PermissionEditSession` |
+| Batch edits | `pex.session().start()` → `PexPermissionEditSession` |
 | Async reload | `pex.reloadAsync()` → `CompletableFuture<Void>` |
-| Proxy `PermissionService` | `ProxyPermissionServices` on Bungee/Waterfall |
+| Proxy `PexPermissionService` | `ProxyPermissionServices` on Bungee/Waterfall |
 
 ---
 
@@ -28,25 +28,25 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 
 Legacy: `getMatchingExpression`, `explainExpression`.
 
-**Proposed:** `PermissionCheckResult` record on `PexPermissionSubject` or `PermissionService`.
+**Proposed:** `PermissionCheckResult` record on `PexPermissionSubject` or `PexPermissionService`.
 
 ### Configuration read surface
 
 Legacy: `PermissionManager.getConfiguration()`.
 
-**Proposed:** immutable `PermissionService.configuration()` snapshot.
+**Proposed:** immutable `PexPermissionService.configuration()` snapshot.
 
 ### Regex / matcher access
 
 Legacy: `getPermissionMatcher()`.
 
-**Proposed:** read-only `PermissionService.matcher()`.
+**Proposed:** read-only `PexPermissionService.matcher()`.
 
 ### PexUser cache control
 
 Legacy: `resetUser`, `clearUserCache`, `cacheUser`.
 
-**Proposed:** same operations on modern `PermissionService`.
+**Proposed:** same operations on modern `PexPermissionService`.
 
 ### Superperms bridge introspection
 
