@@ -1,0 +1,252 @@
+package dev.rono.permissions.api.service;
+
+import dev.rono.permissions.api.PexPermissionsExException;
+import dev.rono.permissions.api.backend.PexBackendHandle;
+import dev.rono.permissions.api.backend.PexBackendInfo;
+import dev.rono.permissions.api.data.PexImportMode;
+import dev.rono.permissions.api.event.PexPermissionEventBus;
+import dev.rono.permissions.api.session.PexPermissionEditSession;
+import dev.rono.permissions.api.subject.PexGroup;
+import dev.rono.permissions.api.subject.PexUser;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * Runtime operations backing {@link PexPermissionService}.
+ *
+ * <p>Implemented by the core manager; not intended for direct use in plugins. Prefer the fluent
+ * {@link PexPermissionService} flat entry points, which wrap this bridge.</p>
+ *
+ * <h2>Resolve vs find</h2>
+ * <ul>
+ *   <li><strong>Resolve</strong> ({@link #user(String)}, {@link #user(UUID)}, {@link #group(String)}):
+ *       returns a live subject handle, creating or materializing a record when none exists yet.</li>
+ *   <li><strong>Find</strong> ({@link PexPermissionService#findUser(String)},
+ *       {@link PexPermissionService#findUser(UUID)}, {@link PexPermissionService#findGroup(String)} via
+ *       {@link #lookupUser(String)}, {@link #lookupUser(UUID)}, {@link #lookupGroup(String)}):
+ *       returns {@link Optional#empty()} when the subject is not persisted in the active backend.</li>
+ * </ul>
+ */
+public interface PexPermissionServiceBridge {
+
+    /**
+     * Returns the number of user records stored in the active backend.
+     *
+     * @return persisted user count
+     */
+    int userCount();
+
+    /**
+     * Returns the number of group records stored in the active backend.
+     *
+     * @return persisted group count
+     */
+    int groupCount();
+
+    /**
+     * Returns a snapshot describing the currently active permission backend.
+     *
+     * @return active backend metadata
+     */
+    PexBackendInfo activeBackend();
+
+    /**
+     * Switches the active backend to the configured alias.
+     *
+     * @param alias configured backend alias (for example {@code "file"} or {@code "sql"})
+     * @throws PexPermissionsExException if the alias is unknown or activation fails
+     */
+    void setActiveBackend(String alias) throws PexPermissionsExException;
+
+    /**
+     * Opens a handle to a non-active backend for inspection or data transfer.
+     *
+     * @param alias configured backend alias
+     * @return a {@link PexBackendHandle} for the requested backend
+     * @throws PexPermissionsExException if the alias is unknown or the handle cannot be created
+     */
+    PexBackendHandle createBackendHandle(String alias) throws PexPermissionsExException;
+
+    /**
+     * Replaces active-backend data with the contents of another configured backend.
+     *
+     * @param backendAlias source backend alias to import from
+     * @throws PexPermissionsExException if the alias is unknown or import fails
+     */
+    void importFromBackend(String backendAlias) throws PexPermissionsExException;
+
+    /**
+     * Serializes all users, groups, and world inheritance from the active backend.
+     *
+     * @return exported document (format depends on the active backend)
+     * @throws PexPermissionsExException if export fails
+     */
+    String exportData() throws PexPermissionsExException;
+
+    /**
+     * Merges or replaces active-backend data from a serialized document.
+     *
+     * @param document serialized permission data
+     * @param mode merge strategy ({@link PexImportMode#MERGE} or {@link PexImportMode#REPLACE})
+     * @throws PexPermissionsExException if the document is invalid or import fails
+     */
+    void importData(String document, PexImportMode mode) throws PexPermissionsExException;
+
+    /**
+     * Returns the permission-domain event bus for subscribing to entity and system dispatches.
+     *
+     * @return the shared {@link PexPermissionEventBus}
+     */
+    PexPermissionEventBus events();
+
+    /**
+     * Returns the names of worlds registered on the platform.
+     *
+     * @return immutable view of known world names
+     */
+    Collection<String> registeredWorlds();
+
+    /**
+     * Reports whether PermissionsEx debug logging is enabled.
+     *
+     * @return {@code true} when debug mode is active
+     */
+    boolean isDebug();
+
+    /**
+     * Returns the inheritance chain for a world (parent worlds whose permissions apply).
+     *
+     * @param world world name, or {@code null} for the global namespace
+     * @return ordered list of parent world names
+     */
+    List<String> worldInheritance(String world);
+
+    /**
+     * Sets the inheritance chain for a world.
+     *
+     * @param world world name, or {@code null} for the global namespace
+     * @param parentWorlds ordered list of parent world names
+     */
+    void setWorldInheritance(String world, List<String> parentWorlds);
+
+    /**
+     * Returns the inheritance map for every configured world.
+     *
+     * @return map from world name to ordered parent-world lists
+     */
+    Map<String, List<String>> worldInheritanceMap();
+
+    /**
+     * Returns groups marked as default for new users in the given world.
+     *
+     * @param world world name, or {@code null} for the global namespace
+     * @return default groups for the world
+     */
+    List<PexGroup> defaultGroups(String world);
+
+    /**
+     * Returns the rank ladder mapping for a named ladder.
+     *
+     * @param ladderName ladder identifier
+     * @return map from rank index to group at that rank
+     */
+    Map<Integer, PexGroup> rankLadder(String ladderName);
+
+    /**
+     * Looks up a persisted user by string identifier without materializing a new record.
+     *
+     * @param identifier user name or UUID string
+     * @return the user when present in the backend, otherwise empty
+     */
+    Optional<PexUser> lookupUser(String identifier);
+
+    /**
+     * Looks up a persisted user by UUID without materializing a new record.
+     *
+     * @param uuid player UUID
+     * @return the user when present in the backend, otherwise empty
+     */
+    Optional<PexUser> lookupUser(UUID uuid);
+
+    /**
+     * Resolves a user by string identifier, materializing a record when none exists yet.
+     *
+     * @param identifier user name or UUID string
+     * @return a live {@link PexUser} handle (never {@code null})
+     */
+    PexUser user(String identifier);
+
+    /**
+     * Resolves a user by UUID, materializing a record when none exists yet.
+     *
+     * @param uuid player UUID
+     * @return a live {@link PexUser} handle (never {@code null})
+     */
+    PexUser user(UUID uuid);
+
+    /**
+     * Returns every user identifier known to the active backend.
+     *
+     * @return set of persisted user identifiers
+     */
+    Set<String> userIdentifiers();
+
+    /**
+     * Deletes a user record from the active backend.
+     *
+     * @param identifier user name or UUID string to remove
+     */
+    void deleteUser(String identifier);
+
+    /**
+     * Looks up a persisted group by name without materializing a new record.
+     *
+     * @param name group name
+     * @return the group when present in the backend, otherwise empty
+     */
+    Optional<PexGroup> lookupGroup(String name);
+
+    /**
+     * Resolves a group by name, materializing a record when none exists yet.
+     *
+     * @param name group name
+     * @return a live {@link PexGroup} handle (never {@code null})
+     */
+    PexGroup group(String name);
+
+    /**
+     * Returns every group name known to the active backend.
+     *
+     * @return set of persisted group names
+     */
+    Set<String> groupNames();
+
+    /**
+     * Deletes a group record from the active backend.
+     *
+     * @param name group name to remove
+     */
+    void deleteGroup(String name);
+
+    /**
+     * Reloads permission data from the active backend synchronously.
+     *
+     * @throws PexPermissionsExException if reload fails
+     */
+    void reload() throws PexPermissionsExException;
+
+    /**
+     * Reloads permission data from the active backend asynchronously.
+     *
+     * @return a future that completes when reload finishes (normally or exceptionally)
+     */
+    CompletableFuture<Void> reloadAsync();
+
+    /**
+     * Opens a batch edit session that tracks touched subjects until {@link PexPermissionEditSession#save()}.
+     *
+     * @return a new {@link PexPermissionEditSession}
+     */
+    PexPermissionEditSession openEditSession();
+}

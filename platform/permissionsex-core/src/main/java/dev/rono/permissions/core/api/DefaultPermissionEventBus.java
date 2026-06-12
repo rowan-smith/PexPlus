@@ -1,30 +1,30 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.bus.EntityDispatch;
-import dev.rono.permissions.api.bus.PermissionDispatch;
-import dev.rono.permissions.api.bus.SystemDispatch;
-import dev.rono.permissions.api.event.PermissionEventBus;
-import dev.rono.permissions.api.event.PermissionEventListener;
+import dev.rono.permissions.api.bus.PexEntityDispatch;
+import dev.rono.permissions.api.bus.PexPermissionDispatch;
+import dev.rono.permissions.api.bus.PexSystemDispatch;
+import dev.rono.permissions.api.event.PexPermissionEventBus;
+import dev.rono.permissions.api.event.PexPermissionEventListener;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class DefaultPermissionEventBus implements PermissionEventBus {
+public final class DefaultPermissionEventBus implements PexPermissionEventBus {
     private final AtomicLong nextId = new AtomicLong();
     private final CopyOnWriteArrayList<Entry> listeners = new CopyOnWriteArrayList<>();
 
-    public void dispatch(PermissionDispatch dispatch) {
+    public void dispatch(PexPermissionDispatch dispatch) {
         for (Entry entry : listeners) {
-            if (dispatch instanceof EntityDispatch entity) {
+            if (dispatch instanceof PexEntityDispatch entity) {
                 entry.listener.onEntity(entity);
-            } else if (dispatch instanceof SystemDispatch system) {
+            } else if (dispatch instanceof PexSystemDispatch system) {
                 entry.listener.onSystem(system);
             }
         }
     }
 
     @Override
-    public Subscription subscribe(PermissionEventListener listener) {
+    public Subscription subscribe(PexPermissionEventListener listener) {
         Objects.requireNonNull(listener, "listener");
         Entry entry = new Entry(nextId.incrementAndGet(), listener);
         listeners.add(entry);
@@ -38,5 +38,5 @@ public final class DefaultPermissionEventBus implements PermissionEventBus {
         }
     }
 
-    private record Entry(long id, PermissionEventListener listener) implements Subscription {}
+    private record Entry(long id, PexPermissionEventListener listener) implements Subscription {}
 }

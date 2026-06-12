@@ -12,8 +12,8 @@ legacy-api/
 
 api/
   permissionsex-core-api      Platform-neutral SPI (PlatformAdapter, bus dispatches)
-  permissionsex-api           PermissionService façade for modern hook plugins
-  permissionsex-api-bukkit    Optional Bukkit Player helpers
+  permissionsex-api           PexPermissionService façade for modern hook plugins
+  permissionsex-api-bungee    PermissionsEx.getApi() + proxy service registry
 
 platform/
   permissionsex-core          Engine (manager, backends, commands, hierarchy)
@@ -56,7 +56,7 @@ Two paths coexist:
 - **Direct API**: `PermissionManager.has()` / `PermissionUser.has()`
 - **Superperms bridge**: `SuperpermsListener` materializes PEX data into synthetic Bukkit permissions; `PermissiblePEX` regex-matches on `hasPermission()` with a per-player cache
 
-Bus dispatches (`EntityDispatch`, `SystemDispatch`) are translated to legacy `ru.tehkode.permissions.events.*` Bukkit events on game servers via `SpigotEventPublisher`.
+Bus dispatches (`PexEntityDispatch`, `PexSystemDispatch`) are translated to legacy `ru.tehkode.permissions.events.*` Bukkit events on game servers via `SpigotEventPublisher`.
 
 ### Bungee runtime
 
@@ -75,9 +75,9 @@ YAML file I/O is unified in `dev.rono.permissions.core.backends.file` (SnakeYAML
 
 ## Performance
 
-- **Group membership index**: `GroupMembershipIndex` backs `getUsers(group)` without scanning every user.
+- **PexGroup membership index**: `GroupMembershipIndex` backs `getUsers(group)` without scanning every user.
 - **SQL name caches**: entity identifiers and display names cached with `AtomicReference<ImmutableSet>`.
-- **User entity caches**: per-user permission / option / prefix caches in `DefaultPermissionUser`.
+- **PexUser entity caches**: per-user permission / option / prefix caches in `DefaultPermissionUser`.
 - **Selective superperms updates**: permission/metadata changes clear `PermissiblePEX` regex cache without full permissible rebuild when injected.
 
 ## Commands

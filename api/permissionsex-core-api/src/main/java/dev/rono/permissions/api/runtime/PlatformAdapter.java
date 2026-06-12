@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.runtime;
 
-import dev.rono.permissions.api.bus.PermissionDispatch;
+import dev.rono.permissions.api.bus.PexPermissionDispatch;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -17,11 +17,11 @@ public interface PlatformAdapter {
     UUID serverId();
 
     /**
-     * Worlds on game servers; backend server ids on proxies.
+     * PexWorlds on game servers; backend server ids on proxies.
      */
     Collection<String> realmNames();
 
-    void publish(PermissionDispatch dispatch);
+    void publish(PexPermissionDispatch dispatch);
 
     /** @return current realm when online, else null */
     String onlineRealm(UUID player);

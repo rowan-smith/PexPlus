@@ -15,7 +15,7 @@ public class LegacyStubContractTest {
         assertTrue(Modifier.isFinal(PermissionsEx.class.getModifiers()));
         PermissionsEx.class.getMethod("getPlugin");
         PermissionsEx.class.getMethod("isAvailable");
-        PermissionsEx.class.getMethod("getPermissionManager");
+        PermissionsEx.class.getMethod("getApi");
         PermissionsEx.class.getMethod("getUser", Player.class);
         PermissionsEx.class.getMethod("getUser", String.class);
         assertThrows(NoSuchMethodException.class, () -> PermissionsEx.class.getDeclaredMethod("isEnabled"));

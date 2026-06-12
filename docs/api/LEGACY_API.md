@@ -119,7 +119,7 @@ Registered on Bukkit `ServicesManager` as `PermissionManager.class` on game serv
 | `resetGroup(name)` | Drop in-memory group |
 | `getGroupNames()` | **Deprecated** — use backend via manager patterns |
 
-### Worlds & ladders
+### PexWorlds & ladders
 
 | Method | Description |
 |--------|-------------|
@@ -159,7 +159,7 @@ Base type for users and groups (`PermissionUser`, `PermissionGroup`).
 | `getType()` | `USER` or `GROUP` |
 | `isVirtual()` | Not yet persisted |
 | `getPermissionManager()` | Owning manager |
-| `getWorlds()` | Worlds with data |
+| `getWorlds()` | PexWorlds with data |
 
 ### Permissions
 
@@ -318,7 +318,7 @@ For plugins that implement custom backends (rare):
 - `PermissionsUserData` / `PermissionsGroupData`
 - `PEXBackendConfiguration`
 
-Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PermissionService` only.
+Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PexPermissionService` only.
 
 ---
 
@@ -326,7 +326,7 @@ Most hook plugins should **not** depend on backend types — use `PermissionMana
 
 | Legacy | Modern |
 |--------|--------|
-| `PermissionsEx.getPermissionManager()` | `ServicesManager` → `PermissionService` |
+| `PermissionsEx.getPermissionManager()` | `PermissionsEx.getApi()` |
 | `getUser(...)` | `service.user(...)` |
 | `PermissionUser.addPermission` | `user.addPermission(...)` or `user.inWorld(w).addPermission(...)` |
 | `getWorldInheritance` | `service.worldInheritance(...)` |

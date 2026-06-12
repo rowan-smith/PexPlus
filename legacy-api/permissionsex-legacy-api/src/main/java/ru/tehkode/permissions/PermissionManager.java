@@ -1,10 +1,14 @@
 package ru.tehkode.permissions;
 
+import dev.rono.permissions.api.permission.PermissionAddRequest;
+import dev.rono.permissions.api.permission.PermissionHolder;
+import dev.rono.permissions.api.permission.PermissionNode;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.bukkit.PermissionsExConfig;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
@@ -16,8 +20,8 @@ import java.util.logging.Logger;
  * Runtime extensions ({@code PlatformAdapter}, entity bus dispatches, internal scheduling) are implemented on
  * {@code dev.rono.permissions.core.InternalPermissionManager} and are not part of this surface.</p>
  *
- * <p><strong>Frozen public contract.</strong> Do not add methods to {@code ru.tehkode.*} — use the modern API
- * for new features. Guarded by {@code LegacyApiContractTest} in {@code permissionsex-legacy-api}.</p>
+ * <p>Classic methods remain for binary compatibility but are deprecated — use
+ * {@link dev.rono.permissions.api.PermissionsExApi} via {@link ru.tehkode.permissions.bukkit.PermissionsEx#getApi()}.</p>
  *
  * <h2>World scope</h2>
  * <p>A {@code null} world name denotes the <em>global</em> (common) scope shared across worlds unless
@@ -45,10 +49,20 @@ import java.util.logging.Logger;
  * <p>{@link #initTimer()} starts the scheduler used to expire timed grants. {@link #TRANSIENT_PERMISSION}
  * ({@code 0}) marks a timed grant as non-persisted (in-memory only until reload).</p>
  *
+ * <h2>Holder-based permissions</h2>
+ * <p>The {@link #addPermission(PermissionHolder, String)}, {@link #removePermission(PermissionHolder, String)},
+ * {@link #hasPermission(PermissionHolder, String)}, and {@link #getPermissions(PermissionHolder)} methods operate on
+ * {@link PermissionHolder} identities (for example {@code User#asHolder()} from the modern user API, group/world/ladder
+ * holders, etc.). Resolve the manager via {@link dev.rono.permissions.api.PermissionsExApi#getPermissionManager()}
+ * after {@link ru.tehkode.permissions.bukkit.PermissionsEx#getApi()}. World context for advanced adds is supplied
+ * through {@link PermissionAddRequest}.</p>
+ *
  * @see PermissionEntity
  * @see PermissionUser
  * @see PermissionGroup
  */
+// Suppressed deprecation warnings are intentional, binary compatibility.
+@SuppressWarnings("DeprecatedIsStillUsed")
 public interface PermissionManager {
 
     /**
@@ -60,11 +74,96 @@ public interface PermissionManager {
     int TRANSIENT_PERMISSION = 0;
 
     /**
+     * Grants a permission to the given holder in the <em>global</em> scope (not world-specific).
+     *
+     * <p>The grant is persisted when the underlying entity is saved. For timed or world-scoped grants, use
+     * {@link #addPermission(PermissionHolder, String, Duration)} or {@link #addPermission(PermissionAddRequest)}.</p>
+     *
+     * @param holder     permission target; must not be {@code null}
+     * @param permission permission node to grant; must not be {@code null} or empty
+     * @return metadata describing the added node
+     * @see PermissionHolder
+     * @see PermissionNode
+     */
+    PermissionNode addPermission(PermissionHolder holder, String permission);
+
+    /**
+     * Grants a permission to the holder in the <em>global</em> scope for a limited duration.
+     *
+     * <p>When {@code duration} is {@code null}, behaves like {@link #addPermission(PermissionHolder, String)}.
+     * Timed grants expire automatically after the scheduler runs ({@link #initTimer()}).</p>
+     *
+     * @param holder     permission target; must not be {@code null}
+     * @param permission permission node to grant; must not be {@code null} or empty
+     * @param duration   lifetime of the grant, or {@code null} for a permanent direct assignment
+     * @return metadata describing the added node (including expiry when timed)
+     * @see PermissionHolder
+     * @see PermissionNode
+     */
+    PermissionNode addPermission(PermissionHolder holder, String permission, Duration duration);
+
+    /**
+     * Grants a permission using a fully specified add request (world context, expiry, source metadata).
+     *
+     * <p>Build requests with {@link PermissionAddRequest#builder()}. World keys in the request context map to
+     * world-scoped storage; an empty context uses the global scope.</p>
+     *
+     * @param request add specification; must not be {@code null}
+     * @return metadata describing the added node
+     * @see PermissionAddRequest
+     * @see PermissionNode
+     */
+    PermissionNode addPermission(PermissionAddRequest request);
+
+    /**
+     * Removes a <em>direct</em> permission assignment from the holder in the <em>global</em> scope.
+     *
+     * <p>Does not remove inherited permissions. Does not clear timed nodes in world-specific scopes; use
+     * {@link PermissionEntity#removeTimedPermission(String, String)} on the resolved classic entity when needed.</p>
+     *
+     * @param holder     permission target; must not be {@code null}
+     * @param permission permission node to remove; must not be {@code null}
+     */
+    void removePermission(PermissionHolder holder, String permission);
+
+    /**
+     * Checks whether the holder effectively holds the permission in the <em>global</em> scope.
+     *
+     * <p>Includes inheritance and parent groups for user/group holders. For per-world effective checks, use the
+     * classic {@link #has(Player, String, String)} API or {@link dev.rono.permissions.api.service.PexPermissionService}
+     * world scopes.</p>
+     *
+     * @param holder     permission target; must not be {@code null}
+     * @param permission permission node to check; must not be {@code null}
+     * @return {@code true} if granted after inheritance, {@code false} otherwise
+     * @see PermissionHolder
+     */
+    boolean hasPermission(PermissionHolder holder, String permission);
+
+    /**
+     * Returns <em>direct</em> permission assignments for the holder in the <em>global</em> scope.
+     *
+     * <p>Does not include inherited nodes or world-specific assignments. Each entry is a {@link PermissionNode}
+     * without expiry metadata for permanent grants.</p>
+     *
+     * @param holder permission target; must not be {@code null}
+     * @return immutable list of direct global permissions (may be empty)
+     * @see PermissionHolder
+     * @see PermissionNode
+     */
+    List<PermissionNode> getPermissions(PermissionHolder holder);
+
+    // |---------------------------------------------|
+    // |  Legacy methods (deprecated)               |
+    // |---------------------------------------------|
+
+    /**
      * Returns whether the engine should create user records automatically when unknown players are resolved.
      *
      * @return {@code true} if new user records should be created (config-driven)
      * @see PermissionsExConfig#createUserRecords()
      */
+    @Deprecated()
     boolean shouldCreateUserRecords();
 
     /**
@@ -72,6 +171,7 @@ public interface PermissionManager {
      *
      * @return configuration instance
      */
+    @Deprecated()
     PermissionsExConfig getConfiguration();
 
     /**
@@ -81,6 +181,7 @@ public interface PermissionManager {
      * @param permission permission node to check
      * @return {@code true} if granted, {@code false} otherwise
      */
+    @Deprecated()
     boolean has(Player player, String permission);
 
     /**
@@ -91,6 +192,7 @@ public interface PermissionManager {
      * @param world      world name
      * @return {@code true} if granted, {@code false} otherwise
      */
+    @Deprecated()
     boolean has(Player player, String permission, String world);
 
     /**
@@ -104,6 +206,7 @@ public interface PermissionManager {
      * @param world      world name, or {@code null} for global scope
      * @return {@code true} if granted, {@code false} otherwise
      */
+    @Deprecated()
     boolean has(String playerName, String permission, String world);
 
     /**
@@ -114,6 +217,7 @@ public interface PermissionManager {
      * @param world      world name, or {@code null} for global scope
      * @return {@code true} if granted, {@code false} if denied or the user is unknown
      */
+    @Deprecated()
     boolean has(UUID playerId, String permission, String world);
 
     /**
@@ -124,6 +228,7 @@ public interface PermissionManager {
      * @throws IllegalArgumentException if {@code username} is null or empty
      * @throws IllegalStateException    if the user does not exist in the backend and cannot be created
      */
+    @Deprecated()
     PermissionUser getUser(String username);
 
     /**
@@ -135,6 +240,7 @@ public interface PermissionManager {
      * @param ident        stable user identifier (typically UUID string)
      * @param fallbackName player name used when converting legacy name-based records
      */
+    @Deprecated()
     void cacheUser(String ident, String fallbackName);
 
     /**
@@ -143,6 +249,7 @@ public interface PermissionManager {
      * @param player online player
      * @return user instance
      */
+    @Deprecated()
     PermissionUser getUser(Player player);
 
     /**
@@ -151,6 +258,7 @@ public interface PermissionManager {
      * @param uid player UUID
      * @return user instance
      */
+    @Deprecated()
     PermissionUser getUser(UUID uid);
 
     /**
@@ -158,6 +266,7 @@ public interface PermissionManager {
      *
      * @return unmodifiable set of users
      */
+    @Deprecated()
     Set<PermissionUser> getUsers();
 
     /**
@@ -165,6 +274,7 @@ public interface PermissionManager {
      *
      * @return copy of cached users (may be a subset of {@link #getUsers()})
      */
+    @Deprecated()
     Set<PermissionUser> getActiveUsers();
 
     /**
@@ -172,6 +282,7 @@ public interface PermissionManager {
      *
      * @return collection of user identifiers (typically UUID strings)
      */
+    @Deprecated()
     Collection<String> getUserIdentifiers();
 
     /**
@@ -179,6 +290,7 @@ public interface PermissionManager {
      *
      * @return collection of user names
      */
+    @Deprecated()
     Collection<String> getUserNames();
 
     /**
@@ -190,6 +302,7 @@ public interface PermissionManager {
      * @param worldName world name, or {@code null} for global scope
      * @return unmodifiable set of matching users
      */
+    @Deprecated()
     Set<PermissionUser> getUsers(String groupName, String worldName);
 
     /**
@@ -200,6 +313,7 @@ public interface PermissionManager {
      * @param groupName group identifier
      * @return unmodifiable set of matching users
      */
+    @Deprecated()
     Set<PermissionUser> getUsers(String groupName);
 
     /**
@@ -210,6 +324,7 @@ public interface PermissionManager {
      * @param inheritance when {@code true}, includes users in child/descendant groups
      * @return unmodifiable set of matching users
      */
+    @Deprecated()
     Set<PermissionUser> getUsers(String groupName, String worldName, boolean inheritance);
 
     /**
@@ -220,6 +335,7 @@ public interface PermissionManager {
      * @param inheritance when {@code true}, includes users in child/descendant groups
      * @return unmodifiable set of matching users
      */
+    @Deprecated()
     Set<PermissionUser> getUsers(String groupName, boolean inheritance);
 
     /**
@@ -231,6 +347,7 @@ public interface PermissionManager {
      *
      * @param userName user identifier or name
      */
+    @Deprecated()
     void resetUser(String userName);
 
     /**
@@ -239,6 +356,7 @@ public interface PermissionManager {
      * @param player online player whose cached user object should be dropped
      * @see #resetUser(String)
      */
+    @Deprecated()
     void resetUser(Player player);
 
     /**
@@ -247,6 +365,7 @@ public interface PermissionManager {
      * @param userName user identifier or name
      * @see #resetUser(String)
      */
+    @Deprecated()
     void clearUserCache(String userName);
 
     /**
@@ -255,6 +374,7 @@ public interface PermissionManager {
      * @param uid player UUID
      * @see #clearUserCache(String)
      */
+    @Deprecated()
     void clearUserCache(UUID uid);
 
     /**
@@ -263,6 +383,7 @@ public interface PermissionManager {
      * @param player online player
      * @see #clearUserCache(String)
      */
+    @Deprecated()
     void clearUserCache(Player player);
 
     /**
@@ -271,6 +392,7 @@ public interface PermissionManager {
      * @param groupname group identifier
      * @return group instance, or {@code null} if {@code groupname} is null or empty
      */
+    @Deprecated()
     PermissionGroup getGroup(String groupname);
 
     /**
@@ -278,6 +400,7 @@ public interface PermissionManager {
      *
      * @return unmodifiable list of groups
      */
+    @Deprecated()
     List<PermissionGroup> getGroupList();
 
     /**
@@ -307,6 +430,7 @@ public interface PermissionManager {
      * @param worldName world name, or {@code null} for global scope
      * @return unmodifiable list of child groups
      */
+    @Deprecated()
     List<PermissionGroup> getGroups(String groupName, String worldName);
 
     /**
@@ -316,6 +440,7 @@ public interface PermissionManager {
      * @return unmodifiable list of child groups
      * @see #getGroups(String, String)
      */
+    @Deprecated()
     List<PermissionGroup> getGroups(String groupName);
 
     /**
@@ -326,6 +451,7 @@ public interface PermissionManager {
      * @param inheritance when {@code true}, includes all descendant groups; when {@code false}, direct children only
      * @return unmodifiable list of matching groups
      */
+    @Deprecated()
     List<PermissionGroup> getGroups(String groupName, String worldName, boolean inheritance);
 
     /**
@@ -335,6 +461,7 @@ public interface PermissionManager {
      * @param inheritance when {@code true}, includes all descendant groups; when {@code false}, direct children only
      * @return unmodifiable, sorted list of matching groups
      */
+    @Deprecated()
     List<PermissionGroup> getGroups(String groupName, boolean inheritance);
 
     /**
@@ -346,6 +473,7 @@ public interface PermissionManager {
      * @param worldName world name, or {@code null} to query global defaults only
      * @return unmodifiable list of default groups (may be empty)
      */
+    @Deprecated()
     List<PermissionGroup> getDefaultGroups(String worldName);
 
     /**
@@ -356,6 +484,7 @@ public interface PermissionManager {
      * @param groupName group identifier
      * @return the removed cached group, or {@code null} if none was cached
      */
+    @Deprecated()
     PermissionGroup resetGroup(String groupName);
 
     /**
@@ -363,6 +492,7 @@ public interface PermissionManager {
      *
      * @param debug {@code true} to enable debug output
      */
+    @Deprecated()
     void setDebug(boolean debug);
 
     /**
@@ -370,6 +500,7 @@ public interface PermissionManager {
      *
      * @return {@code true} if debug mode is active
      */
+    @Deprecated()
     boolean isDebug();
 
     /**
@@ -378,6 +509,7 @@ public interface PermissionManager {
      * @param ladderName ladder name (case-insensitive match)
      * @return map of rank to group; empty if the ladder does not exist
      */
+    @Deprecated()
     Map<Integer, PermissionGroup> getRankLadder(String ladderName);
 
     /**
@@ -386,6 +518,7 @@ public interface PermissionManager {
      * @param worldName world name
      * @return ordered list of parent world names; empty if none configured
      */
+    @Deprecated()
     List<String> getWorldInheritance(String worldName);
 
     /**
@@ -396,6 +529,7 @@ public interface PermissionManager {
      * @param world        world whose inheritance is being set
      * @param parentWorlds ordered list of parent world names
      */
+    @Deprecated()
     void setWorldInheritance(String world, List<String> parentWorlds);
 
     /**
@@ -403,6 +537,7 @@ public interface PermissionManager {
      *
      * @return current {@link PermissionBackend} instance
      */
+    @Deprecated()
     PermissionBackend getBackend();
 
     /**
@@ -411,6 +546,7 @@ public interface PermissionManager {
      * @param backendName backend type identifier (e.g. {@code file}, {@code sql})
      * @throws PermissionBackendException if the backend cannot be created or initialized
      */
+    @Deprecated()
     void setBackend(String backendName) throws PermissionBackendException;
 
     /**
@@ -420,6 +556,7 @@ public interface PermissionManager {
      * @return newly created backend
      * @throws PermissionBackendException if the backend cannot be created
      */
+    @Deprecated()
     PermissionBackend createBackend(String backendName) throws PermissionBackendException;
 
     /**
@@ -428,6 +565,7 @@ public interface PermissionManager {
      * @throws PermissionBackendException if the backend reload fails
      * @see #reset(boolean)
      */
+    @Deprecated()
     void reset() throws PermissionBackendException;
 
     /**
@@ -436,11 +574,13 @@ public interface PermissionManager {
      * @param callEvent when {@code true}, publishes a system reload event after reload completes
      * @throws PermissionBackendException if the backend reload fails
      */
+    @Deprecated()
     void reset(boolean callEvent) throws PermissionBackendException;
 
     /**
      * Shuts down the manager: closes the backend, clears caches, and stops the scheduler.
      */
+    @Deprecated()
     void end();
 
     /**
@@ -449,6 +589,7 @@ public interface PermissionManager {
      * <p>Called during startup and after {@link #reset()} cache clears. Tasks scheduled with
      * {@link PermissionManager#TRANSIENT_PERMISSION} lifetime are not persisted.</p>
      */
+    @Deprecated()
     void initTimer();
 
     /**
@@ -456,6 +597,7 @@ public interface PermissionManager {
      *
      * @return current {@link PermissionMatcher}
      */
+    @Deprecated()
     PermissionMatcher getPermissionMatcher();
 
     /**
@@ -463,6 +605,7 @@ public interface PermissionManager {
      *
      * @param matcher new matcher implementation
      */
+    @Deprecated()
     void setPermissionMatcher(PermissionMatcher matcher);
 
     /**
@@ -470,6 +613,7 @@ public interface PermissionManager {
      *
      * @return PermissionsEx logger instance
      */
+    @Deprecated()
     Logger getLogger();
 
     /**
@@ -477,6 +621,7 @@ public interface PermissionManager {
      *
      * @return scheduler, or {@code null} after {@link #end()}
      */
+    @Deprecated()
     ScheduledExecutorService getExecutor();
 
     /**
@@ -485,5 +630,6 @@ public interface PermissionManager {
      * @return {@code true} if default groups are written to storage (config-driven)
      * @see PermissionsExConfig#saveDefaultGroup()
      */
+    @Deprecated()
     boolean shouldSaveDefaultGroup();
 }

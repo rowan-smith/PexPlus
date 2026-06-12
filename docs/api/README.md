@@ -11,17 +11,18 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Situation | Use |
 |-----------|-----|
-| New plugin | [Modern API](MODERN_API.md) (`PermissionService`) |
+| New plugin | [Modern API](MODERN_API.md) (`PermissionsEx.getApi()`) |
 | Existing PEX 1.23.x hook plugin | [Legacy API](LEGACY_API.md) — no recompile required for typical hooks |
 | Static `PermissionsEx.getUser(...)` calls | Legacy API + `permissionsex-legacy-stub` |
+| Static modern entry | `permissionsex-api` + `PermissionsEx.getApi()` (`PermissionsExApi`) |
 | Permission change events (modern) | `pex.events()` or legacy Bukkit events on Spigot |
-| Proxy (Bungee/Waterfall) | `ProxyPermissionServices.permissionService()` (+ legacy `PermissionManager`) |
+| Proxy (Bungee/Waterfall) | `PermissionsEx.getApi()` (+ deprecated classic `PermissionManager` methods) |
 
 ## Documentation
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](MODERN_API.md) | `PermissionService`, `User`, `Group`, world contexts, timed permissions, Maven setup, examples |
+| [MODERN_API.md](MODERN_API.md) | `PermissionsEx.getApi()`, managers, holder permissions, `PexPermissionService`, subjects, world contexts |
 | [LEGACY_API.md](LEGACY_API.md) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
 | [FUTURE.md](FUTURE.md) | Recommended additions and known gaps |
 
@@ -30,15 +31,14 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 Both APIs resolve to the **same object** (`DefaultPermissionManager`):
 
 ```java
-// Modern
-RegisteredServiceProvider<PermissionService> modern =
-        getServer().getServicesManager().getRegistration(PermissionService.class);
+// Modern (managers + holder permissions)
+PermissionsExApi api = PermissionsEx.getApi();
 
-// Legacy
-RegisteredServiceProvider<PermissionManager> legacy =
-        getServer().getServicesManager().getRegistration(PermissionManager.class);
+// Classic manager
+PermissionManager manager = api.getPermissionManager();
 
-// modern.getProvider() == legacy.getProvider()  (same instance)
+// Deprecated static alias
+PermissionManager legacy = PermissionsEx.getPermissionManager();
 ```
 
 ## Sample plugins

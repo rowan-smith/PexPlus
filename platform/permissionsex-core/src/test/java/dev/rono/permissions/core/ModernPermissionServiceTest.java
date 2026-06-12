@@ -1,29 +1,24 @@
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.api.service.PermissionServiceBridge;
-import dev.rono.permissions.api.subject.Group;
-import dev.rono.permissions.api.subject.TimedGroupMembership;
-import dev.rono.permissions.api.subject.TimedPermissionEntry;
-import dev.rono.permissions.api.subject.User;
-import dev.rono.permissions.api.world.Worlds;
+import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PexPermissionServiceBridge;
+import dev.rono.permissions.api.world.PexWorlds;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.PEXTestBase;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModernPermissionServiceTest extends PEXTestBase {
 
-    private PermissionService pex() {
-        return (PermissionService) manager;
+    private PexPermissionService pex() {
+        return (PexPermissionService) manager;
     }
 
-    private PermissionServiceBridge bridge() {
-        return PermissionService.requireBridge(pex());
+    private PexPermissionServiceBridge bridge() {
+        return PexPermissionService.requireBridge(pex());
     }
 
     @Test
@@ -37,10 +32,10 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void userAndGroupCrudViaModernApi() {
-        Group defaultGroup = bridge().group("default");
+        var defaultGroup = bridge().group("default");
         defaultGroup.addPermission("modern.group", null);
 
-        User user = pex().user("modern-api-user");
+        var user = pex().user("modern-api-user");
         user.addPermission("modern.test", null);
         user.addGroup("default", null);
         user.save();
@@ -58,7 +53,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void globalVsWorldPermissions() {
-        User user = pex().user("world-perms-user");
+        var user = pex().user("world-perms-user");
 
         user.inWorld("world").addPermission("world.node");
         user.inWorld("world").addTimedPermission("world.temp", 120);
@@ -69,7 +64,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
         assertFalse(pex().world("other").user("world-perms-user").hasPermission("world.node"));
         assertFalse(user.hasPermission("world.node"));
 
-        List<TimedPermissionEntry> timed = user.timedPermissionEntries("world");
+        var timed = user.timedPermissionEntries("world");
         assertEquals(1, timed.size());
         assertEquals("world.temp", timed.get(0).permission());
 
@@ -80,10 +75,10 @@ class ModernPermissionServiceTest extends PEXTestBase {
     @Test
     void timedGroupMembershipMetadata() {
         pex().group("timed-group");
-        User user = pex().user("timed-group-user");
+        var user = pex().user("timed-group-user");
         user.addGroup("timed-group", null, 90);
 
-        List<TimedGroupMembership> memberships = user.timedGroupMemberships(null);
+        var memberships = user.timedGroupMemberships(null);
         assertEquals(1, memberships.size());
         assertEquals("timed-group", memberships.get(0).groupName());
     }
@@ -95,12 +90,12 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void findUserByUuidWhenPersisted() {
-        UUID id = UUID.randomUUID();
-        User user = pex().user(id.toString());
+        var id = UUID.randomUUID();
+        var user = pex().user(id.toString());
         user.setOption("name", "uuid-user", null);
         user.save();
 
-        Optional<User> found = pex().findUser(id).optional();
+        var found = pex().findUser(id).optional();
         assertTrue(found.isPresent());
         assertEquals("uuid-user", found.get().name());
 
@@ -109,7 +104,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void findUserGetHasPermission() {
-        User user = pex().user("find-get-user");
+        var user = pex().user("find-get-user");
         user.addPermission("find.get.node", null);
         user.save();
 
@@ -120,9 +115,9 @@ class ModernPermissionServiceTest extends PEXTestBase {
 
     @Test
     void groupMembersAndDefaultGroups() {
-        Group group = pex().group("member-group");
-        User user = pex().user("member-user");
-        user.addGroup("member-group", Worlds.GLOBAL);
+        var group = pex().group("member-group");
+        var user = pex().user("member-user");
+        user.addGroup("member-group", PexWorlds.GLOBAL);
         user.save();
 
         assertTrue(group.memberIdentifiers().contains(user.identifier()));
@@ -133,9 +128,9 @@ class ModernPermissionServiceTest extends PEXTestBase {
     @Test
     void eventBusNotifiesListeners() {
         var received = new java.util.concurrent.atomic.AtomicInteger(0);
-        var subscription = pex().events().subscribe(new dev.rono.permissions.api.event.PermissionEventListener() {
+        var subscription = pex().events().subscribe(new dev.rono.permissions.api.event.PexPermissionEventListener() {
             @Override
-            public void onEntity(dev.rono.permissions.api.bus.EntityDispatch dispatch) {
+            public void onEntity(dev.rono.permissions.api.bus.PexEntityDispatch dispatch) {
                 received.incrementAndGet();
             }
         });
@@ -159,7 +154,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
     @Test
     void groupChildrenAndAsyncReload() throws Exception {
         pex().group("parent-group");
-        Group child = pex().group("child-group");
+        var child = pex().group("child-group");
         child.addParent("parent-group", null);
         child.save();
         assertFalse(pex().group("parent-group").children().isEmpty());
@@ -168,14 +163,14 @@ class ModernPermissionServiceTest extends PEXTestBase {
     }
 
     @Test
-    void promoteDemoteViaModernUser() throws dev.rono.permissions.api.RankingException {
-        Group mod = pex().group("mod");
+    void promoteDemoteViaModernUser() throws dev.rono.permissions.api.PexRankingException {
+        var mod = pex().group("mod");
         mod.setRank(2, "default");
         mod.save();
-        Group admin = pex().group("admin");
+        var admin = pex().group("admin");
         admin.setRank(1, "default");
         admin.save();
-        User user = pex().user("rank-user");
+        var user = pex().user("rank-user");
         user.addGroup("mod", null);
         user.save();
 
@@ -186,9 +181,9 @@ class ModernPermissionServiceTest extends PEXTestBase {
     @Test
     void flatApiEntryPoints() {
         pex().group("member-group");
-        User user = pex().user("fluent-user");
+        var user = pex().user("fluent-user");
         user.addPermission("fluent.test", null);
-        user.addGroup("member-group", Worlds.GLOBAL);
+        user.addGroup("member-group", PexWorlds.GLOBAL);
         user.save();
 
         assertTrue(user.hasPermission("fluent.test"));
@@ -198,7 +193,7 @@ class ModernPermissionServiceTest extends PEXTestBase {
         assertTrue(pex().findGroup("member-group").optional().isPresent());
 
         pex().group("fluent-parent");
-        Group child = pex().group("fluent-child");
+        var child = pex().group("fluent-child");
         child.addParent("fluent-parent", null);
         child.save();
         assertFalse(pex().world(null).group("fluent-parent").children().isEmpty());
@@ -207,8 +202,50 @@ class ModernPermissionServiceTest extends PEXTestBase {
     }
 
     @Test
-    void exportDataAndBackendHandle() throws dev.rono.permissions.api.PermissionsExException {
+    void exportDataAndBackendHandle() throws dev.rono.permissions.api.PexPermissionsExException {
         assertNotNull(pex().backend().exportData());
         assertNotNull(pex().backend().createHandle("mock").info());
+    }
+
+    @Test
+    void permissionsExApiLifecycle() {
+        var api = ((DefaultPermissionManager) manager).permissionsExApi();
+        var uuid = UUID.randomUUID();
+
+        assertFalse(api.getUserManager().exists(uuid));
+        assertTrue(api.getUserManager().findUser(uuid).isEmpty());
+
+        var created = api.getUserManager().createUser(uuid);
+        assertEquals(uuid, created.getId());
+        assertTrue(api.getUserManager().exists(uuid));
+        assertEquals(created.getId(), api.getUserManager().getUser(uuid).getId());
+
+        api.getPermissionManager().addPermission(created.asHolder(), "lifecycle.test");
+        assertTrue(api.getPermissionManager().hasPermission(created.asHolder(), "lifecycle.test"));
+        assertSame(manager, api.getPermissionManager());
+
+        assertThrows(dev.rono.permissions.api.user.UserAlreadyExistsException.class,
+                () -> api.getUserManager().createUser(uuid));
+    }
+
+    @Test
+    void managerCounts() {
+        var api = ((DefaultPermissionManager) manager).permissionsExApi();
+
+        var user = api.getUserManager().createUser(UUID.randomUUID());
+        assertEquals(1, api.getUserManager().count());
+        assertEquals(1, api.getUserManager().count(u -> u.getId().equals(user.getId())));
+        assertEquals(0, api.getUserManager().count(u -> u.getName().equals("nonexistent-name")));
+
+        var group = api.getGroupManager().createGroup("count-test-group");
+        assertTrue(api.getGroupManager().count() >= 1);
+        assertEquals(1, api.getGroupManager().count(g -> g.getName().equals(group.getName())));
+
+        api.getWorldManager().createWorld("count-test-world");
+        assertTrue(api.getWorldManager().count() >= 1);
+        assertEquals(1, api.getWorldManager().count(w -> w.getName().equals("count-test-world")));
+
+        assertTrue(api.getLadderManager().count() >= 1);
+        assertTrue(api.getLadderManager().count(l -> l.getName().equals("default")) >= 1);
     }
 }

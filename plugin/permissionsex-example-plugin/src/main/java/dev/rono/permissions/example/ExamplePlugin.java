@@ -1,41 +1,35 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.bukkit.BukkitPermissions;
-import org.bukkit.entity.Player;
+import dev.rono.permissions.api.service.PexPermissionService;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.tehkode.permissions.PermissionManager;
 
 import java.util.Locale;
 
-/** Sample plugin using the modern {@link PermissionService} API. */
+/** Sample plugin using {@link PermissionsEx#getApi()}. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
 
-    private PermissionService permissions;
+    private PermissionManager permissions;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
 
-        RegisteredServiceProvider<PermissionService> registration =
-                getServer().getServicesManager().getRegistration(PermissionService.class);
-        if (registration == null) {
-            getLogger().warning("PermissionService is not registered — is PermissionsEx loaded?");
+        if (!PermissionsEx.isAvailable()) {
+            getLogger().warning("PermissionsEx is not available — is PermissionsEx loaded?");
             return;
         }
 
-        permissions = registration.getProvider();
+        permissions = PermissionsEx.getApi().getPermissionManager();
         getLogger().info(String.format(Locale.ROOT,
-                "PEX backend: %s (%s), users=%d groups=%d worlds=%d",
-                permissions.backend().type(),
-                permissions.backend().simpleName(),
-                permissions.users().count(),
-                permissions.groups().count(),
-                permissions.worlds().count()));
+                "PEX users=%d groups=%d",
+                PermissionsEx.getApi().getUserManager().count(),
+                PermissionsEx.getApi().getGroupManager().count()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -44,14 +38,15 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
-        boolean allowed = BukkitPermissions.on(player).hasPermission("my.node");
-        var worldContext = BukkitPermissions.on(player).context();
-        String displayName = worldContext.option("name");
+        var player = event.getPlayer();
+        var allowed = permissions.has(player, "my.node");
+        var pex = (PexPermissionService) permissions;
+        var worldContext = pex.world(player.getWorld().getName()).user(player.getUniqueId());
+        var displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();
         }
-        final String resolvedName = displayName;
+        final var resolvedName = displayName;
 
         getLogger().fine(() -> String.format(Locale.ROOT,
                 "pex uuid=%s user=%s allowed(my.node)=%s groups=%s directPerms=%s timed=%s",

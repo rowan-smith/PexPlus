@@ -2,7 +2,6 @@ package dev.rono.permissions.legacy;
 
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -14,13 +13,19 @@ import java.util.jar.JarInputStream;
 
 /**
  * Optional regression probe: drop classic third-party plugin JARs into
- * {@code src/test/resources/plugin-jars/} to verify they still resolve {@link PermissionsEx} static entry points.
+ * {@code src/test/resources/plugin-jars/} to verify they still link against legacy PermissionsEx entry points.
+ *
+ * <p>Hook plugins reference {@code ru.tehkode.permissions.bukkit.PermissionsEx} at compile time (provided scope).
+ * Vault ships {@code Permission_PermissionsEx} and expects PermissionsEx on the server classpath at runtime.</p>
  */
 class LegacyClassicJarProbeTest {
 
     @Test
     void optionalClassicPluginJarsResolveLegacyEntryPoints() throws Exception {
         var dir = Path.of("src/test/resources/plugin-jars");
+        if (!Files.isDirectory(dir)) {
+            Assumptions.assumeTrue(false, "No plugin-jars directory — add classic hook plugin JARs to enable this probe");
+        }
 
         try (var jars = Files.list(dir).filter(p -> p.toString().endsWith(".jar"))) {
             var files = jars.toArray(Path[]::new);
@@ -59,8 +64,9 @@ class LegacyClassicJarProbeTest {
     private static void assertLegacyEntryPoints(ClassLoader loader) throws ReflectiveOperationException {
         var permissionsEx = Class.forName("ru.tehkode.permissions.bukkit.PermissionsEx", false, loader);
 
-        var ignore = permissionsEx.getMethod("getPermissionManager");
-        var ignore2 = permissionsEx.getMethod("isAvailable");
+        permissionsEx.getMethod("getPermissionManager");
+        permissionsEx.getMethod("getApi");
+        permissionsEx.getMethod("isAvailable");
     }
 
     private static boolean referencesTehkode(byte[] classBytes) {
