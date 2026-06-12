@@ -48,7 +48,7 @@ public final class PermissionsExApiImpl implements PermissionsExApi {
     }
 
     @Override
-    public PermissionService getPermissionService() {
+    public PermissionService getPermissionManager() {
         return permissionService;
     }
 

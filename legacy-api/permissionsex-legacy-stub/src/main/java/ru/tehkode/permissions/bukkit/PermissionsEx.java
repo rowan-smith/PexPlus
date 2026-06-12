@@ -43,13 +43,13 @@ public final class PermissionsEx {
         if (plugin == null || !plugin.isEnabled()) {
             return false;
         }
-        RegisteredServiceProvider<PermissionsExApi> modern =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+
+        var modern = Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
         if (modern != null && modern.getProvider() != null) {
             return true;
         }
-        RegisteredServiceProvider<PermissionManager> legacy =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
+
+        var legacy = Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
         return legacy != null && legacy.getProvider() != null;
     }
 
@@ -63,16 +63,17 @@ public final class PermissionsEx {
         if (!isAvailable()) {
             throw new PermissionsNotAvailable();
         }
-        RegisteredServiceProvider<PermissionsExApi> reg =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+
+        var reg = Bukkit.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
         if (reg != null && reg.getProvider() != null) {
             return reg.getProvider();
         }
-        RegisteredServiceProvider<PermissionManager> legacyReg =
-                Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
+
+        var legacyReg = Bukkit.getServer().getServicesManager().getRegistration(PermissionManager.class);
         if (legacyReg != null && legacyReg.getProvider() instanceof PermissionsExApi api) {
             return api;
         }
+
         throw new PermissionsNotAvailable();
     }
 
@@ -81,8 +82,7 @@ public final class PermissionsEx {
      *
      * @return active permission manager; never {@code null}
      * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the manager is not registered
-     * @deprecated Use {@link #getApi()} and {@link PermissionsExApi#getLegacyPermissionManager()} for
-     *             classic integrations.
+     * @deprecated Use {@link #getApi()} and {@link PermissionsExApi#getLegacyPermissionManager()} for classic integrations.
      */
     @Deprecated(forRemoval = false)
     public static PermissionManager getPermissionManager() {
@@ -96,6 +96,7 @@ public final class PermissionsEx {
      * @return permission user handle; never {@code null} when PermissionsEx is available
      * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the manager is not registered
      */
+    @Deprecated(forRemoval = false)
     public static PermissionUser getUser(Player player) {
         return getPermissionManager().getUser(player);
     }
@@ -107,6 +108,7 @@ public final class PermissionsEx {
      * @return permission user handle; never {@code null} when PermissionsEx is available
      * @throws PermissionsNotAvailable if PermissionsEx is not loaded or the manager is not registered
      */
+    @Deprecated(forRemoval = false)
     public static PermissionUser getUser(String name) {
         return getPermissionManager().getUser(name);
     }

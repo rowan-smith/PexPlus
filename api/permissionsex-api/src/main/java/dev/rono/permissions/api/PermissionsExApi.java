@@ -14,7 +14,6 @@ import ru.tehkode.permissions.PermissionManager;
  * or {@link dev.rono.permissions.bungee.PermissionsEx#getApi()} on Bungee/Waterfall.</p>
  */
 public interface PermissionsExApi {
-
     UserManager getUserManager();
 
     GroupManager getGroupManager();
@@ -23,7 +22,7 @@ public interface PermissionsExApi {
 
     LadderManager getLadderManager();
 
-    PermissionService getPermissionService();
+    PermissionService getPermissionManager();
 
     PermissionManager getLegacyPermissionManager();
 }

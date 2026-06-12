@@ -1,23 +1,21 @@
 package dev.rono.proxychat.exampleLegacyPlugin;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * Sample plugin compiling only against {@code permissionsex-legacy-api} (+ {@code spigot-api}): classic static
  * {@link PermissionsEx} entry points and {@link PermissionManager} operations.
  */
+@SuppressWarnings("deprecation")
 public class ExampleLegacyPlugin extends JavaPlugin implements Listener {
 
     @Override
@@ -28,9 +26,11 @@ public class ExampleLegacyPlugin extends JavaPlugin implements Listener {
             getLogger().warning("PermissionsEx is not loaded or not enabled.");
             return;
         }
+
         try {
             PermissionManager mgr = PermissionsEx.getPermissionManager();
             getLogger().info("PEX backend: " + mgr.getBackend().getClass().getSimpleName());
+
         } catch (Throwable t) {
             getLogger().severe("PEX is enabled but PermissionManager is not available yet.");
             t.printStackTrace();
@@ -39,16 +39,18 @@ public class ExampleLegacyPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        var player = event.getPlayer();
+
         if (!PermissionsEx.isAvailable()) {
             return;
         }
+
         try {
-            PermissionUser user = PermissionsEx.getUser(player);
-            PermissionManager mgr = PermissionsEx.getPermissionManager();
-            boolean allowed = mgr.has(player.getUniqueId(), "my.node", player.getWorld().getName());
-            String lastKnownName = user.getOption("name");
-            UUID id = player.getUniqueId();
+            var user = PermissionsEx.getUser(player);
+            var mgr = PermissionsEx.getPermissionManager();
+            var allowed = mgr.has(player.getUniqueId(), "my.node", player.getWorld().getName());
+            var lastKnownName = user.getOption("name");
+            var id = player.getUniqueId();
 
             getLogger().fine(() -> String.format(Locale.ROOT,
                     "pex uuid=%s user=%s allowed(my.node)=%s option(name)=%s parents=%s",
@@ -57,6 +59,7 @@ public class ExampleLegacyPlugin extends JavaPlugin implements Listener {
                     allowed,
                     lastKnownName,
                     Arrays.toString(user.getGroupsNames())));
+
         } catch (Throwable t) {
             getLogger().fine(() -> "PEX API not reachable on join: " + t.getMessage());
         }
