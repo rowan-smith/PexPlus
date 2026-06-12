@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.GroupWorldContext;
 import java.util.Optional;
@@ -16,9 +16,9 @@ import java.util.Set;
  */
 public final class GroupsScope {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
 
-    GroupsScope(PermissionService service) {
+    GroupsScope(PermissionServiceBridge service) {
         this.service = service;
     }
 

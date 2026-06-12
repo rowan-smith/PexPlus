@@ -185,9 +185,9 @@ RegisteredServiceProvider<PermissionService> reg =
         getServer().getServicesManager().getRegistration(PermissionService.class);
 if (reg != null) {
     PermissionService pex = reg.getProvider();
-    getLogger().info("PEX backend: " + pex.activeBackendSimpleName());
-    getLogger().info("Users: " + pex.registeredUserNameCount()
-            + ", groups: " + pex.registeredGroupCount());
+    getLogger().info("PEX backend: " + pex.query().backend().simpleName());
+    getLogger().info("Users: " + pex.query().users().count()
+            + ", groups: " + pex.query().groups().count());
 }
 ```
 
@@ -220,9 +220,7 @@ Primary entry: **`query()`**. Lookup: `ServicesManager.getRegistration(Permissio
 | `query().backend().info()` / `activate(alias)` | Backend snapshot and administration |
 | `query().world(w).user(uuid).inGroup("vip")` | World-bound permission checks |
 | `query().events()` / `reload()` / `editSession()` | Events, reload, batch edits |
-| `user(uuid)` / `group(name)` | Direct subject access (escape hatch) |
-
-Legacy top-level `userCount()`, `groupCount()`, `backend()`, etc. are deprecated.
+| `user(uuid)` / `group(name)` | Direct subject access via runtime bridge (advanced) |
 
 Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
 
@@ -349,8 +347,8 @@ public void onEnable() {
         return;
     }
     PermissionService pex = reg.getProvider();
-    getLogger().info("PEX " + pex.backend().simpleName()
-            + " — " + pex.groupCount() + " groups");
+    getLogger().info("PEX " + pex.query().backend().simpleName()
+            + " — " + pex.query().groups().count() + " groups");
 }
 
 public void onJoin(PlayerJoinEvent event, PermissionService pex) {

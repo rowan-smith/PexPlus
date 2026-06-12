@@ -4,7 +4,7 @@ import dev.rono.permissions.api.PermissionsExException;
 import dev.rono.permissions.api.backend.BackendHandle;
 import dev.rono.permissions.api.backend.BackendInfo;
 import dev.rono.permissions.api.data.ImportMode;
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 
 /**
  * Backend administration — obtain via {@link PermissionQuery#backend()}.
@@ -17,9 +17,9 @@ import dev.rono.permissions.api.service.PermissionService;
  */
 public final class BackendScope {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
 
-    BackendScope(PermissionService service) {
+    BackendScope(PermissionServiceBridge service) {
         this.service = service;
     }
 

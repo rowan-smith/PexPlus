@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.subject.UserWorldContext;
 import java.util.Optional;
@@ -17,9 +17,9 @@ import java.util.UUID;
  */
 public final class UsersScope {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
 
-    UsersScope(PermissionService service) {
+    UsersScope(PermissionServiceBridge service) {
         this.service = service;
     }
 

@@ -48,6 +48,6 @@ public final class PlayerScope {
 
     /** Materialized user (any world). */
     public User user() {
-        return service.user(player.getUniqueId());
+        return service.query().users().resolve(player.getUniqueId()).get();
     }
 }

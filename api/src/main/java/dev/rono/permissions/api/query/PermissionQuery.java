@@ -3,6 +3,7 @@ package dev.rono.permissions.api.query;
 import dev.rono.permissions.api.PermissionsExException;
 import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.session.PermissionEditSession;
 import dev.rono.permissions.api.world.Worlds;
 import java.util.Collection;
@@ -20,10 +21,10 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class PermissionQuery {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
 
     private PermissionQuery(PermissionService service) {
-        this.service = service;
+        this.service = PermissionService.requireBridge(service);
     }
 
     public static PermissionQuery of(PermissionService service) {

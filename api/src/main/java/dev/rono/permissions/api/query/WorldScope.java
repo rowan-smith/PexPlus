@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.subject.Group;
 import dev.rono.permissions.api.subject.GroupWorldContext;
 import dev.rono.permissions.api.subject.UserWorldContext;
@@ -20,10 +20,10 @@ import java.util.UUID;
  */
 public final class WorldScope {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
     private final String world;
 
-    WorldScope(PermissionService service, String world) {
+    WorldScope(PermissionServiceBridge service, String world) {
         this.service = service;
         this.world = Worlds.normalize(world);
     }

@@ -121,7 +121,7 @@ pex.query().events();
 | `importFrom(alias)` | Copy from configured backend |
 | `exportData()` / `importData(doc, mode)` | YAML import/export |
 
-Direct {@code user(uuid)}, {@code group(name)} remain for low-level access. Legacy top-level {@code userCount()}, {@code backend()}, etc. are deprecated — use {@code query()} instead.
+Runtime implementors use {@link dev.rono.permissions.api.service.PermissionServiceBridge}; plugins use {@code query()} only.
 
 ---
 
@@ -138,74 +138,15 @@ Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `ma
 
 ## `PermissionService`
 
-Primary entry: **`query()`**. Direct subject methods remain for implementors and escape hatches.
+Plugins call **`query()`** only. The runtime implements `PermissionServiceBridge` internally.
 
-### Deprecated (use `query()`)
-
-| Deprecated | Replacement |
-|------------|-------------|
-| `userCount()` / `groupCount()` | `query().users().count()` / `query().groups().count()` |
-| `backend()` | `query().backend().info()` |
-| `setActiveBackend(alias)` | `query().backend().activate(alias)` |
-| `exportData()` / `importData(...)` | `query().backend().exportData()` / `importData(...)` |
-
-### Introspection (via `query()`)
-
-| Method | Description |
-|--------|-------------|
-| `query().backend().info()` | `BackendInfo(type, simpleName, diagnosticLabel)` |
-| `query().users().count()` / `query().groups().count()` | Registered subjects |
-| `query().worlds()` | Known realm/world names |
-| `query().isDebug()` | Debug mode flag |
-
-### World inheritance
-
-| Method | Description |
-|--------|-------------|
-| `worldInheritance(world)` | Parent worlds that inherit into `world` |
-| `setWorldInheritance(world, parents)` | Set inheritance parents |
-| `worldInheritanceMap()` | All mappings (`Worlds.GLOBAL` key = global) |
-| `defaultGroups(world)` | Default groups for a world |
-| `rankLadder(ladderName)` | `Map<rank, Group>` on a promotion ladder |
-| `events()` | Modern `PermissionEventBus` for entity/system notifications |
-
-### Backend administration
-
-| Method | Description |
-|--------|-------------|
-| `setActiveBackend(alias)` | Switch active backend (same as legacy `setBackend`) |
-| `createBackendHandle(alias)` | Non-active `BackendHandle` for inspection/transfer |
-| `importFromBackend(alias)` | Copy configured backend into active store |
-| `exportData()` | Export active backend as YAML document |
-| `importData(document, ImportMode)` | Import YAML (`MERGE` or `REPLACE`) |
-
-### Users
-
-| Method | Description |
-|--------|-------------|
-| `findUser(identifier)` / `findUser(uuid)` | Optional lookup — **only persisted** users |
-| `user(identifier)` / `user(uuid)` | Resolve or **materialize** (classic `getUser`) |
-| `userIdentifiers()` | All identifiers in backend |
-| `deleteUser(identifier)` | Remove from backend and cache |
-
-Use `user(...).has(permission[, world])` and `user(...).inGroup(name[, world, inherit])` for subject checks — not service-level helpers.
-
-### Groups
-
-| Method | Description |
-|--------|-------------|
-| `findGroup(name)` | Optional — **only persisted** groups |
-| `group(name)` | Resolve or materialize group |
-| `groupNames()` | All group names |
-| `deleteGroup(name)` | Remove from backend and cache |
-
-### Maintenance
-
-| Method | Description |
-|--------|-------------|
-| `reload()` | Reload backend; throws `PermissionsExException` on failure |
-| `reloadAsync()` | Reload on PEX executor; returns `CompletableFuture<Void>` |
-| `openEditSession()` | Batch edit session — track subjects, call `save()` once |
+| Via `query()` | Description |
+|---------------|-------------|
+| `backend().info()` / `activate(alias)` | Backend snapshot and admin |
+| `users().count()` / `groups().count()` | Registry counts |
+| `world(w).user(uuid)` / `findUser(uuid)` | World-bound checks (optional find) |
+| `groups().resolve(name).inWorld(w)` | Group operations |
+| `events()` / `reload()` / `editSession()` | Events, reload, batch edits |
 
 Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
 
@@ -213,16 +154,16 @@ Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.ja
 
 ## Events (`PermissionEventBus`)
 
-Subscribe via `pex.query().events()` (or `pex.events()`):
+Subscribe via `pex.query().events()`:
 
 ```java
-var sub = pex.events().subscribe(new PermissionEventListener() {
+var sub = pex.query().events().subscribe(new PermissionEventListener() {
     @Override
     public void onEntity(EntityDispatch dispatch) {
         // entityIdentifier, entityType, mutation
     }
 });
-pex.events().unsubscribe(sub);
+pex.query().events().unsubscribe(sub);
 ```
 
 Uses types from `permissionsex-core-api`: `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.

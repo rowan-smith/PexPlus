@@ -1,17 +1,17 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 
 /** Package-internal fluent scaffolding; use {@link PermissionService#query()}. */
 final class SubjectRefs {
 
     private SubjectRefs() {}
 
-    static UserRef user(PermissionService service, java.util.UUID uuid, String identifier) {
+    static UserRef user(PermissionServiceBridge service, java.util.UUID uuid, String identifier) {
         return new UserRef(service, uuid, identifier);
     }
 
-    static GroupRef group(PermissionService service, String name) {
+    static GroupRef group(PermissionServiceBridge service, String name) {
         return new GroupRef(service, name);
     }
 }

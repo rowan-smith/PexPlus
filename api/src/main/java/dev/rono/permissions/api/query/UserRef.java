@@ -1,6 +1,6 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
 import dev.rono.permissions.api.subject.User;
 import dev.rono.permissions.api.subject.UserWorldContext;
 import dev.rono.permissions.api.world.Worlds;
@@ -9,11 +9,11 @@ import java.util.UUID;
 
 final class UserRef {
 
-    private final PermissionService service;
+    private final PermissionServiceBridge service;
     private final UUID uuid;
     private final String identifier;
 
-    UserRef(PermissionService service, UUID uuid, String identifier) {
+    UserRef(PermissionServiceBridge service, UUID uuid, String identifier) {
         this.service = service;
         this.uuid = uuid;
         this.identifier = identifier;
