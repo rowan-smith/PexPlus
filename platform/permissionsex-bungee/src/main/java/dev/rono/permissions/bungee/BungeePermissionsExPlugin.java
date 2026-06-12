@@ -1,9 +1,9 @@
 package dev.rono.permissions.bungee;
 
 import cloud.commandframework.execution.CommandExecutionCoordinator;
-import dev.rono.permissions.api.bus.PexPermissionDispatch;
+import dev.rono.permissions.api.bus.PermissionDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.bungee.backends.file.BungeeFileBackend;
 import dev.rono.permissions.bungee.backends.memory.BungeeMemoryBackend;
 import dev.rono.permissions.core.DefaultPermissionManager;
@@ -67,7 +67,7 @@ public class BungeePermissionsExPlugin extends Plugin implements PlatformAdapter
             this.manager.initTimer();
             ProxyPermissionServices.register(
                     ((DefaultPermissionManager) this.manager).permissionsExApi(),
-                    (PexPermissionService) this.manager,
+                    (PermissionService) this.manager,
                     this.manager);
             BungeePermissionBootstrapReporter.log(this, this.manager);
         } catch (PermissionBackendException ex) {
@@ -89,7 +89,7 @@ public class BungeePermissionsExPlugin extends Plugin implements PlatformAdapter
     }
 
     @Override
-    public void publish(PexPermissionDispatch dispatch) {
+    public void publish(PermissionDispatch dispatch) {
         // Proxy runtimes intentionally do not emulate Bukkit event listeners.
     }
 

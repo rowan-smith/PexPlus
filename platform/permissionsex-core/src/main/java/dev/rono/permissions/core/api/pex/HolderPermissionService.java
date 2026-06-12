@@ -63,8 +63,13 @@ public final class HolderPermissionService {
     }
 
     public boolean hasPermission(PermissionHolder holder, String permission) {
+        return hasPermission(holder, permission, Map.of());
+    }
+
+    public boolean hasPermission(PermissionHolder holder, String permission, Map<String, String> context) {
         var entity = resolver.resolve(holder);
-        return entity.has(permission, null);
+        var world = resolver.worldContext(context);
+        return entity.has(permission, world);
     }
 
     public List<PermissionNode> getPermissions(PermissionHolder holder) {

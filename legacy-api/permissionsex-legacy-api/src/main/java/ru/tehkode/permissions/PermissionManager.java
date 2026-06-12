@@ -130,7 +130,7 @@ public interface PermissionManager {
      * Checks whether the holder effectively holds the permission in the <em>global</em> scope.
      *
      * <p>Includes inheritance and parent groups for user/group holders. For per-world effective checks, use the
-     * classic {@link #has(Player, String, String)} API or {@link dev.rono.permissions.api.service.PexPermissionService}
+     * classic {@link #has(Player, String, String)} API or {@link dev.rono.permissions.api.service.PermissionService}
      * world scopes.</p>
      *
      * @param holder     permission target; must not be {@code null}
@@ -139,6 +139,20 @@ public interface PermissionManager {
      * @see PermissionHolder
      */
     boolean hasPermission(PermissionHolder holder, String permission);
+
+    /**
+     * Checks whether the holder effectively holds the permission in the scope described by {@code context}.
+     *
+     * <p>The {@code world} entry in {@code context} selects the world/realm namespace (same as classic
+     * per-world checks). An empty or missing context uses the global namespace.</p>
+     *
+     * @param holder     permission target; must not be {@code null}
+     * @param permission permission node to check; must not be {@code null}
+     * @param context    optional context map (for example {@code Map.of("world", player.getWorld().getName())})
+     * @return {@code true} if granted after inheritance, {@code false} otherwise
+     * @see PermissionHolder
+     */
+    boolean hasPermission(PermissionHolder holder, String permission, Map<String, String> context);
 
     /**
      * Returns <em>direct</em> permission assignments for the holder in the <em>global</em> scope.

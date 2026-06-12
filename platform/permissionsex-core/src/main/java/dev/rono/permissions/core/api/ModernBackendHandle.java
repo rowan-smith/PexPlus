@@ -1,12 +1,12 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.PexPermissionsExException;
-import dev.rono.permissions.api.backend.PexBackendHandle;
-import dev.rono.permissions.api.backend.PexBackendInfo;
+import dev.rono.permissions.api.PermissionsExException;
+import dev.rono.permissions.api.backend.BackendHandle;
+import dev.rono.permissions.api.backend.BackendInfo;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.backends.PermissionBackend;
 
-public final class ModernBackendHandle implements PexBackendHandle {
+public final class ModernBackendHandle implements BackendHandle {
     private final PermissionBackend backend;
     private final String alias;
     private final DefaultPermissionManager manager;
@@ -18,25 +18,25 @@ public final class ModernBackendHandle implements PexBackendHandle {
     }
 
     @Override
-    public PexBackendInfo info() {
-        return new PexBackendInfo(alias, backend.getClass().getSimpleName(), alias + " (" + backend.getClass().getSimpleName() + ")");
+    public BackendInfo info() {
+        return new BackendInfo(alias, backend.getClass().getSimpleName(), alias + " (" + backend.getClass().getSimpleName() + ")");
     }
 
     @Override
-    public void copyFromActive() throws PexPermissionsExException {
+    public void copyFromActive() throws PermissionsExException {
         try {
             backend.loadFrom(manager.getBackend());
         } catch (RuntimeException e) {
-            throw new PexPermissionsExException("Failed to copy active backend into " + alias, e);
+            throw new PermissionsExException("Failed to copy active backend into " + alias, e);
         }
     }
 
     @Override
-    public void applyToActive() throws PexPermissionsExException {
+    public void applyToActive() throws PermissionsExException {
         try {
             manager.applyBackendData(backend);
         } catch (RuntimeException e) {
-            throw new PexPermissionsExException("Failed to apply backend " + alias + " to active store", e);
+            throw new PermissionsExException("Failed to apply backend " + alias + " to active store", e);
         }
     }
 

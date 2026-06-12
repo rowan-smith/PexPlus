@@ -1,42 +1,42 @@
 package dev.rono.permissions.api.query;
 
-import dev.rono.permissions.api.service.PexPermissionServiceBridge;
-import dev.rono.permissions.api.subject.PexGroup;
-import dev.rono.permissions.api.subject.PexGroupWorldContext;
-import dev.rono.permissions.api.world.PexWorlds;
+import dev.rono.permissions.api.service.PermissionServiceBridge;
+import dev.rono.permissions.api.group.Group;
+import dev.rono.permissions.api.subject.GroupWorldContext;
+import dev.rono.permissions.api.world.Worlds;
 import java.util.Optional;
 
 final class GroupRef {
 
-    private final PexPermissionServiceBridge service;
+    private final PermissionServiceBridge service;
     private final String name;
 
-    GroupRef(PexPermissionServiceBridge service, String name) {
+    GroupRef(PermissionServiceBridge service, String name) {
         this.service = service;
         this.name = name;
     }
 
-    PexGroup resolve() {
+    Group resolve() {
         return service.group(name);
     }
 
-    Optional<PexGroup> find() {
+    Optional<Group> find() {
         return service.lookupGroup(name);
     }
 
-    PexGroupWorldContext inWorld(String world) {
+    GroupWorldContext inWorld(String world) {
         return resolve().inWorld(world);
     }
 
-    Optional<PexGroupWorldContext> findInWorld(String world) {
+    Optional<GroupWorldContext> findInWorld(String world) {
         return find().map(group -> group.inWorld(world));
     }
 
-    PexGroupWorldContext inPresetWorld(String presetWorld) {
-        return inWorld(presetWorld != null ? presetWorld : PexWorlds.GLOBAL);
+    GroupWorldContext inPresetWorld(String presetWorld) {
+        return inWorld(presetWorld != null ? presetWorld : Worlds.GLOBAL);
     }
 
-    Optional<PexGroupWorldContext> findInPresetWorld(String presetWorld) {
-        return findInWorld(presetWorld != null ? presetWorld : PexWorlds.GLOBAL);
+    Optional<GroupWorldContext> findInPresetWorld(String presetWorld) {
+        return findInWorld(presetWorld != null ? presetWorld : Worlds.GLOBAL);
     }
 }

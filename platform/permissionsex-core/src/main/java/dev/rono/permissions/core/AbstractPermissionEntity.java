@@ -18,7 +18,7 @@
  */
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.bus.PexEntityMutation;
+import dev.rono.permissions.api.bus.EntityMutation;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import ru.tehkode.permissions.*;
 
@@ -59,8 +59,8 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	}
 
 	/**
-	 * Return name of permission entity (PexUser or PexGroup)
-	 * PexUser should be equal to Player's name on the server
+	 * Return name of permission entity (User or Group)
+	 * User should be equal to Player's name on the server
 	 *
 	 * @return name
 	 */
@@ -141,7 +141,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setPrefix(String prefix, String worldName) {
 		getData().setOption("prefix", prefix, worldName);
 		clearCache();
-		this.callEvent(PexEntityMutation.INFO_CHANGED);
+		this.callEvent(EntityMutation.INFO_CHANGED);
 	}
 
 	/**
@@ -172,7 +172,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setSuffix(String suffix, String worldName) {
 		getData().setOption("suffix", suffix, worldName);
 		clearCache();
-		this.callEvent(PexEntityMutation.INFO_CHANGED);
+		this.callEvent(EntityMutation.INFO_CHANGED);
 	}
 
 	/**
@@ -201,7 +201,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		String expression = getMatchingExpression(permission, world);
 
 		if (this.isDebug()) {
-			manager.getLogger().info("PexUser " + this.getIdentifier() + " checked for \"" + permission + "\", " + (expression == null ? "no permission found" : "\"" + expression + "\" found"));
+			manager.getLogger().info("User " + this.getIdentifier() + " checked for \"" + permission + "\", " + (expression == null ? "no permission found" : "\"" + expression + "\" found"));
 		}
 
 		return explainExpression(expression);
@@ -365,7 +365,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setPermissions(List<String> permissions, String world) {
 		getData().setPermissions(permissions, world);
 		clearCache();
-		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
 	}
 
 	/**
@@ -488,7 +488,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void setOption(String option, String value, String world) {
 		getData().setOption(option, value, world);
 		clearCache();
-		this.callEvent(PexEntityMutation.OPTIONS_CHANGED);
+		this.callEvent(EntityMutation.OPTIONS_CHANGED);
 	}
 
 	/**
@@ -595,7 +595,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void save() {
 		getData().save();
 		clearCache();
-		this.callEvent(PexEntityMutation.SAVED);
+		this.callEvent(EntityMutation.SAVED);
 	}
 
 	/**
@@ -604,7 +604,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 	public void remove() {
 		getData().remove();
 		clearCache();
-		this.callEvent(PexEntityMutation.REMOVED);
+		this.callEvent(EntityMutation.REMOVED);
 	}
 
 	/**
@@ -697,7 +697,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		}
 
 		clearCache();
-		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
 	}
 
 	/**
@@ -719,10 +719,10 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		this.timedPermissionsTime.remove(world + ":" + permission);
 
 		clearCache();
-		this.callEvent(PexEntityMutation.PERMISSIONS_CHANGED);
+		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
 	}
 
-	protected void callEvent(PexEntityMutation action) {
+	protected void callEvent(EntityMutation action) {
 		if (manager instanceof InternalPermissionManager internal) {
 			internal.publishEntity(this.getIdentifier(), this.getType().toString(), action);
 		}
@@ -925,7 +925,7 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 		if (this instanceof PermissionUser user && manager instanceof DefaultPermissionManager dpm) {
 			dpm.onUserGroupMembershipChanged(user, world);
 		}
-		this.callEvent(PexEntityMutation.INHERITANCE_CHANGED);
+		this.callEvent(EntityMutation.INHERITANCE_CHANGED);
 	}
 
 	public void setParentsIdentifier(List<String> parentNames) {

@@ -127,7 +127,7 @@ final class DefaultUserManager implements UserManager {
     }
 
     private User wrapUser(UUID id, PermissionUser delegate) {
-        return new UserImpl(id, delegate);
+        return new UserImpl(id, delegate, manager);
     }
 
     private static UUID parseId(String identifier) {
@@ -160,7 +160,7 @@ final class DefaultGroupManager implements GroupManager {
         if (name == null || name.isEmpty() || !manager.getBackend().hasGroup(name)) {
             return Optional.empty();
         }
-        return Optional.of(new GroupImpl(name, manager.getGroup(name)));
+        return Optional.of(new GroupImpl(name, manager.getGroup(name), manager));
     }
 
     @Override
@@ -168,7 +168,7 @@ final class DefaultGroupManager implements GroupManager {
         if (!exists(name)) {
             throw new GroupNotFoundException(name);
         }
-        return new GroupImpl(name, manager.getGroup(name));
+        return new GroupImpl(name, manager.getGroup(name), manager);
     }
 
     @Override
@@ -179,7 +179,7 @@ final class DefaultGroupManager implements GroupManager {
         manager.getBackend().getGroupData(name);
         var created = manager.getGroup(name);
         created.save();
-        return new GroupImpl(name, created);
+        return new GroupImpl(name, created, manager);
     }
 
     @Override

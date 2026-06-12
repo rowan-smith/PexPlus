@@ -1,7 +1,7 @@
 package dev.rono.permissions.bungee;
 
 import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PermissionService;
 import ru.tehkode.permissions.PermissionManager;
 
 import java.util.Objects;
@@ -14,14 +14,14 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ProxyPermissionServices {
     private static final AtomicReference<PermissionsExApi> PERMISSIONS_EX_API = new AtomicReference<>();
-    private static final AtomicReference<PexPermissionService> PERMISSION_SERVICE = new AtomicReference<>();
+    private static final AtomicReference<PermissionService> PERMISSION_SERVICE = new AtomicReference<>();
     private static final AtomicReference<PermissionManager> PERMISSION_MANAGER = new AtomicReference<>();
 
     private ProxyPermissionServices() {}
 
     public static void register(
             PermissionsExApi api,
-            PexPermissionService service,
+            PermissionService service,
             PermissionManager manager) {
         PERMISSIONS_EX_API.set(Objects.requireNonNull(api, "api"));
         PERMISSION_SERVICE.set(Objects.requireNonNull(service, "service"));
@@ -46,10 +46,10 @@ public final class ProxyPermissionServices {
         return api;
     }
 
-    public static PexPermissionService permissionService() {
+    public static PermissionService permissionService() {
         var service = PERMISSION_SERVICE.get();
         if (service == null) {
-            throw new IllegalStateException("PexPermissionService is not registered on this proxy");
+            throw new IllegalStateException("PermissionService is not registered on this proxy");
         }
         return service;
     }
@@ -68,7 +68,7 @@ public final class ProxyPermissionServices {
         if (PermissionsExApi.class.equals(type)) {
             return (T) permissionsExApi();
         }
-        if (PexPermissionService.class.equals(type)) {
+        if (PermissionService.class.equals(type)) {
             return (T) permissionService();
         }
         if (PermissionManager.class.equals(type)) {

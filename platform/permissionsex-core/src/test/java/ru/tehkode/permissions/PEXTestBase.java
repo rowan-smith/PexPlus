@@ -1,8 +1,8 @@
 package ru.tehkode.permissions;
 
-import dev.rono.permissions.api.bus.PexEntityDispatch;
-import dev.rono.permissions.api.bus.PexPermissionDispatch;
-import dev.rono.permissions.api.bus.PexSystemDispatch;
+import dev.rono.permissions.api.bus.EntityDispatch;
+import dev.rono.permissions.api.bus.PermissionDispatch;
+import dev.rono.permissions.api.bus.SystemDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.PermissionsExConfig;
@@ -24,7 +24,7 @@ public abstract class PEXTestBase {
     protected PermissionManager manager;
     protected PermissionsExConfig config;
     protected PlatformAdapter platformAdapter;
-    protected final List<PexPermissionDispatch> firedDispatches = new ArrayList<>();
+    protected final List<PermissionDispatch> firedDispatches = new ArrayList<>();
     private final Map<String, MapPEXBackendConfiguration> backendConfigs = new ConcurrentHashMap<>();
 
     static final class MapPEXBackendConfiguration implements PEXBackendConfiguration {
@@ -411,13 +411,13 @@ public abstract class PEXTestBase {
                     }
 
                     @Override
-                    public void publish(PexPermissionDispatch dispatch) {
+                    public void publish(PermissionDispatch dispatch) {
                         firedDispatches.add(dispatch);
-                        if (dispatch instanceof PexEntityDispatch ed) {
+                        if (dispatch instanceof EntityDispatch ed) {
                             assert ed.mutation() != null;
                             return;
                         }
-                        if (dispatch instanceof PexSystemDispatch sd) {
+                        if (dispatch instanceof SystemDispatch sd) {
                             assert sd.mutation() != null;
                             return;
                         }

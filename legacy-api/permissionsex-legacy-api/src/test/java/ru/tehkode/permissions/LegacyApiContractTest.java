@@ -13,6 +13,7 @@ import ru.tehkode.permissions.events.PermissionSystemEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,7 @@ public class LegacyApiContractTest {
         assertMethod(PermissionManager.class, "addPermission", dev.rono.permissions.api.permission.PermissionAddRequest.class);
         assertMethod(PermissionManager.class, "removePermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class);
         assertMethod(PermissionManager.class, "hasPermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class);
+        assertMethod(PermissionManager.class, "hasPermission", dev.rono.permissions.api.permission.PermissionHolder.class, String.class, Map.class);
         assertMethod(PermissionManager.class, "getPermissions", dev.rono.permissions.api.permission.PermissionHolder.class);
 
         Set<String> declared = Arrays.stream(PermissionManager.class.getMethods())
@@ -85,6 +87,7 @@ public class LegacyApiContractTest {
                 "addPermission(PermissionAddRequest)",
                 "removePermission(PermissionHolder,String)",
                 "hasPermission(PermissionHolder,String)",
+                "hasPermission(PermissionHolder,String,Map)",
                 "getPermissions(PermissionHolder)",
                 "shouldCreateUserRecords()",
                 "getConfiguration()",

@@ -26,9 +26,9 @@ import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
 import com.mojang.api.profiles.ProfileRepository;
 import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.bus.PexPermissionDispatch;
+import dev.rono.permissions.api.bus.PermissionDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
 import dev.rono.permissions.core.commands.CoreCommandService;
@@ -245,7 +245,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			var permissionsExApi =
 					((DefaultPermissionManager) this.permissionsManager).permissionsExApi();
 			this.getServer().getServicesManager().register(PermissionManager.class, this.permissionsManager, this, ServicePriority.Normal);
-			this.getServer().getServicesManager().register(PexPermissionService.class, (PexPermissionService) this.permissionsManager, this, ServicePriority.Normal);
+			this.getServer().getServicesManager().register(PermissionService.class, (PermissionService) this.permissionsManager, this, ServicePriority.Normal);
 			this.getServer().getServicesManager().register(
 					PermissionsExApi.class,
 					permissionsExApi,
@@ -278,7 +278,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 				var permissionsExApi =
 						((DefaultPermissionManager) this.permissionsManager).permissionsExApi();
 				this.permissionsManager.end();
-				this.getServer().getServicesManager().unregister(PexPermissionService.class, this.permissionsManager);
+				this.getServer().getServicesManager().unregister(PermissionService.class, this.permissionsManager);
 				this.getServer().getServicesManager().unregister(PermissionsExApi.class, permissionsExApi);
 				this.getServer().getServicesManager().unregister(PermissionManager.class, this.permissionsManager);
 				this.permissionsManager = null;
@@ -411,7 +411,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 	}
 
 	@Override
-	public void publish(PexPermissionDispatch dispatch) {
+	public void publish(PermissionDispatch dispatch) {
 		eventPublisher.publish(dispatch);
 	}
 

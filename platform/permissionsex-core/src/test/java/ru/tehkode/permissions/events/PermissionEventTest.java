@@ -1,7 +1,7 @@
 package ru.tehkode.permissions.events;
 
-import dev.rono.permissions.api.bus.PexEntityDispatch;
-import dev.rono.permissions.api.bus.PexEntityMutation;
+import dev.rono.permissions.api.bus.EntityDispatch;
+import dev.rono.permissions.api.bus.EntityMutation;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.PEXTestBase;
 import ru.tehkode.permissions.PermissionGroup;
@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PermissionEventTest extends PEXTestBase {
 
-    private List<PexEntityDispatch> entityDispatches() {
+    private List<EntityDispatch> entityDispatches() {
         return firedDispatches.stream()
-                .filter(PexEntityDispatch.class::isInstance)
-                .map(PexEntityDispatch.class::cast)
+                .filter(EntityDispatch.class::isInstance)
+                .map(EntityDispatch.class::cast)
                 .collect(Collectors.toList());
     }
 
@@ -29,10 +29,10 @@ public class PermissionEventTest extends PEXTestBase {
         user.setPermissions(Collections.singletonList("test.perm"), null);
 
         assertEquals(1, entityDispatches().size(), "One event should be fired");
-        PexEntityDispatch dispatch = entityDispatches().get(0);
+        EntityDispatch dispatch = entityDispatches().get(0);
         assertEquals(user.getIdentifier(), dispatch.entityIdentifier());
         assertEquals("USER", dispatch.entityType());
-        assertEquals(PexEntityMutation.PERMISSIONS_CHANGED, dispatch.mutation());
+        assertEquals(EntityMutation.PERMISSIONS_CHANGED, dispatch.mutation());
     }
 
     @Test
@@ -41,10 +41,10 @@ public class PermissionEventTest extends PEXTestBase {
         group.setOption("test-opt", "val", null);
 
         assertEquals(1, entityDispatches().size(), "One event should be fired");
-        PexEntityDispatch dispatch = entityDispatches().get(0);
+        EntityDispatch dispatch = entityDispatches().get(0);
         assertEquals(group.getIdentifier(), dispatch.entityIdentifier());
         assertEquals("GROUP", dispatch.entityType());
-        assertEquals(PexEntityMutation.OPTIONS_CHANGED, dispatch.mutation());
+        assertEquals(EntityMutation.OPTIONS_CHANGED, dispatch.mutation());
     }
 
     @Test
@@ -59,6 +59,6 @@ public class PermissionEventTest extends PEXTestBase {
                         .anyMatch(
                                 e ->
                                         e.entityIdentifier().equals(user.getIdentifier())
-                                                && e.mutation() == PexEntityMutation.INHERITANCE_CHANGED));
+                                                && e.mutation() == EntityMutation.INHERITANCE_CHANGED));
     }
 }

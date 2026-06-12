@@ -1,11 +1,12 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.world.PexWorlds;
+import dev.rono.permissions.api.world.Worlds;
 
-final class ModernWorlds {
+public final class ModernWorlds {
+
     private ModernWorlds() {}
 
-    static String toLegacy(String world) {
-        return PexWorlds.normalize(world);
+    public static String toLegacy(String world) {
+        return Worlds.normalize(world);
     }
 }
