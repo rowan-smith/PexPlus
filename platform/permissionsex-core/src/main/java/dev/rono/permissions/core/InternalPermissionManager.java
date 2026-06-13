@@ -29,7 +29,7 @@ public interface InternalPermissionManager extends PermissionManager {
 
     void registerTask(TimerTask task, int delay);
 
-    void scheduleTimedGroupsCheck(long nextExpiration, String identifier);
+    TimedExpiryCoordinator timedExpiry();
 
     Collection<String> getWorldNames();
 

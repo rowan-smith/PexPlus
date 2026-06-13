@@ -42,6 +42,7 @@ var manager = api.getPermissionManager();
 ## Quick start
 
 ```java
+import dev.rono.permissions.api.permission.PermissionContext;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 if (!PermissionsEx.isAvailable()) {
@@ -54,7 +55,11 @@ var manager = api.getPermissionManager();
 if (manager.hasPermission(
         user.asHolder(),
         "my.plugin.use",
-        Map.of("world", player.getWorld().getName()))) {
+        PermissionContext.of(
+                player.getWorld().getName(),
+                getServer().getName(),
+                "spawn",
+                player.getGameMode().name()))) {
     ...
 }
 
@@ -73,6 +78,8 @@ user.save();
 | `GroupManager` | no materialize | requires persisted | explicit create | backend groups |
 | `WorldManager` | registered realms | requires exists | explicit create | worlds |
 | `LadderManager` | known ladders | requires exists | explicit create | ladders |
+
+`LadderManager` also exposes `promote(user, ladder)`, `demote(user, ladder)`, `isRanked(user, ladder)`, and `rank(user, ladder)`.
 
 Subject operations (`hasPermission`, groups, meta, timed grants) are on `User` / `Group` returned by managers.
 
@@ -94,7 +101,28 @@ api.getEventBus().unsubscribe(sub);
 | `Worlds.GLOBAL` | `null` — global namespace |
 | Empty string `""` | Normalized to global |
 
-`user.hasPermission("node")` checks the **global** namespace. Use `user.inWorld(world).hasPermission("node")` or `hasPermission(holder, node, Map.of("world", world))` for per-world checks.
+`user.hasPermission("node")` checks the **global** namespace. Use `user.inWorld(world).hasPermission("node")` or `hasPermission(holder, node, context)` for per-world checks.
+
+### Permission context maps
+
+Structured context for holder checks uses standard keys from `PermissionContext`:
+
+| Key | Role |
+|-----|------|
+| `world` | Primary realm/world for resolution |
+| `server` | Fallback realm on proxies when `world` is absent |
+| `region` | Optional; for plugin interpreters |
+| `gamemode` | Optional; for plugin interpreters |
+| `state` | Optional (for example `event` during minigames) |
+
+```java
+import dev.rono.permissions.api.permission.PermissionContext;
+
+var context = PermissionContext.of("survival", "lobby-1", "spawn", "creative");
+manager.hasPermission(holder, "my.node", context);
+
+var eventContext = PermissionContext.withState("arena", "event");
+```
 
 Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `mapKey`, `fromMapKey`.
 
@@ -206,10 +234,9 @@ Extends `PermissionSubject`.
 | `timedGroupMemberships([world])` | `TimedGroupMembership(group, world, remainingSeconds)` |
 | `allTimedGroupMemberships()` | Across all worlds |
 | `groupMembershipRemainingSeconds(group[, world])` | Seconds until timed membership expires |
-| `promote(ladder)` / `promote(promoter, ladder)` | Rank ladder promotion; throws `RankingException` |
-| `demote(ladder)` / `demote(demoter, ladder)` | Rank ladder demotion |
-| `isRanked(ladder)` / `rank(ladder)` | Rank metadata |
 | `inWorld(world)` / `global()` | Returns `UserWorldContext` |
+
+Rank-ladder promotion/demotion is on `LadderManager` (`promote(user, ladder)`, `demote(user, ladder)`, `rank(user, ladder)`).
 
 ---
 
@@ -256,6 +283,7 @@ Obtain via `subject.inWorld("world_nether")`, `user.global()`, or `pex.world("wo
 | `BackendInfo` | Record: backend alias, implementation class name, label |
 | `TimedPermissionEntry` | Record: permission, world, remainingSeconds |
 | `TimedGroupMembership` | Record: groupName, world, remainingSeconds |
+| `PermissionContext` | Standard context map keys and builders |
 | `PermissionsExException` | Checked exception for reload/backend failures |
 | `RankingException` | Promotion/demotion failures |
 | `BackendHandle` | Non-active backend for copy/apply |

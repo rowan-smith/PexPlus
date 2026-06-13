@@ -137,7 +137,7 @@ class ModernApiTest extends PEXTestBase {
   }
 
   @Test
-  void promoteDemoteViaUser() throws dev.rono.permissions.api.RankingException {
+  void promoteDemoteViaLadderManager() throws dev.rono.permissions.api.RankingException {
     var mod = api().getGroupManager().createGroup("mod");
     mod.setRank(2, "default");
     mod.save();
@@ -148,8 +148,10 @@ class ModernApiTest extends PEXTestBase {
     user.addGroup("mod", null);
     user.save();
 
-    assertEquals("admin", user.promote("default").getName());
-    assertEquals("mod", user.demote("default").getName());
+    var ladders = api().getLadderManager();
+    var ladder = ladders.getLadder("default");
+    assertEquals("admin", ladders.promote(user, ladder).getName());
+    assertEquals("mod", ladders.demote(user, ladder).getName());
   }
 
   @Test

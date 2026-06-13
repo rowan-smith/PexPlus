@@ -53,7 +53,7 @@ public class DefaultPermissionManager implements PermissionManager, InternalPerm
 	private final PlatformAdapter platform;
 	private final Logger logger;
 	protected ScheduledExecutorService executor;
-	private final Map<String, ScheduledFuture<?>> clearTimedGroupsTasks = new HashMap<>();
+	private final TimedExpiryCoordinator timedExpiryCoordinator;
 	protected boolean debugMode = false;
 	protected boolean allowOps = false;
 	protected boolean userAddGroupsLast = false;
@@ -73,6 +73,7 @@ public class DefaultPermissionManager implements PermissionManager, InternalPerm
 		this.allowOps = config.allowOps();
 		this.userAddGroupsLast = config.userAddGroupsLast();
 		this.initBackend();
+		this.timedExpiryCoordinator = new TimedExpiryCoordinator(this);
 		this.holderPermissions = new HolderPermissionService(this);
 		this.permissionsExApi = new PermissionsExApiImpl(this);
 	}
@@ -156,19 +157,17 @@ public class DefaultPermissionManager implements PermissionManager, InternalPerm
 	}
 
 	@Override
-	public void scheduleTimedGroupsCheck(long nextExpiration, final String identifier) {
-		ScheduledFuture<?> future = clearTimedGroupsTasks.get(identifier);
-		long newDelay = (nextExpiration - (System.currentTimeMillis() / 1000));
+	public TimedExpiryCoordinator timedExpiry() {
+		return timedExpiryCoordinator;
+	}
 
-		if (future == null || future.isDone() || future.getDelay(TimeUnit.SECONDS) > newDelay) {
-			clearTimedGroupsTasks.put(identifier, executor.schedule(new Runnable() {
-				@Override
-				public void run() {
-					getUser(identifier).updateTimedGroups();
-					clearTimedGroupsTasks.remove(identifier);
-				}
-			}, newDelay, TimeUnit.SECONDS));
+	@Override
+	public void registerTask(TimerTask task, int delay) {
+		if (executor == null || delay == PermissionManager.TRANSIENT_PERMISSION) {
+			return;
 		}
+
+		executor.schedule(task, delay, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -708,21 +707,6 @@ public class DefaultPermissionManager implements PermissionManager, InternalPerm
 	}
 
 	/**
-	 * Register new timer task
-	 *
-	 * @param task  TimerTask object
-	 * @param delay delay in seconds
-	 */
-	@Override
-	public void registerTask(TimerTask task, int delay) {
-		if (executor == null || delay == PermissionManager.TRANSIENT_PERMISSION) {
-			return;
-		}
-
-		executor.schedule(task, delay, TimeUnit.SECONDS);
-	}
-
-	/**
 	 * Reset all in-memory groups and users, clean up runtime stuff, reloads backend
 	 */
 	public void reset() throws PermissionBackendException {
@@ -763,6 +747,9 @@ public class DefaultPermissionManager implements PermissionManager, InternalPerm
 		}
 
 		executor = Executors.newSingleThreadScheduledExecutor();
+		if (timedExpiryCoordinator != null) {
+			timedExpiryCoordinator.reset();
+		}
 	}
 
 	protected void clearCache() {

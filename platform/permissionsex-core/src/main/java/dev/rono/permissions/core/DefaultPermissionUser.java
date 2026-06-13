@@ -63,6 +63,7 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 			this.getData().setParents(parents, null);
 		}
 		updateTimedGroups();
+		registerPendingTimedPermissionExpirations();
 
 		if (this.isDebug()) {
 			manager.getLogger().info("User " + this.getIdentifier() + " initialized");
@@ -180,8 +181,9 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 		this.addGroup(groupName, worldName);
 
 		if (lifetime > 0) {
-			this.setOption("group-" + groupName + "-until", Long.toString(System.currentTimeMillis() / 1000 + lifetime), worldName);
-			updateTimedGroups();
+			long expiry = System.currentTimeMillis() / 1000L + lifetime;
+			this.setOption("group-" + groupName + "-until", Long.toString(expiry), worldName);
+			InternalPermissionManager.require(this.manager).timedExpiry().notifyEarliestExpiry(expiry);
 		}
 	}
 
@@ -591,6 +593,19 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 
 	@Override
 	public void updateTimedGroups() {
+		long next = sweepTimedGroups(System.currentTimeMillis() / 1000L);
+		if (next < Long.MAX_VALUE) {
+			InternalPermissionManager.require(manager).timedExpiry().notifyEarliestExpiry(next);
+		}
+	}
+
+	/**
+	 * Expires timed group memberships that ended at or before {@code nowEpochSecond}.
+	 *
+	 * @param nowEpochSecond current epoch second
+	 * @return earliest future expiry among remaining timed memberships, or {@link Long#MAX_VALUE}
+	 */
+	long sweepTimedGroups(long nowEpochSecond) {
 		long nextExpiration = Long.MAX_VALUE;
 		final Set<Map.Entry<String, String>> removeGroups = new HashSet<>();
 		for (Map.Entry<String, Map<String, String>> world : getAllOptions().entrySet()) {
@@ -600,7 +615,7 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 					continue;
 				}
 				long groupLifetime = Long.parseLong(entry.getValue());
-				if (groupLifetime > 0 && groupLifetime <= System.currentTimeMillis() / 1000) { // check for expiration
+				if (groupLifetime > 0 && groupLifetime <= nowEpochSecond) { // check for expiration
 					removeGroups.add(Maps.immutableEntry(group, world.getKey()));
 				} else {
 					nextExpiration = Math.min(nextExpiration, groupLifetime);
@@ -617,10 +632,7 @@ public class DefaultPermissionUser extends AbstractPermissionEntity implements P
 			}
 		}
 
-		if (nextExpiration < Long.MAX_VALUE) {
-			// Schedule the next timed groups check with the permissions manager
-			InternalPermissionManager.require(manager).scheduleTimedGroupsCheck(nextExpiration, getIdentifier());
-		}
+		return nextExpiration;
 	}
 
 	static String getTimedGroupName(String option) {

@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionManager;
 
 import java.util.Locale;
-import java.util.Map;
+import dev.rono.permissions.api.permission.PermissionContext;
 
 /** Sample plugin using {@link PermissionsEx#getApi()}. */
 public class ExamplePlugin extends JavaPlugin implements Listener {
@@ -45,7 +45,11 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         var allowed = permissions.hasPermission(
                 user.asHolder(),
                 "my.node",
-                Map.of("world", worldName));
+                PermissionContext.of(
+                        worldName,
+                        getServer().getName(),
+                        "spawn",
+                        player.getGameMode().name()));
         var worldContext = user.inWorld(worldName);
         var displayName = worldContext.option("name");
         if (displayName == null) {

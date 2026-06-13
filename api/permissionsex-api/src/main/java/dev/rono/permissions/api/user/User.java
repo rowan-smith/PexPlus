@@ -1,7 +1,5 @@
 package dev.rono.permissions.api.user;
 
-import dev.rono.permissions.api.RankingException;
-import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.subject.PermissionSubject;
 import dev.rono.permissions.api.subject.SubjectType;
@@ -16,8 +14,8 @@ import java.util.UUID;
 /**
  * Modern view of a permission user.
  *
- * <p>Extends {@link PermissionSubject} with group membership, rank-ladder promotion/demotion, and
- * timed group assignment.</p>
+ * <p>Extends {@link PermissionSubject} with group membership and timed group assignment.
+ * Rank-ladder promotion/demotion lives on {@link dev.rono.permissions.api.ladder.LadderManager}.</p>
  */
 public interface User extends PermissionSubject {
 
@@ -240,77 +238,4 @@ public interface User extends PermissionSubject {
     default int groupMembershipRemainingSeconds(String groupName) {
         return groupMembershipRemainingSeconds(groupName, Worlds.GLOBAL);
     }
-
-    /**
-     * Promotes this user one step up on the specified rank ladder without rank restrictions.
-     *
-     * <p>Equivalent to {@link #promote(User, String)} with a {@code null} promoter (console/plugin).</p>
-     *
-     * @param ladderName rank ladder name; implementations typically default empty values to {@code "default"}
-     * @return the group this user was promoted into
-     * @throws RankingException if this user is not on the ladder or no higher group exists
-     */
-    Group promote(String ladderName) throws RankingException;
-
-    /**
-     * Promotes this user one step up on the specified rank ladder.
-     *
-     * <p>Replaces the user's current ladder group with the next higher-ranked group on the same ladder.
-     * If {@code promoter} is non-null and ranked on the ladder, their rank must be strictly higher
-     * (numerically lower) than this user's rank. Pass {@code null} when the action is performed from the
-     * console or by a plugin without rank restrictions.</p>
-     *
-     * @param promoter   user authorizing the promotion, or {@code null} for unrestricted promotion
-     * @param ladderName rank ladder name; implementations typically default empty values to {@code "default"}
-     * @return the group this user was promoted into
-     * @throws RankingException if this user is not on the ladder, the promoter lacks sufficient rank,
-     *                          or no higher group exists on the ladder
-     */
-    Group promote(User promoter, String ladderName) throws RankingException;
-
-    /**
-     * Demotes this user one step down on the specified rank ladder without rank restrictions.
-     *
-     * <p>Equivalent to {@link #demote(User, String)} with a {@code null} demoter (console/plugin).</p>
-     *
-     * @param ladderName rank ladder name; implementations typically default empty values to {@code "default"}
-     * @return the group this user was demoted into
-     * @throws RankingException if this user is not on the ladder or no lower group exists
-     */
-    Group demote(String ladderName) throws RankingException;
-
-    /**
-     * Demotes this user one step down on the specified rank ladder.
-     *
-     * <p>Replaces the user's current ladder group with the next lower-ranked group on the same ladder.
-     * If {@code demoter} is non-null and ranked on the ladder, their rank must be strictly higher
-     * (numerically lower) than this user's rank. Pass {@code null} when the action is performed from the
-     * console or by a plugin without rank restrictions.</p>
-     *
-     * @param demoter    user authorizing the demotion, or {@code null} for unrestricted demotion
-     * @param ladderName rank ladder name; implementations typically default empty values to {@code "default"}
-     * @return the group this user was demoted into
-     * @throws RankingException if this user is not on the ladder, the demoter lacks sufficient rank,
-     *                          or no lower group exists on the ladder
-     */
-    Group demote(User demoter, String ladderName) throws RankingException;
-
-    /**
-     * Returns whether this user holds a ranked group on the given ladder.
-     *
-     * @param ladderName rank ladder name
-     * @return {@code true} if {@link #rank(String)} would return a value greater than zero
-     */
-    boolean isRanked(String ladderName);
-
-    /**
-     * Returns this user's numeric rank on the given ladder.
-     *
-     * <p>Lower numbers denote higher standing on the ladder. Returns {@code 0} when the user is not
-     * ranked on that ladder.</p>
-     *
-     * @param ladderName rank ladder name
-     * @return rank value, or {@code 0} if not ranked
-     */
-    int rank(String ladderName);
 }

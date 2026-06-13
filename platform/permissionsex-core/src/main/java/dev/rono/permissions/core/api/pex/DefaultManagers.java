@@ -339,4 +339,58 @@ final class DefaultLadderManager implements dev.rono.permissions.api.ladder.Ladd
     private CoreCommandService commandService() {
         return new CoreCommandService(manager);
     }
+
+    @Override
+    public dev.rono.permissions.api.group.Group promote(
+            dev.rono.permissions.api.user.User user, String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        return promote(null, user, ladderName);
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group promote(
+            dev.rono.permissions.api.user.User actor,
+            dev.rono.permissions.api.user.User user,
+            String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        try {
+            return SubjectSupport.wrapGroup(
+                    SubjectSupport.requireUser(user).promote(SubjectSupport.optionalUser(actor), ladderName),
+                    manager);
+        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
+            throw SubjectSupport.toRankingException(ex);
+        }
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group demote(
+            dev.rono.permissions.api.user.User user, String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        return demote(null, user, ladderName);
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group demote(
+            dev.rono.permissions.api.user.User actor,
+            dev.rono.permissions.api.user.User user,
+            String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        try {
+            return SubjectSupport.wrapGroup(
+                    SubjectSupport.requireUser(user).demote(SubjectSupport.optionalUser(actor), ladderName),
+                    manager);
+        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
+            throw SubjectSupport.toRankingException(ex);
+        }
+    }
+
+    @Override
+    public boolean isRanked(dev.rono.permissions.api.user.User user, String ladderName) {
+        return SubjectSupport.requireUser(user).isRanked(ladderName);
+    }
+
+    @Override
+    public int rank(dev.rono.permissions.api.user.User user, String ladderName) {
+        return SubjectSupport.requireUser(user).getRank(ladderName);
+    }
 }

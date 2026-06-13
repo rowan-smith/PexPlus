@@ -1,7 +1,5 @@
 package dev.rono.permissions.core.api.pex;
 
-import dev.rono.permissions.api.RankingException;
-import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.subject.TimedGroupMembership;
@@ -125,44 +123,6 @@ public final class UserImpl extends AbstractPermissionSubjectAdapter implements 
         var identifier = user.getIdentifier();
         user.remove();
         manager.resetUser(identifier);
-    }
-
-    @Override
-    public Group promote(String ladderName) throws RankingException {
-        return promote(null, ladderName);
-    }
-
-    @Override
-    public Group promote(User promoter, String ladderName) throws RankingException {
-        try {
-            return SubjectSupport.wrapGroup(user.promote(SubjectSupport.optionalUser(promoter), ladderName), manager);
-        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
-            throw SubjectSupport.toRankingException(ex);
-        }
-    }
-
-    @Override
-    public Group demote(String ladderName) throws RankingException {
-        return demote(null, ladderName);
-    }
-
-    @Override
-    public Group demote(User demoter, String ladderName) throws RankingException {
-        try {
-            return SubjectSupport.wrapGroup(user.demote(SubjectSupport.optionalUser(demoter), ladderName), manager);
-        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
-            throw SubjectSupport.toRankingException(ex);
-        }
-    }
-
-    @Override
-    public boolean isRanked(String ladderName) {
-        return user.isRanked(ladderName);
-    }
-
-    @Override
-    public int rank(String ladderName) {
-        return user.getRank(ladderName);
     }
 
     private static String parseTimedGroupOption(String option) {

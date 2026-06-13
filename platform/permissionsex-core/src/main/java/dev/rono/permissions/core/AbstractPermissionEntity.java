@@ -680,20 +680,10 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 
 		this.timedPermissions.get(world).add(permission);
 
-		final String finalWorld = world;
-
 		if (lifeTime > 0) {
-			TimerTask task = new TimerTask() {
-
-				@Override
-				public void run() {
-					removeTimedPermission(permission, finalWorld);
-				}
-			};
-
-			InternalPermissionManager.require(this.manager).registerTask(task, lifeTime);
-
-			this.timedPermissionsTime.put(world + ":" + permission, (System.currentTimeMillis() / 1000L) + lifeTime);
+			long expiry = (System.currentTimeMillis() / 1000L) + lifeTime;
+			InternalPermissionManager.require(this.manager).timedExpiry().notifyEarliestExpiry(expiry);
+			this.timedPermissionsTime.put(world + ":" + permission, expiry);
 		}
 
 		clearCache();
@@ -720,6 +710,44 @@ abstract class AbstractPermissionEntity implements PermissionEntity {
 
 		clearCache();
 		this.callEvent(EntityMutation.PERMISSIONS_CHANGED);
+	}
+
+	/**
+	 * Expires timed permissions that ended at or before {@code nowEpochSecond}.
+	 *
+	 * @param nowEpochSecond current epoch second
+	 * @return earliest future expiry among remaining timed permissions, or {@link Long#MAX_VALUE}
+	 */
+	long sweepTimedPermissions(long nowEpochSecond) {
+		long nextExpiration = Long.MAX_VALUE;
+		List<String> expiredKeys = new ArrayList<>();
+
+		for (Map.Entry<String, Long> entry : this.timedPermissionsTime.entrySet()) {
+			long expiry = entry.getValue();
+			if (expiry <= nowEpochSecond) {
+				expiredKeys.add(entry.getKey());
+			} else {
+				nextExpiration = Math.min(nextExpiration, expiry);
+			}
+		}
+
+		for (String key : expiredKeys) {
+			int colon = key.indexOf(':');
+			String worldKey = colon >= 0 ? key.substring(0, colon) : "";
+			String permission = colon >= 0 ? key.substring(colon + 1) : key;
+			removeTimedPermission(permission, worldKey);
+		}
+
+		return nextExpiration;
+	}
+
+	/** Registers pending timed permission expirations with the shared coordinator. */
+	void registerPendingTimedPermissionExpirations() {
+		long now = System.currentTimeMillis() / 1000L;
+		long next = sweepTimedPermissions(now);
+		if (next < Long.MAX_VALUE) {
+			InternalPermissionManager.require(this.manager).timedExpiry().notifyEarliestExpiry(next);
+		}
 	}
 
 	protected void callEvent(EntityMutation action) {

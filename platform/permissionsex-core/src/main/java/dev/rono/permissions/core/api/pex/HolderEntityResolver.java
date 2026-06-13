@@ -1,7 +1,10 @@
 package dev.rono.permissions.core.api.pex;
 
+import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.permission.PermissionHolder;
+import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.DefaultPermissionManager;
+import dev.rono.permissions.core.api.ModernWorlds;
 import ru.tehkode.permissions.PermissionEntity;
 
 import java.util.Map;
@@ -32,10 +35,25 @@ final class HolderEntityResolver {
         }
     }
 
+    /**
+     * Resolves the realm/world scope used for permission checks from a structured context map.
+     *
+     * <p>Uses {@link PermissionContext#WORLD} first, then {@link PermissionContext#SERVER}. Other keys
+     * ({@code region}, {@code gamemode}, {@code state}) are available for plugins but do not change
+     * core realm resolution today.</p>
+     */
     String worldContext(Map<String, String> context) {
         if (context == null || context.isEmpty()) {
             return null;
         }
-        return context.get("world");
+        String world = context.get(PermissionContext.WORLD);
+        if (!Worlds.isGlobal(world)) {
+            return ModernWorlds.toLegacy(world);
+        }
+        String server = context.get(PermissionContext.SERVER);
+        if (server != null && !server.isEmpty()) {
+            return server;
+        }
+        return null;
     }
 }
