@@ -1,0 +1,41 @@
+/**
+ * PermissionsExPlus documentation theme overrides.
+ */
+
+:root {
+  --ifm-color-primary: #2e7d32;
+  --ifm-color-primary-dark: #27692b;
+  --ifm-color-primary-darker: #246328;
+  --ifm-color-primary-darkest: #1d5220;
+  --ifm-color-primary-light: #359137;
+  --ifm-color-primary-lighter: #38973a;
+  --ifm-color-primary-lightest: #45a847;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu,
+    Cantarell, 'Noto Sans', sans-serif;
+  --docusaurus-highlighted-code-line-bg: rgba(46, 125, 50, 0.08);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #66bb6a;
+  --ifm-color-primary-dark: #4caf50;
+  --ifm-color-primary-darker: #43a047;
+  --ifm-color-primary-darkest: #2e7d32;
+  --ifm-color-primary-light: #81c784;
+  --ifm-color-primary-lighter: #8bc34a;
+  --ifm-color-primary-lightest: #a5d6a7;
+  --docusaurus-highlighted-code-line-bg: rgba(102, 187, 106, 0.16);
+}
+
+.navbar__title {
+  font-weight: 700;
+}
+
+.markdown h1:first-child {
+  font-size: 2.1rem;
+}
+
+table {
+  display: table;
+  width: 100%;
+}

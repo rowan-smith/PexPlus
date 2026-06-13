@@ -1,6 +1,15 @@
+# Dependencies
+node_modules/
+
+# Docusaurus
+.docusaurus/
+build/
+
+# Legacy Jekyll
 vendor/
 _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
 *.gem
+.bundle/
