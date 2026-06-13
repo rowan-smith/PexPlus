@@ -1,6 +1,8 @@
 package dev.rono.permissions.bungee.backends.file;
 
 import dev.rono.permissions.core.DefaultPermissionManager;
+import dev.rono.permissions.api.runtime.BungeeContextResolver;
+import dev.rono.permissions.api.runtime.ContextResolver;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -205,6 +207,11 @@ class BungeeFileBackendTest {
         @Override
         public boolean isOperator(java.util.UUID uuid) {
             return false;
+        }
+
+        @Override
+        public ContextResolver getContextResolver() {
+            return new BungeeContextResolver();
         }
     }
 }
