@@ -1,68 +1,65 @@
 ---
-layout: page
-title: Home
+layout: default
+title: Getting Started
 permalink: /
+description: Install PermissionsExPlus and set up permissions on your Minecraft server.
 ---
 
-PermissionsExPlus is a maintained fork of the original [PermissionsEx](https://github.com/PEXPlugins/PermissionsEx) (PEX) plugin for Bukkit/Spigot servers. It keeps the familiar command structure and permission model while adding active maintenance, modern platform support, and updated compatibility.
+PermissionsExPlus (PEX) is a permissions plugin for Minecraft servers. It lets you manage **users**, **groups**, **permissions**, **prefixes**, and **multi-world** setups using familiar `/pex` commands.
 
-**Current version:** `{{ site.version }}`
+**Current version:** {{ site.version }}
 
-## What it does
+## Install
 
-PermissionsExPlus provides a flexible permissions system with support for:
+1. Download **`PermissionsExPlus-{{ site.version }}.jar`** from [GitHub Releases](https://github.com/{{ site.repo }}/releases) or build from source.
+2. Remove any old PermissionsEx jars from your `plugins/` folder.
+3. Place the jar in `plugins/` and restart the server.
+4. Use `/pex` in-game to confirm it loaded.
 
-- User and group permission management
-- Group inheritance and hierarchy
-- Prefix and suffix management
-- Timed permissions and timed group membership
-- Multi-world permission handling
-- Rank ladder promotion and demotion
-- Runtime backend inspection and switching
-- UUID-based player records
+> **Java 21+** is required. Works on Spigot, Paper, BungeeCord, Velocity, and Sponge.
 
-## Supported platforms
+## Quick setup
 
-| Platform | Status |
-|----------|--------|
-| Spigot / CraftBukkit | Supported |
-| Paper | Supported |
-| BungeeCord / Waterfall | Supported |
-| Velocity | Supported |
-| Sponge | Supported |
-
-Install the universal **`PermissionsExPlus-{{ site.version }}.jar`** bootstrap artifact on each server process. See [Installation]({{ site.baseurl }}/installation/) for details.
-
-## Quick start
+Create an admin group and assign a player:
 
 ```text
 /pex group admin create
 /pex group admin add '*'
 /pex user Steve group set admin
-/pex user Alex add essentials.home
-/pex group moderator prefix [Mod]
-/pex promote Steve
 ```
 
-## Documentation
+Add a permission to a player:
 
-| Section | Description |
-|---------|-------------|
-| [Installation]({{ site.baseurl }}/installation/) | Download, build, and deploy the universal jar |
-| [Commands]({{ site.baseurl }}/commands/) | Full `/pex` command reference |
-| [Examples]({{ site.baseurl }}/examples/) | Sample configs and common setups |
-| [Compatibility]({{ site.baseurl }}/compatibility/) | Minecraft, Java, and platform matrix |
-| [Integrations]({{ site.baseurl }}/integrations/) | Hook plugin development guide |
-| [Modern API]({{ site.baseurl }}/modern-api/) | `dev.rono.permissions.api` reference |
-| [Legacy API]({{ site.baseurl }}/legacy-api/) | Classic `ru.tehkode.permissions` reference |
-| [Architecture]({{ site.baseurl }}/architecture/) | Module layout and design rules |
+```text
+/pex user Alex add essentials.home
+```
 
-## Why this fork exists
+Set a chat prefix on a group:
 
-PermissionsEx was widely used, but the original project became unmaintained. PermissionsExPlus continues that legacy with active fixes, updated compatibility, and a clearer long-term home for the plugin.
+```text
+/pex group moderator prefix [Mod]
+```
 
-## Credits
+## What you can do
 
-- Original authors: `t3hk0d3`, `zml`
-- Fork maintenance: `Rono` / [rowan-smith](https://github.com/rowan-smith)
-- License: [GNU GPL v2.0 or later](https://github.com/{{ site.repo }}/blob/main/LICENSE)
+- Assign permissions to **users** and **groups**
+- Set up **group inheritance** (e.g. admin inherits moderator)
+- Add **prefixes and suffixes** for chat plugins
+- Grant **temporary permissions** that expire automatically
+- Use **different permissions per world**
+- **Promote and demote** players on rank ladders
+
+## Where to go next
+
+| Topic | Guide |
+|-------|-------|
+| Where data is stored | [Storage]({{ site.baseurl }}/storage/) |
+| Config files | [Configuration]({{ site.baseurl }}/configuration/) |
+| All commands | [Commands]({{ site.baseurl }}/commands/general/) |
+| Common questions | [FAQ]({{ site.baseurl }}/faq/default-groups/) |
+| Plugin developers | [Developers]({{ site.baseurl }}/developers/) |
+
+## Need help?
+
+- [Report issues on GitHub](https://github.com/{{ site.repo }}/issues)
+- Use `/pex report` in-game to generate a diagnostic report
