@@ -44,6 +44,7 @@ const sidebars: SidebarsConfig = {
         'guides/troubleshooting',
         'faq/default-groups',
         'faq/migration',
+        'changelog',
       ],
     },
     {

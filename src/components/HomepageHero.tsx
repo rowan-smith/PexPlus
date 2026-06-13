@@ -1,4 +1,5 @@
 import Link from '@docusaurus/Link';
+import PlatformBadges from '@site/src/components/PlatformBadges';
 import siteVars from '@site/site-vars.json';
 import styles from './HomepageHero.module.css';
 
@@ -31,6 +32,7 @@ export default function HomepageHero(): JSX.Element {
             API cookbook
           </Link>
         </div>
+        <PlatformBadges />
       </div>
     </header>
   );

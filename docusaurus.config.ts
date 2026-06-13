@@ -50,7 +50,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
-          editUrl: `https://github.com/${siteVars.repo}/tree/gh-pages/`,
+          editUrl: `https://github.com/${siteVars.repo}/edit/gh-pages/`,
           remarkPlugins: [siteVarsPlugin],
         },
         blog: false,
@@ -61,7 +61,30 @@ const config: Config = {
     ],
   ],
 
+  themes: [
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        language: ['en'],
+        indexDocs: true,
+        docsRouteBasePath: '/',
+        highlightSearchTermsOnTargetPage: true,
+        searchResultLimits: 12,
+        searchBarShortcutHint: true,
+      },
+    ],
+  ],
+
   themeConfig: {
+    announcementBar: {
+      id: 'pex_migration',
+      content:
+        'New to PermissionsExPlus or migrating from original PEX? Read the <a href="/faq/migration">migration guide</a> · <a href="/changelog">Changelog</a>',
+      backgroundColor: '#0f2922',
+      textColor: '#86efac',
+      isCloseable: true,
+    },
     metadata: [
       {
         name: 'description',
@@ -123,6 +146,7 @@ const config: Config = {
             {type: 'doc', docId: 'guides/troubleshooting', label: 'Troubleshooting'},
             {type: 'doc', docId: 'faq/default-groups', label: 'Default Groups'},
             {type: 'doc', docId: 'faq/migration', label: 'Migration'},
+            {type: 'doc', docId: 'changelog', label: 'Changelog'},
           ],
         },
         {
@@ -144,6 +168,7 @@ const config: Config = {
               href: `https://github.com/${siteVars.repo}/releases`,
               label: 'Release notes (GitHub)',
             },
+            {type: 'doc', docId: 'changelog', label: 'Changelog'},
           ],
         },
         {
@@ -167,6 +192,7 @@ const config: Config = {
               label: 'Current Javadoc',
             },
             {type: 'doc', docId: 'developers/reference', label: 'All API versions'},
+            {type: 'doc', docId: 'changelog', label: 'Changelog'},
             {
               href: `https://github.com/${siteVars.repo}/releases`,
               label: 'Older releases',
@@ -203,6 +229,7 @@ const config: Config = {
         {
           title: 'Project',
           items: [
+            {label: 'Changelog', to: '/changelog'},
             {label: 'GitHub', href: `https://github.com/${siteVars.repo}`},
             {label: 'Releases', href: `https://github.com/${siteVars.repo}/releases`},
             {label: 'Issues', href: `https://github.com/${siteVars.repo}/issues`},

@@ -27,7 +27,12 @@ Docs can use Maven-style placeholders — replaced at build time:
 
 Note: avoid `@site.*` in MDX files — Docusaurus reserves the `@site` alias.
 
-MDX pages can also use `<Version />`, `<Repo />`, and `<JarName />` components.
+MDX components (`<Version />`, `<Repo />`, `<JarName />`) are also available globally.
+
+Generated data (refreshed on `npm run build:data`):
+
+- `src/data/commands.json` — command search index (from `docs/commands/`)
+- `src/data/releases.json` — changelog entries (from GitHub Releases API)
 
 ## Production build
 
