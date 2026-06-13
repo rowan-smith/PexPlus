@@ -1,11 +1,11 @@
 ---
 layout: default
-title: API Reference
+title: Javadoc
 permalink: /developers/reference/
 description: Javadoc API reference for all PermissionsExPlus versions.
 ---
 
-Browse the generated API documentation for each release.
+Browse generated API documentation. Method signatures, parameters, and return types are documented here — the [API Cookbook]({{ site.baseurl }}/developers/cookbook/) shows how to use them.
 
 <div class="version-cards">
 {% for doc in site.javadoc_versions %}
@@ -16,25 +16,27 @@ Browse the generated API documentation for each release.
 {% endfor %}
 </div>
 
-## Package overview
+## Key packages (1.23.5)
 
-| API | Package | Javadoc |
-|-----|---------|---------|
-| **Modern** | `dev.rono.permissions.api.*` | [1.23.5]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/package-summary.html) |
-| **Legacy** | `ru.tehkode.permissions.*` | [1.23.5]({{ site.baseurl }}/apidocs/1.23.5/ru/tehkode/permissions/package-summary.html) |
-| **Classic** | `ru.tehkode.permissions.*` | [1.23.4]({{ site.baseurl }}/apidocs/1.23.4/ru/tehkode/permissions/package-summary.html) · [1.23.1]({{ site.baseurl }}/apidocs/1.23.1/ru/tehkode/permissions/package-summary.html) · [1.22.1]({{ site.baseurl }}/apidocs/1.22.1/apidocs/ru/tehkode/permissions/package-summary.html) |
+| API | Package | Entry point |
+|-----|---------|-------------|
+| **Modern service** | `dev.rono.permissions.api.service` | [PermissionsExApi]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/service/PermissionsExApi.html) |
+| **Subjects** | `dev.rono.permissions.api.subject` | [User]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/subject/User.html), [Group]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/subject/Group.html) |
+| **Context** | `dev.rono.permissions.api.permission` | [PermissionContext]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/permission/PermissionContext.html) |
+| **Legacy** | `ru.tehkode.permissions` | [PermissionManager]({{ site.baseurl }}/apidocs/1.23.5/ru/tehkode/permissions/PermissionManager.html) |
+| **Legacy events** | `ru.tehkode.permissions.events` | [PermissionEntityEvent]({{ site.baseurl }}/apidocs/1.23.5/ru/tehkode/permissions/events/PermissionEntityEvent.html) |
 
-Versions **1.23.1 – 1.23.4** are built from the original PermissionsEx `STABLE-1.23.x` tags. **1.23.5** includes the new `dev.rono.permissions.api` packages.
+Versions **1.23.1 – 1.23.4** document the classic `ru.tehkode.*` API only. The modern `dev.rono.*` packages appear starting in **1.23.5**.
 
 ## Generate locally
 
-**PermissionsExPlus 1.23.5** (from repo root):
+**1.23.5** (PermissionsExPlus):
 
 ```bash
 mvn -pl api/permissionsex-api,legacy-api/permissionsex-legacy-api javadoc:javadoc -am -Ddoclint=none
 ```
 
-**Classic 1.23.x** (from a `STABLE-1.23.x` tag):
+**Classic 1.23.x**:
 
 ```bash
 ./scripts/build-classic-javadoc.sh STABLE-1.23.4 1.23.4
@@ -45,13 +47,6 @@ mvn -pl api/permissionsex-api,legacy-api/permissionsex-legacy-api javadoc:javado
 ```xml
 <groupId>dev.rono.permissions</groupId>
 <artifactId>permissionsex-api</artifactId>
-<version>{{ site.version }}</version>
-<scope>provided</scope>
-```
-
-```xml
-<groupId>dev.rono.permissions</groupId>
-<artifactId>permissionsex-legacy-api</artifactId>
 <version>{{ site.version }}</version>
 <scope>provided</scope>
 ```

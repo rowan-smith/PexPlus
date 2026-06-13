@@ -5,61 +5,78 @@ permalink: /
 description: Install PermissionsExPlus and set up permissions on your Minecraft server.
 ---
 
-PermissionsExPlus (PEX) is a permissions plugin for Minecraft servers. It lets you manage **users**, **groups**, **permissions**, **prefixes**, and **multi-world** setups using familiar `/pex` commands.
+PermissionsExPlus (PEX) is a permissions plugin for Minecraft servers. It controls **who can do what** by assigning **permissions** to **users** and **groups**.
 
-**Current version:** {{ site.version }}
+<div class="version-cards">
+  <a class="version-card" href="https://github.com/{{ site.repo }}/releases">
+    <span class="version-card-label">Download v{{ site.version }}</span>
+    <span class="version-card-desc">Get the latest release jar</span>
+  </a>
+  <a class="version-card" href="{{ site.baseurl }}/guides/recipes/">
+    <span class="version-card-label">Common Setups</span>
+    <span class="version-card-desc">Staff ranks, VIP, survival — copy-paste recipes</span>
+  </a>
+  <a class="version-card" href="{{ site.baseurl }}/commands/general/">
+    <span class="version-card-label">Command Reference</span>
+    <span class="version-card-desc">Full /pex command documentation</span>
+  </a>
+</div>
 
-## Install
+## Install in 4 steps
 
-1. Download **`PermissionsExPlus-{{ site.version }}.jar`** from [GitHub Releases](https://github.com/{{ site.repo }}/releases) or build from source.
-2. Remove any old PermissionsEx jars from your `plugins/` folder.
-3. Place the jar in `plugins/` and restart the server.
-4. Use `/pex` in-game to confirm it loaded.
+1. Download **`PermissionsExPlus-{{ site.version }}.jar`** from [GitHub Releases](https://github.com/{{ site.repo }}/releases).
+2. Remove any old PermissionsEx jars from `plugins/`.
+3. Copy the jar into `plugins/` and restart the server.
+4. Run `/pex` in-game — you should see the help menu.
 
-> **Java 21+** is required. Works on Spigot, Paper, BungeeCord, Velocity, and Sponge.
+See [Requirements]({{ site.baseurl }}/requirements/) for Java and platform details.
 
-## Quick setup
+## Your first permissions
 
-Create an admin group and assign a player:
+**Create a group, give it permissions, assign a player:**
 
 ```text
 /pex group admin create
+/pex group admin add permissions.*
 /pex group admin add '*'
+/pex group admin prefix &c[Admin]
 /pex user Steve group set admin
 ```
 
-Add a permission to a player:
+**Give one player a single permission:**
 
 ```text
 /pex user Alex add essentials.home
 ```
 
-Set a chat prefix on a group:
+**Grant a temporary permission (7 days):**
 
 ```text
-/pex group moderator prefix [Mod]
+/pex user Alex timed add essentials.fly 7d
 ```
 
-## What you can do
+## Core ideas
 
-- Assign permissions to **users** and **groups**
-- Set up **group inheritance** (e.g. admin inherits moderator)
-- Add **prefixes and suffixes** for chat plugins
-- Grant **temporary permissions** that expire automatically
-- Use **different permissions per world**
-- **Promote and demote** players on rank ladders
+| Concept | Summary | Learn more |
+|---------|---------|------------|
+| **Groups** | Bundles of permissions (admin, vip, default) | [Group commands]({{ site.baseurl }}/commands/groups/) |
+| **Inheritance** | Groups inherit permissions from parent groups | [Inheritance]({{ site.baseurl }}/concepts/inheritance/) |
+| **Context** | Different permissions per world | [Context]({{ site.baseurl }}/concepts/context/) |
+| **Weight** | Which group's prefix wins in chat | [Weight]({{ site.baseurl }}/concepts/weight/) |
 
-## Where to go next
+## Documentation map
 
-| Topic | Guide |
-|-------|-------|
-| Where data is stored | [Storage]({{ site.baseurl }}/storage/) |
-| Config files | [Configuration]({{ site.baseurl }}/configuration/) |
-| All commands | [Commands]({{ site.baseurl }}/commands/general/) |
-| Common questions | [FAQ]({{ site.baseurl }}/faq/default-groups/) |
-| Plugin developers | [Developers]({{ site.baseurl }}/developers/) |
+| I want to… | Go to |
+|------------|-------|
+| Set up a staff hierarchy | [Common Setups]({{ site.baseurl }}/guides/recipes/) |
+| Learn every command | [Commands]({{ site.baseurl }}/commands/general/) |
+| Edit config files | [Configuration]({{ site.baseurl }}/configuration/) |
+| Fix something broken | [Troubleshooting]({{ site.baseurl }}/guides/troubleshooting/) |
+| Integrate my plugin | [API Cookbook]({{ site.baseurl }}/developers/cookbook/) |
+| Browse API classes | [Javadoc]({{ site.baseurl }}/developers/reference/) |
 
-## Need help?
+## Get help
 
-- [Report issues on GitHub](https://github.com/{{ site.repo }}/issues)
-- Use `/pex report` in-game to generate a diagnostic report
+- [GitHub Issues](https://github.com/{{ site.repo }}/issues) — bug reports and questions
+- `/pex report` — generate a diagnostic report in-game
+- [Migration guide]({{ site.baseurl }}/faq/migration/) — switching from another permissions plugin

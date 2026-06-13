@@ -135,6 +135,22 @@
     padding: $spacing-unit * 1.25;
     max-width: 780px;
 
+    .breadcrumbs {
+        font-size: 0.8rem;
+        color: $text-muted;
+        margin-bottom: $spacing-unit * 0.75;
+        a { color: $text-muted; &:hover { color: $brand-color; } }
+        .breadcrumb-current { color: $grey-color-dark; font-weight: 500; }
+        a + a, a + .breadcrumb-current, span + a::before {
+            content: none;
+        }
+        > * + *::before {
+            content: " / ";
+            color: $grey-color-light;
+            margin: 0 0.25rem;
+        }
+    }
+
     .page-title {
         font-size: 1.75rem;
         margin-bottom: $spacing-unit;

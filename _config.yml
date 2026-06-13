@@ -10,7 +10,6 @@ github_username: rowan-smith
 repo: rowan-smith/PermissionsExPlus
 version: "1.23.5"
 
-# Build settings
 markdown: kramdown
 kramdown:
   input: GFM
@@ -21,13 +20,13 @@ exclude:
   - vendor
   - Gemfile.lock
   - .bundle
+  - scripts
 
-# Javadoc versions hosted on this site
 javadoc_versions:
   - version: "1.23.5"
     label: "1.23.5 (current)"
     url: /apidocs/1.23.5/index.html
-    description: Modern and legacy API for PermissionsExPlus
+    description: Modern + legacy API (PermissionsExPlus)
   - version: "1.23.4"
     label: "1.23.4"
     url: /apidocs/1.23.4/index.html
@@ -45,23 +44,33 @@ javadoc_versions:
     url: /apidocs/1.23.1/index.html
     description: Classic PermissionsEx API
   - version: "1.22.1"
-    label: "1.22.1 (classic)"
+    label: "1.22.1"
     url: /apidocs/1.22.1/apidocs/index.html
-    description: Original PermissionsEx API reference
-  - version: "2.0-SNAPSHOT"
-    label: "2.0-SNAPSHOT (archive)"
-    url: /apidocs/2.0-SNAPSHOT/apidocs/index.html
-    description: Historical development snapshot
+    description: Original PermissionsEx API
 
 navigation:
   - section: Introduction
     links:
       - title: Getting Started
         url: /
+      - title: Requirements
+        url: /requirements/
       - title: Storage
         url: /storage/
       - title: Configuration
         url: /configuration/
+  - section: Concepts
+    links:
+      - title: How Permissions Work
+        url: /concepts/permissions/
+      - title: Inheritance
+        url: /concepts/inheritance/
+      - title: Context & Worlds
+        url: /concepts/context/
+      - title: Weight
+        url: /concepts/weight/
+      - title: Prefix & Meta
+        url: /concepts/meta/
   - section: Commands
     links:
       - title: General
@@ -76,27 +85,29 @@ navigation:
         url: /commands/worlds/
       - title: Ranks
         url: /commands/ranks/
-  - section: Advanced
+  - section: Guides
     links:
-      - title: Context & Worlds
-        url: /advanced/context/
-      - title: Weight
-        url: /advanced/weight/
-      - title: Prefix, Suffix & Meta
-        url: /advanced/meta/
+      - title: Common Setups
+        url: /guides/recipes/
+      - title: Troubleshooting
+        url: /guides/troubleshooting/
   - section: FAQ
     links:
       - title: Default Groups
         url: /faq/default-groups/
-      - title: Migrate from Other Plugins
+      - title: Migration
         url: /faq/migration/
   - section: Developers
     links:
-      - title: API Introduction
+      - title: Overview
         url: /developers/
-      - title: API Usage
-        url: /developers/usage/
+      - title: API Cookbook
+        url: /developers/cookbook/
       - title: Contributing
         url: /developers/contributing/
-      - title: API Reference
+      - title: Javadoc
         url: /developers/reference/
+  - section: Project
+    links:
+      - title: About
+        url: /about/

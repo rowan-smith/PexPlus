@@ -1,23 +1,17 @@
 ---
 layout: default
-title: API Introduction
+title: Overview
 permalink: /developers/
-description: Introduction to integrating with PermissionsExPlus from your plugin.
+description: Integrate your plugin with PermissionsExPlus.
 ---
 
-If you are building a **companion plugin** that reads or modifies permissions, PEX provides two APIs.
+PermissionsExPlus exposes APIs for companion plugins that need to read or modify permissions at runtime.
 
-## Which API?
+## Quick start
 
-| Your situation | Use |
-|----------------|-----|
-| **New plugin** | Modern API (`PermissionsEx.getApi()`) |
-| **Existing PEX plugin** | Legacy API — usually works without changes |
-| **Listening to events on Spigot** | Legacy Bukkit events |
-
-## Modern API (recommended)
-
-Package: `dev.rono.permissions.api`
+1. Add Maven dependency (`provided` scope — do not shade PEX into your jar)
+2. Check `PermissionsEx.isAvailable()` in `onEnable`
+3. Use `PermissionsEx.getApi()` for new code
 
 ```xml
 <dependency>
@@ -28,33 +22,40 @@ Package: `dev.rono.permissions.api`
 </dependency>
 ```
 
-PEX must be on the server at runtime. Your plugin only needs this at **compile time** — do not bundle PEX in your jar.
+## Documentation layers
 
-## Legacy API
+| Layer | What it covers |
+|-------|----------------|
+| **[API Cookbook]({{ site.baseurl }}/developers/cookbook/)** | Practical recipes — check perms, add groups, events |
+| **[Javadoc]({{ site.baseurl }}/developers/reference/)** | Full class and method reference for every version |
+| **[Sample plugins](https://github.com/{{ site.repo }}/tree/main/plugin)** | Working example jars in the repo |
 
-Package: `ru.tehkode.permissions`
+The website is intentionally thin — detailed API signatures live in Javadoc. The cookbook shows you *how* to do common tasks with links to the relevant classes.
 
-For plugins written for original PermissionsEx 1.23.x:
+## Two APIs
+
+| API | Package | When |
+|-----|---------|------|
+| **Modern** | `dev.rono.permissions.api.*` | New plugins |
+| **Legacy** | `ru.tehkode.permissions.*` | Existing PEX 1.23.x plugins |
+
+Both talk to the same runtime manager on game servers.
+
+## Legacy dependencies
+
+For classic `PermissionsEx.getUser()` static calls, also add:
 
 ```xml
 <dependency>
   <groupId>dev.rono.permissions</groupId>
-  <artifactId>permissionsex-legacy-api</artifactId>
+  <artifactId>permissionsex-legacy-stub</artifactId>
   <version>{{ site.version }}</version>
   <scope>provided</scope>
 </dependency>
 ```
 
-Add `permissionsex-legacy-stub` if you use `PermissionsEx.getUser()` static methods.
-
-## Sample plugins
-
-Working examples are in the [GitHub repo](https://github.com/{{ site.repo }}/tree/main/plugin):
-
-- `permissionsex-example-plugin` — modern API
-- `permissionsex-example-legacy-plugin` — legacy API
-
 ## Next steps
 
-- [API Usage]({{ site.baseurl }}/developers/usage/) — code examples
-- [API Reference]({{ site.baseurl }}/developers/reference/) — Javadoc for all versions
+- [API Cookbook]({{ site.baseurl }}/developers/cookbook/) — copy-paste recipes
+- [Javadoc]({{ site.baseurl }}/developers/reference/) — browse all versions
+- [Contributing]({{ site.baseurl }}/developers/contributing/) — build from source
