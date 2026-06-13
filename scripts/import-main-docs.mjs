@@ -132,6 +132,13 @@ function transformBody(body) {
   for (const [pattern, replacement] of LINK_REPLACEMENTS) {
     out = out.replace(pattern, replacement);
   }
+  // Javadoc inline tags break MDX parsing
+  out = out
+    .replace(/\{@link\s+([^}]+)\}/g, (_, target) => {
+      const simple = target.split(/[#.]/).pop();
+      return `\`${simple}\` (\`${target.trim()}\`)`;
+    })
+    .replace(/\{@code\s+([^}]+)\}/g, '`$1`');
   return out.trimEnd() + '\n';
 }
 

@@ -152,7 +152,7 @@ When adding API or engine features:
 3. Preserve the four invariants above
 4. Route timed expiry through `TimedExpiryCoordinator`
 5. Keep `SubjectContexts` as delegation-only
-6. Route group graph traversal through {@code GroupHierarchyEngine} (in {@code core.api.pex}) or {@code DefaultPermissionManager}
+6. Route group graph traversal through `GroupHierarchyEngine` (in `core.api.pex`) or `DefaultPermissionManager`
 7. Update [MODERN_API.md](/developers/api/modern) and this file when behavior or layering changes
 
 ---
@@ -260,9 +260,9 @@ Shorter overloads (`addPermission(holder, node)`, `addPermission(holder, node, d
 | Context | `null` / empty meaning |
 |---------|------------------------|
 | Modern `PermissionContext` | `PermissionContext.global()` or parameterless overloads |
-| Legacy `PermissionManager.getUser(name)` | {@code null} = not found (classic API) |
-| Modern `UserManager.findUser` | {@code Optional.empty()} = not found |
-| `option(key, world)` | {@code null} value = unset |
+| Legacy `PermissionManager.getUser(name)` | `null` = not found (classic API) |
+| Modern `UserManager.findUser` | `Optional.empty()` = not found |
+| `option(key, world)` | `null` value = unset |
 | `PermissionContext` map | empty = global scope |
 | Method parameters | `@NonNull` by convention unless Javadoc says optional |
 
@@ -276,7 +276,7 @@ Modern API methods return **immutable snapshots** (`List.copyOf`, `Set.copyOf`, 
 
 ## Event bus guarantees
 
-See {@link dev.rono.permissions.api.event.PermissionEventBus} Javadoc:
+See `PermissionEventBus` Javadoc:
 
 - Synchronous dispatch on publisher thread
 - Registration-order listener invocation

@@ -128,7 +128,7 @@ api.getEventBus().unsubscribe(sub);
 
 ### Permission context (platform-neutral)
 
-Structured scope for holder checks and the modern subject API uses {@link dev.rono.permissions.api.permission.PermissionContext}:
+Structured scope for holder checks and the modern subject API uses `PermissionContext` (`dev.rono.permissions.api.permission.PermissionContext`):
 
 | Key | Role |
 |-----|------|
@@ -146,9 +146,9 @@ manager.hasPermission(holder, "my.node", context);
 user.inContext(PermissionContext.server("lobby")).addPermission("proxy.admin");
 ```
 
-Each platform supplies a {@link dev.rono.permissions.api.runtime.ContextResolver} via {@link dev.rono.permissions.api.runtime.PlatformAdapter#getContextResolver()} for inheritance ordering (for example Bukkit: `world → server → global`; Velocity: `server → global`; Sponge: `dimension → world → server → global`).
+Each platform supplies a `ContextResolver` via `PlatformAdapter#getContextResolver()` for inheritance ordering (for example Bukkit: `world → server → global`; Velocity: `server → global`; Sponge: `dimension → world → server → global`).
 
-All scoped operations on `User` / `Group` take {@link PermissionContext}. Parameterless overloads use {@link PermissionContext#global()}.
+All scoped operations on `User` / `Group` take `PermissionContext`. Parameterless overloads use `PermissionContext.global()`.
 
 ---
 
