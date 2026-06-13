@@ -4,7 +4,9 @@ import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.subject.PermissionSubject;
 import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.subject.SubjectWorldContexts;
+import dev.rono.permissions.api.subject.SubjectServerContexts;
 import dev.rono.permissions.api.subject.TimedGroupMembership;
+import dev.rono.permissions.api.subject.UserServerContext;
 import dev.rono.permissions.api.subject.UserWorldContext;
 import dev.rono.permissions.api.world.Worlds;
 import java.util.List;
@@ -88,6 +90,19 @@ public interface User extends PermissionSubject {
     @Override
     default UserWorldContext global() {
         return inWorld(Worlds.GLOBAL);
+    }
+
+    /**
+     * Returns a server-scoped view of this user for permission, group, and metadata operations.
+     *
+     * <p>On proxy runtimes, {@code server} is a backend id from the proxy configuration. Prefer this
+     * over {@link #inWorld(String)} in proxy plugins; both bind the same permission namespace.</p>
+     *
+     * @param server backend server id on proxies, or a realm name; {@link Worlds#GLOBAL} for the global namespace
+     * @return server-bound user context
+     */
+    default UserServerContext inServer(String server) {
+        return SubjectServerContexts.user(this, server);
     }
 
     /**

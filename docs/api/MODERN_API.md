@@ -177,6 +177,10 @@ PermissionsExApi api = PermissionsEx.getApi();
 
 Maven artifact: `permissionsex-api-bungee` (optional; includes `ProxyPermissionServices` for advanced use).
 
+### Server context on proxies
+
+Backend server names are permission namespaces (stored as `world` keys in the backend). Commands use `pex server` / `pex servers` instead of `pex world` / `pex worlds`, but the modern API exposes the same scoping via `User.inServer(server)` and `Group.inServer(server)`. Holder-based checks can use `PermissionContext.SERVER` when `world` is absent.
+
 ---
 
 ## `PermissionSubject`
@@ -228,7 +232,18 @@ Shared by `User` and `Group`.
 | Method | Description |
 |--------|-------------|
 | `inWorld(world)` | `SubjectWorldContext` — world-scoped facade |
+| `inServer(server)` | `SubjectServerContext` — server-scoped facade (same namespace; prefer on proxies) |
 | `global()` | Same as `inWorld(Worlds.GLOBAL)` |
+
+On **proxy** runtimes, backend server ids (for example `lobby`, `survival`) are the permission namespace. There is no separate Minecraft world on the proxy — use `inServer(serverName)` (or `inWorld` with the same name) to grant permissions per backend:
+
+```java
+User user = api.getUserManager().getUser(player.getUniqueId());
+user.inServer("lobby").addPermission("bungee.command.server");
+if (user.inServer("lobby").hasPermission("proxy.admin")) { ... }
+```
+
+Player permission checks on the proxy auto-scope to the connected backend via `PlatformAdapter.onlineRealm()`.
 
 ### Persistence
 

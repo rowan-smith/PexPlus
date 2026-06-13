@@ -18,7 +18,7 @@ public final class SubjectWorldContexts {
 
     static SubjectWorldContext subject(PermissionSubject subject, String world) {
         String normalized = Worlds.normalize(world);
-        return new SubjectWorldContext() {
+        return new SubjectServerContext() {
             @Override
             public String world() {
                 return normalized;
@@ -141,7 +141,7 @@ public final class SubjectWorldContexts {
     public static UserWorldContext user(User user, String world) {
         String normalized = Worlds.normalize(world);
         SubjectWorldContext base = subject(user, normalized);
-        return new UserWorldContext() {
+        return new UserServerContext() {
             @Override
             public String world() {
                 return base.world();
@@ -299,7 +299,7 @@ public final class SubjectWorldContexts {
     public static GroupWorldContext group(Group group, String world) {
         String normalized = Worlds.normalize(world);
         SubjectWorldContext base = subject(group, normalized);
-        return new GroupWorldContext() {
+        return new GroupServerContext() {
             @Override
             public String world() {
                 return base.world();

@@ -273,4 +273,19 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
     default SubjectWorldContext global() {
         return inWorld(Worlds.GLOBAL);
     }
+
+    /**
+     * Returns a server-scoped view of this subject for permission and metadata operations.
+     *
+     * <p>On proxy runtimes, {@code server} is a backend id (for example {@code "lobby"}). There is no
+     * separate Minecraft world on the proxy — server names are the permission namespace. Methods on the
+     * returned context apply to {@code server} without repeating the server argument. Prefer this over
+     * {@link #inWorld(String)} in proxy plugins; both bind the same namespace.</p>
+     *
+     * @param server backend server id on proxies, or a realm name; {@link Worlds#GLOBAL} for the global namespace
+     * @return server-bound context for this subject
+     */
+    default SubjectServerContext inServer(String server) {
+        return SubjectServerContexts.subject(this, server);
+    }
 }
