@@ -187,7 +187,7 @@ abstract class AbstractPermissionSubjectAdapter implements PermissionSubject {
         delegate.save();
     }
 
-    private String storageRealm(PermissionContext context) {
+    protected String storageRealm(PermissionContext context) {
         return ContextPermissionEvaluator.storageRealm(context, manager.getPlatform());
     }
 }

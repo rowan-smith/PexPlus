@@ -3,12 +3,9 @@ package dev.rono.permissions.core.api.pex;
 import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.permission.PermissionHolder;
-import dev.rono.permissions.api.subject.GroupContext;
-import dev.rono.permissions.api.subject.SubjectContexts;
 import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.core.DefaultPermissionManager;
-import dev.rono.permissions.core.api.ContextPermissionEvaluator;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 
@@ -47,11 +44,6 @@ public final class GroupImpl extends AbstractPermissionSubjectAdapter implements
     @Override
     public SubjectType type() {
         return SubjectType.GROUP;
-    }
-
-    @Override
-    public GroupContext inContext(PermissionContext context) {
-        return SubjectContexts.group(this, context);
     }
 
     @Override
@@ -177,9 +169,5 @@ public final class GroupImpl extends AbstractPermissionSubjectAdapter implements
         var identifier = group.getIdentifier();
         group.remove();
         manager.resetGroup(identifier);
-    }
-
-    private String storageRealm(PermissionContext context) {
-        return ContextPermissionEvaluator.storageRealm(context, manager.getPlatform());
     }
 }

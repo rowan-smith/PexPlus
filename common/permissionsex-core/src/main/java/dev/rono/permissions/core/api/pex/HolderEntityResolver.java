@@ -34,10 +34,6 @@ final class HolderEntityResolver {
         }
     }
 
-    PermissionContext context(Map<String, String> legacy) {
-        return PermissionContext.fromMap(legacy);
-    }
-
     String storageRealm(PermissionContext context) {
         return ContextPermissionEvaluator.storageRealm(context, manager.getPlatform());
     }

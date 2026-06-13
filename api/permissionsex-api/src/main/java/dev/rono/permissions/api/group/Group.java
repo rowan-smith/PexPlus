@@ -4,6 +4,7 @@ import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.subject.GroupContext;
 import dev.rono.permissions.api.subject.PermissionSubject;
+import dev.rono.permissions.api.subject.SubjectContexts;
 import dev.rono.permissions.api.subject.SubjectType;
 import dev.rono.permissions.api.user.User;
 import java.util.List;
@@ -33,7 +34,9 @@ public interface Group extends PermissionSubject {
     }
 
     @Override
-    GroupContext inContext(PermissionContext context);
+    default GroupContext inContext(PermissionContext context) {
+        return SubjectContexts.group(this, context);
+    }
 
     @Override
     default GroupContext global() {

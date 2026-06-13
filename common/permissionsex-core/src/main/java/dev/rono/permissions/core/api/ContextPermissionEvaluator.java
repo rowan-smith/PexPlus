@@ -40,7 +40,7 @@ public final class ContextPermissionEvaluator {
     }
 
     private static String toLegacyRealm(Optional<String> realm) {
-        return realm.map(ModernWorlds::toLegacy).orElse(null);
+        return realm.map(Worlds::normalize).orElse(null);
     }
 
     /** Converts legacy {@code String world} arguments to {@link PermissionContext}. */

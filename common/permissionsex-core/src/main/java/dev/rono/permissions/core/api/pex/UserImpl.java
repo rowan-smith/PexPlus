@@ -3,9 +3,7 @@ package dev.rono.permissions.core.api.pex;
 import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.subject.SubjectType;
-import dev.rono.permissions.api.subject.SubjectContexts;
 import dev.rono.permissions.api.subject.TimedGroupMembership;
-import dev.rono.permissions.api.subject.UserContext;
 import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.DefaultPermissionManager;
@@ -63,11 +61,6 @@ public final class UserImpl extends AbstractPermissionSubjectAdapter implements 
         } catch (IllegalArgumentException ignored) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public UserContext inContext(PermissionContext context) {
-        return SubjectContexts.user(this, context);
     }
 
     @Override
@@ -142,10 +135,6 @@ public final class UserImpl extends AbstractPermissionSubjectAdapter implements 
         var identifier = user.getIdentifier();
         user.remove();
         manager.resetUser(identifier);
-    }
-
-    private String storageRealm(PermissionContext context) {
-        return ContextPermissionEvaluator.storageRealm(context, manager.getPlatform());
     }
 
     private static String parseTimedGroupOption(String option) {
