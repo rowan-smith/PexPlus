@@ -9,16 +9,16 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 | Feature | API |
 |---------|-----|
 | Modern event bus | `pex.events()` → `PermissionEventBus` |
-| Player checks (Bukkit) | `getPermissionManager().has(player, "node")` or `PermissionService` scopes |
+| Player checks (Bukkit) | `getPermissionManager().has(player, "node")` or `User.inWorld()` / holder context |
 | Global permission checks | `pex.user(id).hasPermission("node")` |
 | Promote / demote | `User.promote` / `User.demote` (+ `RankingException`) |
 | Backend admin | `pex.backend().activate`, `createHandle`, `importFrom` |
 | Import / export | `pex.backend().exportData`, `importData(document, ImportMode)` |
 | Hierarchy helpers | `Group.children` / `Group.descendants`, `Group.members(world, inherit)` |
 | Flat API | `pex.user()`, `pex.world()`, `pex.users()`, `pex.groups()`, `pex.backend()` |
-| Batch edits | `pex.session().start()` → `PermissionEditSession` |
+| Batch edits | batch `save()` on subjects |
 | Async reload | `pex.reloadAsync()` → `CompletableFuture<Void>` |
-| Proxy `PermissionService` | `PermissionsExPlus` on Bungee/Waterfall |
+| Proxy `PermissionsExApi` | `PermissionsExPlus` on Bungee/Waterfall |
 
 ---
 
@@ -28,7 +28,7 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 
 Legacy: `getMatchingExpression`, `explainExpression`.
 
-**Proposed:** `PermissionCheckResult` record on `PermissionSubject` or `PermissionService`.
+**Proposed:** `PermissionCheckResult` record on `PermissionSubject` or `PermissionsExApi`.
 
 ### Configuration read surface
 
@@ -46,7 +46,7 @@ Legacy: `getPermissionMatcher()`.
 
 Legacy: `resetUser`, `clearUserCache`, `cacheUser`.
 
-**Proposed:** same operations on modern `PermissionService`.
+**Proposed:** same operations on modern `PermissionsExApi`.
 
 ### Superperms bridge introspection
 
@@ -64,5 +64,5 @@ When adding modern API methods:
 
 1. Types in `permissionsex-api` (optional Bukkit/proxy helpers in separate modules).
 2. Implementation in `dev.rono.permissions.core.api.*`.
-3. Tests in `ModernPermissionServiceTest` or focused test classes.
+3. Tests in `ModernApiTest` or focused test classes.
 4. Update [MODERN_API.md](MODERN_API.md) and this file.

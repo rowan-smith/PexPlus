@@ -1,6 +1,5 @@
 package dev.rono.permissions.example;
 
-import dev.rono.permissions.api.service.PermissionService;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,14 +39,14 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         }
 
         var player = event.getPlayer();
-        var user = PermissionsEx.getApi().getUserManager().getUser(player.getUniqueId());
+        var api = PermissionsEx.getApi();
+        var user = api.getUserManager().getUser(player.getUniqueId());
         var worldName = player.getWorld().getName();
         var allowed = permissions.hasPermission(
                 user.asHolder(),
                 "my.node",
                 Map.of("world", worldName));
-        var pex = (PermissionService) permissions;
-        var worldContext = pex.world(worldName).user(player.getUniqueId());
+        var worldContext = user.inWorld(worldName);
         var displayName = worldContext.option("name");
         if (displayName == null) {
             displayName = player.getName();

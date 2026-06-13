@@ -1,6 +1,5 @@
 package ru.tehkode.permissions;
 
-import dev.rono.permissions.api.service.PermissionService;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.InternalPermissionManager;
 import dev.rono.permissions.core.backends.MultiBackend;
@@ -11,11 +10,6 @@ import ru.tehkode.permissions.backends.PermissionBackend;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LegacyApiCompatibilityTest {
-
-    @Test
-    public void permissionManagerImplementsModernServiceToken() {
-        assertTrue(PermissionService.class.isAssignableFrom(DefaultPermissionManager.class));
-    }
 
     @Test
     public void runtimeManagerExposesInternalHooksSeparatelyFromLegacySurface() throws NoSuchMethodException {

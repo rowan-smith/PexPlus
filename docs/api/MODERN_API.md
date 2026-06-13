@@ -42,7 +42,6 @@ var manager = api.getPermissionManager();
 ## Quick start
 
 ```java
-import dev.rono.permissions.api.service.PermissionService;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 if (!PermissionsEx.isAvailable()) {
@@ -52,124 +51,50 @@ if (!PermissionsEx.isAvailable()) {
 var api = PermissionsEx.getApi();
 var user = api.getUserManager().getUser(player.getUniqueId());
 var manager = api.getPermissionManager();
-if (manager.hasPermission(user.asHolder(), "my.plugin.use")) {
+if (manager.hasPermission(
+        user.asHolder(),
+        "my.plugin.use",
+        Map.of("world", player.getWorld().getName()))) {
     ...
 }
 
-// Classic + fluent PermissionService (same runtime object)
-if (manager.has(player, "my.plugin.use")) {
-    var pex = (PermissionService) manager;
-    pex.world(player.getWorld().getName())
-            .user(player.getUniqueId())
-            .addTimedPermission("my.plugin.temp", 3600);
-    manager.getUser(player).save();
-}
+// Per-world subject operations
+user.inWorld(player.getWorld().getName()).addPermission("my.plugin.temp");
+user.save();
 ```
 
 ---
 
-## Flat API (canonical entry)
+## Managers
 
-All operations are methods on `PermissionService`:
+| Manager | `find` | `get` | `create` | `count()` |
+|---------|--------|-------|----------|-----------|
+| `UserManager` | no materialize | requires persisted | explicit create | backend users |
+| `GroupManager` | no materialize | requires persisted | explicit create | backend groups |
+| `WorldManager` | registered realms | requires exists | explicit create | worlds |
+| `LadderManager` | known ladders | requires exists | explicit create | ladders |
+
+Subject operations (`hasPermission`, groups, meta, timed grants) are on `User` / `Group` returned by managers.
+
+Holder-based checks and edits use `api.getPermissionManager()` (`hasPermission(holder, node, context)`, `addPermission`, etc.).
+
+### Events
 
 ```java
-// Global checks (Worlds.GLOBAL — applies to all worlds unless overridden)
-pex.user(uuid).hasPermission("node");
-pex.user("Steve").inGroup("vip", null, true);
-
-// Per-world checks
-pex.world(world).user(uuid).hasPermission("node");
-pex.world(world).user(uuid).inGroup("vip", true);
-
-// Optional persisted lookup
-pex.findUser("Steve").get().hasPermission("node");
-pex.findUser(uuid).optional().map(u -> u.hasPermission("node")).orElse(false);
-
-// Registry
-pex.users().count();
-pex.groups().count();
-pex.worlds().count();
-pex.group("vip").members(null, true);
-
-// Backend
-pex.backend().getActive();
-pex.backend().activate("file");
-pex.backend().exportData();
-
-// Maintenance
-pex.reload();
-pex.session().start();
-pex.events();
+var sub = api.getEventBus().subscribe(dispatch -> { ... });
+api.getEventBus().unsubscribe(sub);
 ```
-
-### `PermissionService`
-
-| Method | Returns | Role |
-|--------|---------|------|
-| `user(uuid\|name)` | `User` | Materialize subject (creates virtual if absent) |
-| `findUser(uuid\|name)` | `FoundUser` | Optional persisted lookup |
-| `group(name)` | `Group` | Materialize group |
-| `findGroup(name)` | `FoundGroup` | Optional persisted lookup |
-| `world(name)` / `global()` | `WorldScope` | World-bound subject chains |
-| `findWorld(name)` | `Optional<WorldScope>` | When realm is registered |
-| `users()` | `UsersScope` | User registry |
-| `groups()` | `GroupsScope` | Group registry |
-| `worlds()` | `WorldsScope` | Registered realms |
-| `backend()` | `BackendScope` | Backend admin |
-| `session()` | `SessionScope` | Batch edit sessions |
-| `events()` | `PermissionEventBus` | Notifications |
-| `isDebug()` | `boolean` | Debug flag |
-| `reload()` / `reloadAsync()` | — | Reload backend |
-
-### `WorldScope`
-
-| Method | Description |
-|--------|-------------|
-| `user(uuid\|name)` | `UserWorldContext` in this world |
-| `findUser(uuid\|name)` | `Optional<UserWorldContext>` |
-| `group(name)` | `GroupWorldContext` in this world |
-| `findGroup(name)` | `Optional<GroupWorldContext>` |
-| `defaultGroups()` / `inheritance()` / `rankLadder(ladder)` | World config |
-
-### `UsersScope` / `GroupsScope` / `WorldsScope`
-
-| Scope | Method | Description |
-|-------|--------|-------------|
-| `UsersScope` | `count()` / `identifiers()` / `delete(id)` | User registry |
-| `GroupsScope` | `count()` / `names()` / `delete(name)` | Group registry |
-| `WorldsScope` | `count()` / `names()` | Registered realms |
-
-### `FoundUser` / `FoundGroup`
-
-| Method | Description |
-|--------|-------------|
-| `get()` | Persisted subject; throws if absent |
-| `optional()` | `Optional<User>` / `Optional<Group>` |
-| `inWorld(w)` / `global()` | Optional world context |
-
-### `BackendScope`
-
-| Method | Description |
-|--------|-------------|
-| `getActive()` / `type()` / `simpleName()` | Active backend |
-| `isActive()` / `isActive(alias)` | Whether a backend is active |
-| `activate(alias)` | Switch backend |
-| `createHandle(alias)` | Non-active handle |
-| `importFrom(alias)` | Copy from configured backend |
-| `exportData()` / `importData(doc, mode)` | YAML import/export |
-
-Runtime implementors use {@link dev.rono.permissions.api.service.PermissionServiceBridge}; plugins use `PermissionService` only.
 
 ---
 
 ## World model
 
-| Modern constant | Meaning |
-|-----------------|---------|
+| Constant | Meaning |
+|----------|---------|
 | `Worlds.GLOBAL` | `null` — global namespace |
-| Empty string `""` | Normalized to global when passed to API methods |
+| Empty string `""` | Normalized to global |
 
-`pex.user(id).hasPermission("node")` checks the **global** namespace — effective across all worlds unless a per-world override exists.
+`user.hasPermission("node")` checks the **global** namespace. Use `user.inWorld(world).hasPermission("node")` or `hasPermission(holder, node, Map.of("world", world))` for per-world checks.
 
 Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `mapKey`, `fromMapKey`.
 
@@ -177,31 +102,19 @@ Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `ma
 
 ## Events (`PermissionEventBus`)
 
-Subscribe via `pex.events()`:
+Subscribe via `api.getEventBus()`:
 
 ```java
-var sub = pex.events().subscribe(new PermissionEventListener() {
+var sub = api.getEventBus().subscribe(new PermissionEventListener() {
     @Override
     public void onEntity(EntityDispatch dispatch) {
         // entityIdentifier, entityType, mutation
     }
 });
-pex.events().unsubscribe(sub);
+api.getEventBus().unsubscribe(sub);
 ```
 
 Uses types from `permissionsex-core-api`: `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
-
----
-
-## Batch edits (`PermissionEditSession`)
-
-```java
-try (var session = pex.session().start()) {
-    session.editUser("Steve", user -> user.addPermission("foo.bar", null));
-    session.editGroup("vip", group -> group.setPrefix("&6", null));
-    session.save();
-}
-```
 
 ---
 

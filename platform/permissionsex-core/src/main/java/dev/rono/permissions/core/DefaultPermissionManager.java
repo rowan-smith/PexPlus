@@ -19,27 +19,15 @@
 package dev.rono.permissions.core;
 
 import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.PermissionsExException;
-import dev.rono.permissions.api.backend.BackendHandle;
-import dev.rono.permissions.api.backend.BackendInfo;
 import dev.rono.permissions.api.bus.EntityDispatch;
 import dev.rono.permissions.api.bus.EntityMutation;
 import dev.rono.permissions.api.bus.SystemDispatch;
 import dev.rono.permissions.api.bus.SystemMutation;
-import dev.rono.permissions.api.data.ImportMode;
 import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PermissionService;
-import dev.rono.permissions.api.service.PermissionServiceBridge;
-import dev.rono.permissions.api.session.PermissionEditSession;
-import dev.rono.permissions.api.group.Group;
-import dev.rono.permissions.api.user.User;
-import dev.rono.permissions.api.world.Worlds;
 import dev.rono.permissions.core.api.*;
-import dev.rono.permissions.core.api.pex.GroupImpl;
 import dev.rono.permissions.core.api.pex.HolderPermissionService;
 import dev.rono.permissions.core.api.pex.PermissionsExApiImpl;
-import dev.rono.permissions.core.api.pex.UserImpl;
 import dev.rono.permissions.core.backends.CorePermissionBackendRegistrar;
 import org.bukkit.entity.Player;
 import ru.tehkode.permissions.*;
@@ -57,7 +45,7 @@ import java.util.logging.Logger;
 /**
  * @author t3hk0d3
  */
-public class DefaultPermissionManager implements PermissionManager, PermissionService, PermissionServiceBridge, InternalPermissionManager {
+public class DefaultPermissionManager implements PermissionManager, InternalPermissionManager {
 	protected ConcurrentMap<String, PermissionUser> users = new ConcurrentHashMap<>();
 	protected ConcurrentMap<String, PermissionGroup> groups = new ConcurrentHashMap<>();
 	protected PermissionBackend backend = null;
@@ -675,242 +663,14 @@ public class DefaultPermissionManager implements PermissionManager, PermissionSe
 		return this.backend;
 	}
 
-	@Override
-	public BackendInfo activeBackend() {
-		String type = config.getDefaultBackend();
-		PermissionBackend active = this.backend;
-		String simpleName = active != null ? active.getClass().getSimpleName() : "?";
-		return new BackendInfo(type, simpleName, type + " (" + simpleName + ")");
-	}
-
-	@Override
 	public PermissionEventBus events() {
 		return eventBus;
-	}
-
-	@Override
-	public int userCount() {
-		return getUserIdentifiers().size();
-	}
-
-	@Override
-	public int groupCount() {
-		return getGroupNames().size();
-	}
-
-	@Override
-	public Collection<String> registeredWorlds() {
-		return getWorldNames();
-	}
-
-	@Override
-	public Optional<User> lookupUser(String identifier) {
-		if (identifier == null || identifier.isEmpty()) {
-			return Optional.empty();
-		}
-		if (!backend.hasUser(identifier)) {
-			try {
-				UUID.fromString(identifier);
-			} catch (IllegalArgumentException ignored) {
-				UUID resolved = platform.nameToUuid(identifier);
-				if (resolved == null || !backend.hasUser(resolved.toString())) {
-					return Optional.empty();
-				}
-			}
-		}
-		return Optional.of(wrapUser(getUser(identifier)));
-	}
-
-	@Override
-	public Optional<User> lookupUser(UUID uuid) {
-		if (uuid == null || !backend.hasUser(uuid.toString())) {
-			return Optional.empty();
-		}
-		return Optional.of(wrapUser(getUser(uuid)));
-	}
-
-	@Override
-	public User user(String identifier) {
-		return wrapUser(getUser(identifier));
-	}
-
-	@Override
-	public User user(UUID uuid) {
-		return wrapUser(getUser(uuid));
-	}
-
-	@Override
-	public Set<String> userIdentifiers() {
-		return Set.copyOf(getUserIdentifiers());
-	}
-
-	@Override
-	public void deleteUser(String identifier) {
-		PermissionUser user = getUser(identifier);
-		user.remove();
-		resetUser(user.getIdentifier());
-	}
-
-	@Override
-	public Optional<Group> lookupGroup(String name) {
-		if (name == null || name.isEmpty() || !backend.hasGroup(name)) {
-			return Optional.empty();
-		}
-		return Optional.of(wrapGroup(getGroup(name)));
-	}
-
-	@Override
-	public Group group(String name) {
-		if (name == null || name.isEmpty()) {
-			throw new IllegalArgumentException("Group name must not be empty");
-		}
-		return wrapGroup(getGroup(name));
-	}
-
-	@Override
-	public Set<String> groupNames() {
-		return Set.copyOf(getGroupNames());
-	}
-
-	@Override
-	public void deleteGroup(String name) {
-		PermissionGroup group = getGroup(name);
-		String id = group.getIdentifier();
-		group.remove();
-		resetGroup(id);
-	}
-
-	@Override
-	public List<String> worldInheritance(String world) {
-		return List.copyOf(getWorldInheritance(Worlds.normalize(world)));
-	}
-
-	@Override
-	public Map<String, List<String>> worldInheritanceMap() {
-		LinkedHashMap<String, List<String>> mapped = new LinkedHashMap<>();
-		for (Map.Entry<String, List<String>> entry : backend.getAllWorldInheritance().entrySet()) {
-			mapped.put(Worlds.fromMapKey(entry.getKey()), List.copyOf(entry.getValue()));
-		}
-		return Map.copyOf(mapped);
-	}
-
-	@Override
-	public List<Group> defaultGroups(String world) {
-		List<Group> defaults = new ArrayList<>();
-		for (PermissionGroup group : getDefaultGroups(Worlds.normalize(world))) {
-			defaults.add(wrapGroup(group));
-		}
-		return List.copyOf(defaults);
-	}
-
-	@Override
-	public Map<Integer, Group> rankLadder(String ladderName) {
-		Map<Integer, Group> ladder = new LinkedHashMap<>();
-		for (Map.Entry<Integer, PermissionGroup> entry : getRankLadder(ladderName).entrySet()) {
-			ladder.put(entry.getKey(), wrapGroup(entry.getValue()));
-		}
-		return Map.copyOf(ladder);
-	}
-
-	@Override
-	public void setActiveBackend(String alias) throws PermissionsExException {
-		try {
-			setBackend(alias);
-		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to activate backend " + alias, e);
-		}
-	}
-
-	@Override
-	public BackendHandle createBackendHandle(String alias) throws PermissionsExException {
-		try {
-			PermissionBackend created = createBackend(alias);
-			return new ModernBackendHandle(created, alias, this);
-		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to create backend " + alias, e);
-		}
-	}
-
-	@Override
-	public void importFromBackend(String backendAlias) throws PermissionsExException {
-		try {
-			PermissionBackend source = createBackend(backendAlias);
-			backend.loadFrom(source);
-			clearCache();
-			publishSystem(SystemMutation.RELOADED);
-		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to import from backend " + backendAlias, e);
-		}
-	}
-
-	@Override
-	public String exportData() throws PermissionsExException {
-		return BackendSnapshotSupport.export(backend);
-	}
-
-	@Override
-	public void importData(String document, ImportMode mode) throws PermissionsExException {
-		PermissionBackend snapshot = BackendSnapshotSupport.snapshotFromYaml(this, document);
-        if (mode == ImportMode.REPLACE) {
-            clearCache();
-        }
-        backend.loadFrom(snapshot);
-        publishSystem(SystemMutation.RELOADED);
-    }
-
-	@Override
-	public void reload() throws PermissionsExException {
-		try {
-			reset();
-		} catch (PermissionBackendException e) {
-			throw new PermissionsExException("Failed to reload PermissionsEx backend", e);
-		}
-	}
-
-	@Override
-	public CompletableFuture<Void> reloadAsync() {
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Runnable task = () -> {
-			try {
-				reload();
-				future.complete(null);
-			} catch (Exception ex) {
-				future.completeExceptionally(ex);
-			}
-		};
-		if (executor != null) {
-			executor.execute(task);
-		} else {
-			task.run();
-		}
-		return future;
-	}
-
-	@Override
-	public PermissionEditSession openEditSession() {
-		return new PermissionEditSessionImpl(this);
 	}
 
 	public void applyBackendData(PermissionBackend source) {
 		backend.loadFrom(source);
 		clearCache();
 		publishSystem(SystemMutation.RELOADED);
-	}
-
-	private User wrapUser(PermissionUser user) {
-		return new UserImpl(parseUserId(user), user, this);
-	}
-
-	private Group wrapGroup(PermissionGroup group) {
-		return new GroupImpl(group.getIdentifier(), group, this);
-	}
-
-	private static UUID parseUserId(PermissionUser user) {
-		try {
-			return UUID.fromString(user.getIdentifier());
-		} catch (IllegalArgumentException ex) {
-			return UUID.nameUUIDFromBytes(user.getIdentifier().getBytes(java.nio.charset.StandardCharsets.UTF_8));
-		}
 	}
 
 	/**

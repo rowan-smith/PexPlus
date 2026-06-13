@@ -318,7 +318,7 @@ For plugins that implement custom backends (rare):
 - `PermissionsUserData` / `PermissionsGroupData`
 - `PEXBackendConfiguration`
 
-Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PermissionService` only.
+Most hook plugins should **not** depend on backend types — use `PermissionManager` / `PermissionsExApi` only.
 
 ---
 

@@ -151,7 +151,7 @@ public final class GroupImpl extends AbstractPermissionSubjectAdapter implements
     private void collectMembers(LinkedHashSet<String> seen, List<User> members, Set<PermissionUser> source) {
         for (PermissionUser member : source) {
             if (seen.add(member.getIdentifier())) {
-                members.add(manager.user(member.getIdentifier()));
+                members.add(SubjectSupport.wrapUser(manager, member));
             }
         }
     }
@@ -174,7 +174,7 @@ public final class GroupImpl extends AbstractPermissionSubjectAdapter implements
     public List<User> activeMembers(boolean inherit) {
         var members = new ArrayList<User>();
         for (PermissionUser member : group.getActiveUsers(inherit)) {
-            members.add(manager.user(member.getIdentifier()));
+            members.add(SubjectSupport.wrapUser(manager, member));
         }
         return List.copyOf(members);
     }

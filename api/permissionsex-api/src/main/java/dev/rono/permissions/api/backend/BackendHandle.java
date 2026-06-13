@@ -5,9 +5,7 @@ import dev.rono.permissions.api.PermissionsExException;
 /**
  * Non-active backend instance for inspection and data transfer.
  *
- * <p>Created via {@link dev.rono.permissions.api.query.BackendScope#createHandle(String)} or
- * {@link dev.rono.permissions.api.service.PermissionServiceBridge#createBackendHandle(String)}.
- * The handle targets a configured backend without making it active.</p>
+ * <p>The handle targets a configured backend without making it active.</p>
  */
 public interface BackendHandle {
 

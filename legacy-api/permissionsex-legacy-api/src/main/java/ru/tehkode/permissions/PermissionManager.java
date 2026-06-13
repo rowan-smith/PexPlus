@@ -130,8 +130,8 @@ public interface PermissionManager {
      * Checks whether the holder effectively holds the permission in the <em>global</em> scope.
      *
      * <p>Includes inheritance and parent groups for user/group holders. For per-world effective checks, use the
-     * classic {@link #has(Player, String, String)} API or {@link dev.rono.permissions.api.service.PermissionService}
-     * world scopes.</p>
+     * classic {@link #has(Player, String, String)} API or {@link #hasPermission(PermissionHolder, String, Map)}
+     * with a {@code world} context entry.</p>
      *
      * @param holder     permission target; must not be {@code null}
      * @param permission permission node to check; must not be {@code null}

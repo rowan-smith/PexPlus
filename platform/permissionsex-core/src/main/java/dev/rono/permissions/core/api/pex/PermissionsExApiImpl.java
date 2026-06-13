@@ -1,6 +1,7 @@
 package dev.rono.permissions.core.api.pex;
 
 import dev.rono.permissions.api.PermissionsExApi;
+import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.group.GroupManager;
 import dev.rono.permissions.api.ladder.LadderManager;
 import dev.rono.permissions.api.user.UserManager;
@@ -47,5 +48,10 @@ public final class PermissionsExApiImpl implements PermissionsExApi {
     @Override
     public PermissionManager getPermissionManager() {
         return manager;
+    }
+
+    @Override
+    public PermissionEventBus getEventBus() {
+        return manager.events();
     }
 }

@@ -66,7 +66,7 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
 | `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
-| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
+| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionsExApi` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
 
 ### `platform` — engine, runtimes, bootstrap
 
@@ -177,20 +177,20 @@ Add **`permissionsex-core-api`** only if you implement a **custom platform host*
 
 #### Runtime registration (Spigot/Paper only)
 
-On game servers, PEX registers **`PermissionService`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
+On game servers, PEX registers **`PermissionsExApi`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
 
 ```java
-RegisteredServiceProvider<PermissionService> reg =
+PermissionsEx.getApi() reg =
         getServer().getServicesManager().getRegistration(PermissionService.class);
 if (reg != null) {
-    PermissionService pex = reg.getProvider();
+    var api = PermissionsEx.getApi();
     getLogger().info("PEX backend: " + pex.backend().simpleName());
     getLogger().info("Users: " + pex.users().count()
             + ", groups: " + pex.groups().count());
 }
 ```
 
-**Bungee/Waterfall:** `PermissionService` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
+**Bungee/Waterfall:** `PermissionsExApi` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
 
 New features are added on **`dev.rono.permissions.api.*`** only — the legacy `PermissionManager` interface is not expanded.
 
@@ -202,15 +202,15 @@ Detailed documentation lives under **[`docs/api/`](docs/api/README.md)**:
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](docs/api/MODERN_API.md) | `PermissionService`, subjects, world contexts, timed permissions |
+| [MODERN_API.md](docs/api/MODERN_API.md) | managers, subjects, world contexts, timed permissions |
 | [LEGACY_API.md](docs/api/LEGACY_API.md) | Classic `PermissionManager`, events, stub |
 | [FUTURE.md](docs/api/FUTURE.md) | Recommended API additions and gaps |
 
 Summary below; see the linked docs for complete method lists and examples.
 
-#### `PermissionService` (`permissionsex-api`)
+#### `PermissionsExApi` (`permissionsex-api`)
 
-Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers and `getPermissionManager()` (classic + holder-based permission ops). The same runtime object also implements the fluent `PermissionService` surface.
+Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers and `getPermissionManager()` (classic + holder-based permission ops). The same runtime object also implements the manager-based API.
 
 | Method | Description |
 |--------|-------------|
@@ -228,7 +228,7 @@ Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.ja
 
 #### `PermissionSubject`, `User`, `Group` (`permissionsex-api`)
 
-Subject operations are accessed through `User` and `Group` instances from `PermissionService`. Both extend `PermissionSubject`.
+Subject operations are accessed through `User` and `Group` instances from `PermissionsExApi`. Both extend `PermissionSubject`.
 
 | `PermissionSubject` | Description |
 |---------------------|-------------|
@@ -332,7 +332,7 @@ These are used inside PEX platform wiring, not typical hook-plugin entry points.
 
 #### Minimal modern hook example (Spigot)
 
-Modern-only integration via `PermissionService`:
+Modern-only integration via `PermissionsExApi`:
 
 ```java
 import dev.rono.permissions.api.service.PermissionService;
@@ -343,18 +343,18 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public void onEnable() {
-    RegisteredServiceProvider<PermissionService> reg =
+    PermissionsEx.getApi() reg =
             getServer().getServicesManager().getRegistration(PermissionService.class);
     if (reg == null) {
         getLogger().warning("PermissionsEx is not available.");
         return;
     }
-    PermissionService pex = reg.getProvider();
+    var api = PermissionsEx.getApi();
     getLogger().info("PEX " + pex.backend().simpleName()
             + " — " + pex.groups().count() + " groups");
 }
 
-public void onJoin(PlayerJoinEvent event, PermissionService pex) {
+public void onJoin(PlayerJoinEvent event, PermissionsExApi pex) {
     Player player = event.getPlayer();
     var manager = PermissionsEx.getApi().getPermissionManager();
     if (manager.has(player, "my.permission")) {
@@ -373,7 +373,7 @@ For a full modern sample, see [`plugin/permissionsex-example-plugin/`](plugin/pe
 | Situation | Use |
 |-----------|-----|
 | Maintaining an existing PEX hook plugin | **Legacy API** + **legacy stub** (if you call `PermissionsEx.*`) |
-| Brand-new plugin on a PEX server | **Modern API** (`PermissionService`) |
+| Brand-new plugin on a PEX server | **Modern API** (`PermissionsExApi`) |
 | Listening to permission change events on Spigot | **Legacy API** events (`ru.tehkode.permissions.events.*`) — still published on game servers |
 | Proxy (Bungee) integration | **Modern / core** paths; Bukkit events are not fired on proxy |
 
@@ -420,7 +420,7 @@ MockBukkit full-server tests **skip automatically** when the test Paper API does
 
 ### Done
 
-- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PermissionService`)
+- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PermissionsExApi`)
 - [x] **Automated tests for core permission logic** — hierarchy, matcher, backends, commands, concurrency, legacy contract tests (~30 test classes)
 - [x] **Legacy API cleanup and isolation** — `legacy-api` + `legacy-stub` split, `InternalPermissionManager`, `legacy-compat` module, utils in `legacy-api`
 - [x] **Documentation** — `ARCHITECTURE.md`, `docs/COMPATIBILITY.md`, `docs/testing/REAL_SERVER_MATRIX.md`, `docs/examples/`

@@ -12,7 +12,7 @@ legacy-api/
 
 api/
   permissionsex-core-api      Platform-neutral SPI (PlatformAdapter, bus dispatches)
-  permissionsex-api           PermissionService façade for modern hook plugins
+  permissionsex-api           PermissionsExApi + managers for modern hook plugins
   permissionsex-api-bungee    PermissionsEx.getApi() + proxy service registry
 
 platform/

@@ -1,5 +1,6 @@
 package dev.rono.permissions.api;
 
+import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.group.GroupManager;
 import dev.rono.permissions.api.ladder.LadderManager;
 import dev.rono.permissions.api.user.UserManager;
@@ -21,6 +22,13 @@ public interface PermissionsExApi {
     WorldManager getWorldManager();
 
     LadderManager getLadderManager();
+
+    /**
+     * Returns the permission-domain event bus for subscribing to entity and system dispatches.
+     *
+     * @return shared {@link PermissionEventBus}
+     */
+    PermissionEventBus getEventBus();
 
     /**
      * Classic and holder-based permission operations ({@link ru.tehkode.permissions.PermissionUser},
