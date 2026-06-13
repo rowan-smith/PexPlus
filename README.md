@@ -51,6 +51,9 @@ flowchart BT
     boot[permissionsex-bootstrap]
     boot --> spigot
     boot --> bungee
+    boot --> paper
+    boot --> velocity
+    boot --> sponge
   end
   subgraph plugin [plugin]
     exampleLegacy[permissionsex-example-legacy-plugin]
@@ -94,15 +97,15 @@ Maven reactor order matches six groups (see root `pom.xml`). Maven still resolve
 |-----------|-------------|----------------------|---------|
 | `platform/permissionsex-spigot/` | `permissionsex-spigot` | Yes (shaded) | Bukkit/Paper runtime: live `PermissionsEx` `JavaPlugin`, superperms bridge, Cloud commands, Bukkit events. |
 | `platform/permissionsex-bungee/` | `permissionsex-bungee` | Yes (shaded) | Bungee/Waterfall proxy runtime and permission bridge. |
-| `platform/permissionsex-paper/` | `permissionsex-paper` | No (placeholder) | Reserved Paper-specific adapter slot. |
-| `platform/permissionsex-velocity/` | `permissionsex-velocity` | No (placeholder) | Reserved Velocity proxy adapter slot. |
-| `platform/permissionsex-sponge/` | `permissionsex-sponge` | No (placeholder) | Reserved Sponge adapter slot. |
+| `platform/permissionsex-paper/` | `permissionsex-paper` | Yes (thin overlay) | Paper runtime entry (`PaperPermissionsExPlugin`), Brigadier hook, Paper probes. |
+| `platform/permissionsex-velocity/` | `permissionsex-velocity` | Yes (thin overlay) | Velocity proxy adapter, permission provider, shared proxy bootstrap. |
+| `platform/permissionsex-sponge/` | `permissionsex-sponge` | Yes (thin overlay) | Sponge runtime adapter and scheduler bridge. |
 
 ### `bootstrap` — universal jar
 
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
-| `bootstrap/permissionsex-bootstrap/` | `permissionsex-bootstrap` | **Install this jar** | Merges Spigot + Bungee → `PermissionsExPlus-{version}.jar`. |
+| `bootstrap/permissionsex-bootstrap/` | `permissionsex-bootstrap` | **Install this jar** | Merges all five platform artifacts → `PermissionsExPlus-{version}.jar`. |
 
 ### `plugin` — sample companion plugins
 
@@ -494,7 +497,7 @@ mvn clean package -pl bootstrap -am
 
 Outputs: **`bootstrap/target/PermissionsExPlus-{version}.jar`** (module: **`dev.rono.permissions:permissionsex-bootstrap`**)
 
-Install that jar on each server (`plugins/` on backends, same path on Bungee). See **`bootstrap/README.md`** for loader routing (`plugin.yml` vs **`bungee.yml`**).
+Install that jar on each server (`plugins/` on backends and proxies, or Sponge `mods/` as appropriate). See **`bootstrap/README.md`** for loader routing across all platform descriptors.
 
 **Before swapping to the merged jar, remove older PEX jars** from **`plugins/`** so the server cannot load two copies. Delete any shaded platform-only jars, for example:
 

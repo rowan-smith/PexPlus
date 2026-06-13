@@ -22,12 +22,12 @@ common/
 platform/
   permissionsex-spigot        Bukkit/Paper runtime (live today)
   permissionsex-bungee        Bungee/Waterfall proxy runtime (live today)
-  permissionsex-paper         Paper-specific adapter slot (placeholder)
-  permissionsex-velocity      Velocity proxy adapter slot (placeholder)
-  permissionsex-sponge        Sponge adapter slot (placeholder)
+  permissionsex-paper         Paper-specific runtime enhancements
+  permissionsex-velocity      Velocity proxy runtime
+  permissionsex-sponge        Sponge runtime
 
 bootstrap/
-  permissionsex-bootstrap     Universal shaded jar (plugin.yml + bungee.yml)
+  permissionsex-bootstrap     Universal shaded jar (all platform descriptors)
 ```
 
 Dependency direction: **platform** → **common** → **legacy-api** / **api** → **core-api**; **bootstrap** merges platform jars; **plugin** modules depend on **legacy-api** (+ **legacy-stub**) or **api** only.
@@ -102,7 +102,15 @@ Bus dispatches (`EntityDispatch`, `SystemDispatch`) are translated to legacy `ru
 
 ### Bungee runtime
 
-`BungeePexPermissionBridge` handles `PermissionCheckEvent` using direct expression matching. No Bukkit events are published on proxy.
+`BungeePexPermissionBridge` handles `PermissionCheckEvent` using direct expression matching. No Bukkit events are published on proxy. Config, backends, and API registration are shared with Velocity/Sponge via `ProxyPlatformInitializer`.
+
+### Velocity runtime
+
+`PermissionsSetupEvent` supplies a permission provider; `ProxyPlatformInitializer` registers `PermissionsExApi` through `ProxyPermissionServices` (same static registry as Bungee).
+
+### Sponge runtime
+
+Engine wiring reuses `ProxyPlatformInitializer` for config/backends/API registry. Platform adapter maps worlds as permission realms.
 
 ## Backends
 

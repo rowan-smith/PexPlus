@@ -6,36 +6,31 @@ import com.velocitypowered.api.event.permission.PermissionsSetupEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.permission.Tristate;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.rono.permissions.api.runtime.NoOpPlatformEventBus;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
-import dev.rono.permissions.bungee.BungeePermissionsExConfig;
-import dev.rono.permissions.bungee.backends.file.BungeeFileBackend;
-import dev.rono.permissions.bungee.backends.memory.BungeeMemoryBackend;
 import dev.rono.permissions.core.DefaultPermissionManager;
+import dev.rono.permissions.runtime.startup.ProxyPlatformInitializer;
+import dev.rono.permissions.runtime.startup.VelocityPermissionBootstrapReporter;
 import dev.rono.permissions.velocity.platform.VelocityPlatformAdapter;
 import dev.rono.permissions.velocity.platform.VelocityPlatformScheduler;
 import org.slf4j.Logger;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 import java.nio.file.Path;
 
-@Plugin(
-        id = "permissionsex",
-        name = "PermissionsExPlus",
-        version = "1.23.5",
-        authors = {"PermissionsExPlus"})
+/**
+ * Velocity proxy entry point. Shared proxy bootstrap lives in {@link ProxyPlatformInitializer}.
+ */
 public final class VelocityPermissionsExPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
-    private PermissionManager manager;
+    private DefaultPermissionManager manager;
     private PlatformRuntime platformRuntime;
 
     @Inject
@@ -45,18 +40,21 @@ public final class VelocityPermissionsExPlugin {
         this.dataDirectory = dataDirectory;
     }
 
+    public ProxyServer server() {
+        return server;
+    }
+
     @Subscribe
     public void onInit(ProxyInitializeEvent event) throws PermissionBackendException {
-        BungeePermissionsExConfig config =
-                new BungeePermissionsExConfig(dataDirectory.toFile(), java.util.logging.Logger.getLogger(logger.getName()));
-        PermissionBackend.registerBackendAlias("memory", BungeeMemoryBackend.class);
-        PermissionBackend.registerBackendAlias("file", BungeeFileBackend.class);
         var adapter = new VelocityPlatformAdapter(server);
         var scheduler = new VelocityPlatformScheduler(this, server);
         platformRuntime = PlatformRuntime.of(adapter, NoOpPlatformEventBus.INSTANCE, scheduler);
-        manager = new DefaultPermissionManager(config, java.util.logging.Logger.getLogger("PermissionsEx"), platformRuntime);
-        manager.initTimer();
-        logger.info("PermissionsExPlus Velocity adapter enabled");
+        manager = ProxyPlatformInitializer.start(
+                        dataDirectory.toFile(),
+                        java.util.logging.Logger.getLogger(logger.getName()),
+                        platformRuntime)
+                .manager();
+        VelocityPermissionBootstrapReporter.log(this, manager, logger);
     }
 
     @Subscribe
@@ -82,11 +80,13 @@ public final class VelocityPermissionsExPlugin {
 
     @Subscribe
     public void onShutdown(ProxyShutdownEvent event) {
-        if (manager != null) {
-            manager.end();
-            manager = null;
-        }
+        ProxyPlatformInitializer.shutdown(manager);
+        manager = null;
         platformRuntime = null;
         logger.info("PermissionsExPlus Velocity adapter disabled");
+    }
+
+    public PermissionManager manager() {
+        return manager;
     }
 }

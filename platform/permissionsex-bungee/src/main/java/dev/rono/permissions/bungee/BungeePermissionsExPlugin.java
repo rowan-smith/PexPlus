@@ -4,14 +4,13 @@ import dev.rono.permissions.api.runtime.NoOpPlatformEventBus;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
 import dev.rono.permissions.bungee.platform.BungeePlatformAdapter;
 import dev.rono.permissions.bungee.platform.BungeePlatformScheduler;
-import dev.rono.permissions.bungee.backends.file.BungeeFileBackend;
-import dev.rono.permissions.bungee.backends.memory.BungeeMemoryBackend;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
 import dev.rono.permissions.core.commands.CoreCloudPlatform;
 import dev.rono.permissions.core.commands.CoreCommandService;
 import dev.rono.permissions.runtime.startup.BungeePermissionBootstrapReporter;
+import dev.rono.permissions.runtime.startup.ProxyPlatformInitializer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -21,7 +20,6 @@ import org.yaml.snakeyaml.Yaml;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.backends.PermissionBackend;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 import java.io.IOException;
@@ -43,13 +41,12 @@ public class BungeePermissionsExPlugin extends Plugin {
     @Override
     public void onEnable() {
         try {
-            this.config = new BungeePermissionsExConfig(getDataFolder(), getLogger());
-            PermissionBackend.registerBackendAlias("memory", BungeeMemoryBackend.class);
-            PermissionBackend.registerBackendAlias("file", BungeeFileBackend.class);
             var adapter = new BungeePlatformAdapter(this);
             var scheduler = new BungeePlatformScheduler(this);
             this.platformRuntime = PlatformRuntime.of(adapter, NoOpPlatformEventBus.INSTANCE, scheduler);
-            this.manager = new DefaultPermissionManager(config, getLogger(), platformRuntime);
+            var startup = ProxyPlatformInitializer.start(getDataFolder(), getLogger(), platformRuntime);
+            this.config = startup.config();
+            this.manager = startup.manager();
             getProxy().getPluginManager().registerListener(this, new BungeePexPermissionBridge(manager));
             this.commandService = new CoreCommandService(manager);
             this.cloudManager = new StrippingBungeeCommandManager<>(
@@ -68,10 +65,6 @@ public class BungeePermissionsExPlugin extends Plugin {
                             new BungeeImportBridge(),
                             CoreCloudPlatform.PROXY)
                     .register();
-            this.manager.initTimer();
-            ProxyPermissionServices.register(
-                    ((DefaultPermissionManager) this.manager).permissionsExApi(),
-                    this.manager);
             BungeePermissionBootstrapReporter.log(this, this.manager);
         } catch (PermissionBackendException ex) {
             getLogger().severe("Failed to initialize PermissionsExPlus Bungee adapter: " + ex.getMessage());
@@ -81,11 +74,8 @@ public class BungeePermissionsExPlugin extends Plugin {
 
     @Override
     public void onDisable() {
-        ProxyPermissionServices.unregister();
-        if (manager != null) {
-            manager.end();
-            manager = null;
-        }
+        ProxyPlatformInitializer.shutdown(manager instanceof DefaultPermissionManager dpm ? dpm : null);
+        manager = null;
         commandService = null;
         cloudManager = null;
         platformRuntime = null;

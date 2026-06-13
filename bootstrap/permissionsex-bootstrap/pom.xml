@@ -15,7 +15,7 @@
     <name>PermissionsExPlus Bootstrap</name>
     <description>Merges pre-built shaded platform jars. Those jars embed engine + façade layers: core → core-api + api + legacy-api.</description>
 
-    <!-- Logical graph: bootstrap = platform-spigot + platform-bungee (each shades core + apis). -->
+    <!-- Logical graph: bootstrap merges all platform artifacts (Spigot/Bungee shade core + apis; others are thin overlays). -->
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -25,6 +25,21 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>permissionsex-bungee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>permissionsex-paper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>permissionsex-velocity</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>permissionsex-sponge</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -51,6 +66,9 @@
                                 <includes>
                                     <include>dev.rono.permissions:permissionsex-spigot</include>
                                     <include>dev.rono.permissions:permissionsex-bungee</include>
+                                    <include>dev.rono.permissions:permissionsex-paper</include>
+                                    <include>dev.rono.permissions:permissionsex-velocity</include>
+                                    <include>dev.rono.permissions:permissionsex-sponge</include>
                                 </includes>
                             </artifactSet>
                             <filters>

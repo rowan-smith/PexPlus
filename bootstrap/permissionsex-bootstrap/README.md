@@ -8,23 +8,33 @@ Maven still uses a normal module `artifactId` for the reactor; only the **on-dis
 
 ## How routing works
 
-- **Paper / Spigot** reads **`plugin.yml`** and loads **`ru.tehkode.permissions.spigot.bukkit.SpigotPermissionsExPlugin`**.
-- **BungeeCord / Waterfall** reads **`bungee.yml`** and loads **`dev.rono.permissions.bungee.BungeePermissionsExPlugin`**.
+Each platform loader reads **only its own descriptor** from the merged jar. No Java “router” plugin is required.
 
-Both descriptors are unpacked from the shaded Spigot and Bungee artifacts into this jar **without overwriting each other**. No Java “router” plugin is needed: **each loader only parses its own file** and ignores the other.
+| Platform | Descriptor | Main class |
+|----------|------------|------------|
+| **Spigot / CraftBukkit** | `plugin.yml` | `ru.tehkode.permissions.bukkit.PermissionsEx` |
+| **Paper** | `paper-plugin.yml` | `dev.rono.permissions.paper.PaperPermissionsExPlugin` |
+| **BungeeCord / Waterfall** | `bungee.yml` | `dev.rono.permissions.bungee.BungeePermissionsExPlugin` |
+| **Velocity** | `velocity-plugin.json` | `dev.rono.permissions.velocity.VelocityPermissionsExPlugin` |
+| **Sponge** | `META-INF/sponge_plugins.json` | `dev.rono.permissions.sponge.SpongePermissionsExPlugin` |
 
-The **`ru.tehkode.permissions.bukkit.PermissionsEx`** type on the classpath is still the **static façade** (entry helpers) packaged in **`permissionsex-legacy-api`**; only the **`JavaPlugin` main class name** moved to **`PermissionsExPlugin`** to avoid duplicate type definitions across modules.
+Descriptors are unpacked from the shaded platform artifacts into this jar **without overwriting each other**.
+
+The **`ru.tehkode.permissions.bukkit.PermissionsEx`** type on the classpath is still the **static façade** (entry helpers) packaged in **`permissionsex-legacy-api`**; only the **`JavaPlugin` main class name** moved to **`PermissionsExPlugin`** on Spigot to avoid duplicate type definitions across modules. Paper uses its own entry class that extends the Spigot plugin.
 
 ## Install
 
-Copy **`PermissionsExPlus-{version}.jar`** into **`plugins/`** on backend servers **and/or** the proxy.
+Copy **`PermissionsExPlus-{version}.jar`** into **`plugins/`** on backend servers, proxies, or Sponge `mods/` / `plugins/` (per your Sponge loader layout).
 
-**Plugins folder must not contain a second PermissionsExPlus build.** Remove platform-only shaded jars before restart, including:
+**Each server process must contain only one PermissionsExPlus build.** Remove platform-only shaded jars before restart, including:
 
 | Remove (examples) |
 |---|
 | `permissionsex-spigot-*.jar` |
 | `permissionsex-bungee-*.jar` |
+| `permissionsex-paper-*.jar` |
+| `permissionsex-velocity-*.jar` |
+| `permissionsex-sponge-*.jar` |
 | Legacy: `PermissionsExPlus-spigot-*.jar`, `PermissionsExPlus-bungee-*.jar`, `PermissionsExPlus-bootstrap-*-universal.jar`, `ru.tehkode:permissionsex-*` |
 
 Keep a **single** `PermissionsExPlus-*.jar` per server process.
@@ -37,4 +47,4 @@ From repo root:
 mvn -pl bootstrap -am package
 ```
 
-`spigot` and `bungee` must succeed first so **`permissionsex-spigot`** / **`permissionsex-bungee`** jars exist.
+All five platform modules must succeed first so their jars exist for the merge step.
