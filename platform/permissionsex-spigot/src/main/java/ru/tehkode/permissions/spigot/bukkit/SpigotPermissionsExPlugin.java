@@ -234,7 +234,8 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
                         this::reloadConfig,
                         new SpigotConfigBridge(),
                         new SpigotUuidConversionBridge(),
-                        CoreCloudPlatform.GAME_SERVER));
+                        CoreCloudPlatform.GAME_SERVER,
+                        config.options().current().commandFramework()));
                 tryRegisterPaperBrigadier();
             } catch (Exception cloudEx) {
                 getLogger().warning("Failed to initialize Cloud command registration: " + cloudEx.getMessage());

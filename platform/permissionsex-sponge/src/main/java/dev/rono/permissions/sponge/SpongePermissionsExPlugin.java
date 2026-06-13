@@ -88,7 +88,8 @@ public final class SpongePermissionsExPlugin {
                     config::reload,
                     new ProxyConfigBridge(config),
                     force -> "UUID conversion is not supported on Sponge.",
-                    CoreCloudPlatform.PROXY));
+                    CoreCloudPlatform.PROXY,
+                    config.options().current().commandFramework()));
         }
         cloudManager.registerQueuedCommands(event);
     }

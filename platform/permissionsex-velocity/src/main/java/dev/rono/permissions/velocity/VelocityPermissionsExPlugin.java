@@ -88,7 +88,8 @@ public final class VelocityPermissionsExPlugin {
                 config::reload,
                 new ProxyConfigBridge(config),
                 force -> "UUID conversion is not supported on Velocity.",
-                CoreCloudPlatform.PROXY));
+                CoreCloudPlatform.PROXY,
+                config.options().current().commandFramework()));
         VelocityPermissionBootstrapReporter.log(this, manager, logger);
     }
 

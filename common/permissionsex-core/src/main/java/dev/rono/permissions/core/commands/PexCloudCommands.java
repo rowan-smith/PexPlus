@@ -1,6 +1,7 @@
 package dev.rono.permissions.core.commands;
 
 import cloud.commandframework.CommandManager;
+import dev.rono.permissions.core.config.CommandFramework;
 import ru.tehkode.permissions.PermissionManager;
 
 /**
@@ -23,7 +24,8 @@ public final class PexCloudCommands {
                         request.configReloader(),
                         request.configBridge(),
                         request.uuidConversionBridge(),
-                        request.platform())
+                        request.platform(),
+                        request.commandFramework())
                 : new CoreCloudCommandRegistrar<>(
                         request.manager(),
                         request.senderType(),
@@ -32,8 +34,9 @@ public final class PexCloudCommands {
                         request.configReloader(),
                         request.configBridge(),
                         request.uuidConversionBridge(),
-                        request.importBridge(),
-                        request.platform());
+                        request.platform(),
+                        request.commandFramework(),
+                        request.importBridge());
         registrar.register();
         return commandService;
     }
@@ -47,6 +50,7 @@ public final class PexCloudCommands {
             CoreCommandService.ConfigBridge configBridge,
             CoreCommandService.UuidConversionBridge uuidConversionBridge,
             CoreCloudPlatform platform,
+            CommandFramework commandFramework,
             CoreCommandService.ImportBridge importBridge) {
 
         public InstallRequest(
@@ -67,6 +71,30 @@ public final class PexCloudCommands {
                     configBridge,
                     uuidConversionBridge,
                     platform,
+                    CommandFramework.MODERN,
+                    null);
+        }
+
+        public InstallRequest(
+                CommandManager<C> manager,
+                Class<C> senderType,
+                PermissionManager permissionManager,
+                CoreCloudCommandRegistrar.SenderAdapter<C> senderAdapter,
+                CoreCommandService.CoreConfigReloader configReloader,
+                CoreCommandService.ConfigBridge configBridge,
+                CoreCommandService.UuidConversionBridge uuidConversionBridge,
+                CoreCloudPlatform platform,
+                CommandFramework commandFramework) {
+            this(
+                    manager,
+                    senderType,
+                    permissionManager,
+                    senderAdapter,
+                    configReloader,
+                    configBridge,
+                    uuidConversionBridge,
+                    platform,
+                    commandFramework,
                     null);
         }
 
@@ -80,6 +108,7 @@ public final class PexCloudCommands {
                     configBridge,
                     uuidConversionBridge,
                     platform,
+                    commandFramework,
                     importBridge);
         }
     }
