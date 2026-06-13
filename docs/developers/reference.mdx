@@ -1,0 +1,46 @@
+---
+title: Javadoc
+description: Javadoc API reference for all PermissionsExPlus versions.
+slug: /developers/reference
+---
+
+import VersionCards from '@site/src/components/VersionCards';
+
+Browse generated API documentation. Method signatures, parameters, and return types are documented here — the [API Cookbook](/developers/cookbook/) shows how to use them.
+
+<VersionCards type="javadoc" />
+
+## Key packages (%%site.version%%)
+
+| API | Package | Entry point |
+|-----|---------|-------------|
+| **Modern service** | `dev.rono.permissions.api.service` | [PermissionsExApi](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/service/PermissionsExApi.html) |
+| **Subjects** | `dev.rono.permissions.api.subject` | [User](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/User.html), [Group](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/Group.html) |
+| **Context** | `dev.rono.permissions.api.permission` | [PermissionContext](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/permission/PermissionContext.html) |
+| **Legacy** | `ru.tehkode.permissions` | [PermissionManager](pathname:///apidocs/%%site.version%%/ru/tehkode/permissions/PermissionManager.html) |
+| **Legacy events** | `ru.tehkode.permissions.events` | [PermissionEntityEvent](pathname:///apidocs/%%site.version%%/ru/tehkode/permissions/events/PermissionEntityEvent.html) |
+
+Versions **1.23.1 – 1.23.4** document the classic `ru.tehkode.*` API only. The modern `dev.rono.*` packages appear starting in **%%site.version%%**.
+
+## Generate locally
+
+**%%site.version%%** (PermissionsExPlus):
+
+```bash
+mvn -pl api/permissionsex-api,legacy-api/permissionsex-legacy-api javadoc:javadoc -am -Ddoclint=none
+```
+
+**Classic 1.23.x**:
+
+```bash
+./scripts/build-classic-javadoc.sh STABLE-1.23.4 1.23.4
+```
+
+## Maven coordinates
+
+```xml
+<groupId>dev.rono.permissions</groupId>
+<artifactId>permissionsex-api</artifactId>
+<version>%%site.version%%</version>
+<scope>provided</scope>
+```

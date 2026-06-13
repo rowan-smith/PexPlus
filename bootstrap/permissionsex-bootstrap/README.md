@@ -1,5 +1,7 @@
 # PermissionsExPlus bootstrap (merged jar)
 
+See the [Universal Bootstrap Jar](https://permissionsexplus.rono.dev/developers/bootstrap) documentation on the project website.
+
 Maven module **`permissionsex-bootstrap`** (`dev.rono.permissions:permissionsex-bootstrap`) emits a single installable jar:
 
 **`bootstrap/target/PermissionsExPlus-{version}.jar`**
@@ -8,7 +10,7 @@ Maven still uses a normal module `artifactId` for the reactor; only the **on-dis
 
 ## How routing works
 
-Each platform loader reads **only its own descriptor** from the merged jar. No Java “router” plugin is required.
+Each platform loader reads **only its own descriptor** from the merged jar. No Java "router" plugin is required.
 
 | Platform | Descriptor | Main class |
 |----------|------------|------------|
@@ -48,3 +50,5 @@ mvn -pl bootstrap -am package
 ```
 
 All five platform modules must succeed first so their jars exist for the merge step.
+
+Output: `bootstrap/target/PermissionsExPlus-{version}.jar`
