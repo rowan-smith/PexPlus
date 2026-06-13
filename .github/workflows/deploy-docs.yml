@@ -3,7 +3,12 @@ name: Deploy documentation
 on:
   push:
     branches:
-      - gh-pages
+      - main
+    paths:
+      - 'website/**'
+      - 'examples/**'
+      - 'pom.xml'
+      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,22 +29,37 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Build Javadoc
+        run: |
+          chmod +x website/scripts/*.sh
+          website/scripts/build-all-javadoc.sh
 
       - name: Install dependencies
+        working-directory: website
         run: npm ci
 
       - name: Build site
+        working-directory: website
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: website/build
 
   deploy:
     needs: build
