@@ -234,6 +234,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
                         new SpigotConfigBridge(),
                         new SpigotUuidConversionBridge())
                         .register();
+                tryRegisterPaperBrigadier();
             } catch (Exception cloudEx) {
                 getLogger().warning("Failed to initialize Cloud command registration: " + cloudEx.getMessage());
             }
@@ -385,6 +386,23 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 
 	protected StrippingBukkitCommandManager<CommandSender> getCloudManager() {
 		return cloudManager;
+	}
+
+	/** Registers Cloud Brigadier hooks when running on Paper. */
+	protected void tryRegisterPaperBrigadier() {
+		if (cloudManager == null) {
+			return;
+		}
+		try {
+			Class.forName("io.papermc.paper.ServerBuildInfo");
+		} catch (ClassNotFoundException ignored) {
+			return;
+		}
+		try {
+			cloudManager.registerBrigadier();
+		} catch (BukkitCommandManager.BrigadierFailureException ex) {
+			getLogger().fine("Brigadier tab-completion hook not available: " + ex.getMessage());
+		}
 	}
 
 	@Override
