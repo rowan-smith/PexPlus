@@ -20,6 +20,18 @@ Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissions
 
 ---
 
+## Documentation
+
+Every public type under `dev.rono.permissions.api.*` is documented with Javadoc. Generate HTML reference from the repository root:
+
+```bash
+mvn javadoc:javadoc -pl api/permissionsex-api,api/permissionsex-core-api
+```
+
+Package overviews live in `package-info.java` files. Architectural rules: [API_INVARIANTS.md](API_INVARIANTS.md).
+
+---
+
 ## Entry point
 
 ```java

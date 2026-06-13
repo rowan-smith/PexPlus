@@ -29,34 +29,48 @@ public final class PermissionAddRequest {
         this.source = builder.source;
     }
 
+    /** @return holder that receives the grant */
     public PermissionHolder holder() {
         return holder;
     }
 
+    /** @return permission node expression to grant */
     public String permission() {
         return permission;
     }
 
+    /** @return relative duration when specified at build time; may be {@code null} when {@link #expiresAt()} was set directly */
     public Duration duration() {
         return duration;
     }
 
+    /** @return absolute expiry instant resolved at build time; {@code null} for permanent grants */
     public Instant expiresAt() {
         return expiresAt;
     }
 
+    /** @return immutable world/context map for scoped grants */
     public Map<String, String> context() {
         return context;
     }
 
+    /** @return provenance metadata for the grant */
     public PermissionSource source() {
         return source;
     }
 
+    /**
+     * Creates a new builder for a holder permission add request.
+     *
+     * @return new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Fluent builder for {@link PermissionAddRequest}.
+     */
     public static final class Builder {
 
         private PermissionHolder holder;
@@ -66,36 +80,53 @@ public final class PermissionAddRequest {
         private Map<String, String> context = new HashMap<>();
         private PermissionSource source = PermissionSource.SYSTEM;
 
+        /** @param holder permission target; required */
         public Builder holder(PermissionHolder holder) {
             this.holder = holder;
             return this;
         }
 
+        /** @param permission node to grant; required, non-empty */
         public Builder permission(String permission) {
             this.permission = permission;
             return this;
         }
 
+        /** @param duration relative lifetime; mutually exclusive with {@link #expiresAt(Instant)} */
         public Builder duration(Duration duration) {
             this.duration = duration;
             return this;
         }
 
+        /** @param expiresAt absolute expiry; mutually exclusive with {@link #duration(Duration)} */
         public Builder expiresAt(Instant expiresAt) {
             this.expiresAt = expiresAt;
             return this;
         }
 
+        /**
+         * Adds a context entry for world-scoped grants.
+         *
+         * @param key context map key (for example {@code "world"})
+         * @param value context value
+         */
         public Builder addContext(String key, String value) {
             this.context.put(key, value);
             return this;
         }
 
+        /** @param source provenance metadata; defaults to {@link PermissionSource#SYSTEM} */
         public Builder source(PermissionSource source) {
             this.source = source;
             return this;
         }
 
+        /**
+         * Builds the add request.
+         *
+         * @return immutable request
+         * @throws IllegalStateException if holder or permission is missing, or both duration and expiresAt are set
+         */
         public PermissionAddRequest build() {
             if (holder == null) {
                 throw new IllegalStateException("Holder cannot be null");

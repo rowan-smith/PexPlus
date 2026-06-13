@@ -1,13 +1,11 @@
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.permission.PermissionAddRequest;
 import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.api.world.Worlds;
 import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.PEXTestBase;
 
 import java.util.List;
 import java.util.Map;
@@ -15,11 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ModernApiTest extends PEXTestBase {
-
-  private PermissionsExApi api() {
-    return ((DefaultPermissionManager) manager).permissionsExApi();
-  }
+class ModernApiTest extends ModernApiTestSupport {
 
   @Test
   void userAndGroupCrudViaManagers() {

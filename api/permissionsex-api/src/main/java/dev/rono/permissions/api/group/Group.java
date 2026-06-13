@@ -25,8 +25,19 @@ import java.util.Set;
 public interface Group extends PermissionSubject {
 
 
+    /**
+     * Returns the group identifier (same as {@link #identifier()}).
+     *
+     * @return group name
+     */
     String getName();
 
+    /**
+     * Returns a {@link dev.rono.permissions.api.permission.PermissionHolder} identity for holder-based
+     * permission operations on {@link ru.tehkode.permissions.PermissionManager}.
+     *
+     * @return holder view of this group
+     */
     PermissionHolder asHolder();
 
     /**
@@ -426,18 +437,6 @@ public interface Group extends PermissionSubject {
      */
     default List<String> descendantIdentifiers() {
         return descendantIdentifiers(Worlds.GLOBAL);
-    }
-
-    /**
-     * Returns all descendant groups of this group in the global namespace.
-     *
-     * <p>Delegates to {@link #children(String, boolean)} with {@code inherit = true}.</p>
-     *
-     * @param world world name, or {@link Worlds#GLOBAL} for the global namespace
-     * @return list of all descendant groups
-     */
-    default List<Group> descendants(String world) {
-        return children(world, true);
     }
 
     /**

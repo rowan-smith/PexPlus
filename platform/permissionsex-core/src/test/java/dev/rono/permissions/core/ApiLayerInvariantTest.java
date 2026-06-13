@@ -49,7 +49,7 @@ class ApiLayerInvariantTest extends PEXTestBase {
                 .getUserManager()
                 .createUser("invariant-facade-user");
 
-        SubjectWorldContext context = SubjectWorldContexts.subject(user, "world");
+        SubjectWorldContext context = user.inWorld("world");
         user.addPermission("facade.test", "world");
 
         assertTrue(context.hasPermission("facade.test"));

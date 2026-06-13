@@ -22,12 +22,32 @@ import ru.tehkode.permissions.PermissionManager;
  */
 public interface PermissionsExApi {
 
+    /**
+     * Returns the user registry for find/get/create lifecycle operations.
+     *
+     * @return shared {@link dev.rono.permissions.api.user.UserManager}
+     */
     UserManager getUserManager();
 
+    /**
+     * Returns the group registry for find/get/create lifecycle operations.
+     *
+     * @return shared {@link dev.rono.permissions.api.group.GroupManager}
+     */
     GroupManager getGroupManager();
 
+    /**
+     * Returns the world registry for permission namespace management.
+     *
+     * @return shared {@link dev.rono.permissions.api.world.WorldManager}
+     */
     WorldManager getWorldManager();
 
+    /**
+     * Returns the rank-ladder registry and promotion/demotion operations.
+     *
+     * @return shared {@link dev.rono.permissions.api.ladder.LadderManager}
+     */
     LadderManager getLadderManager();
 
     /**

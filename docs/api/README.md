@@ -49,6 +49,24 @@ PermissionManager legacy = PermissionsEx.getPermissionManager();
 | [`plugin/permissionsex-example-plugin/`](../../plugin/permissionsex-example-plugin/) | Modern only |
 | [`plugin/permissionsex-example-legacy-plugin/`](../../plugin/permissionsex-example-legacy-plugin/) | Legacy + stub |
 
+## Tests
+
+Modern API integration tests live in `platform/permissionsex-core/src/test/java/dev/rono/permissions/core/`:
+
+| Class | Coverage |
+|-------|----------|
+| `ModernApiManagerLifecycleTest` | find/get/create/exists, exceptions, counts |
+| `ModernApiSubjectPermissionsTest` | permissions, negation, meta, timed grants |
+| `ModernApiWorldContextTest` | `inWorld` facades, global vs world scope |
+| `ModernApiGroupHierarchyTest` | membership graph, parent trees, identifiers |
+| `ModernApiHolderPermissionTest` | holder checks, `PermissionAddRequest` |
+| `ModernApiEventBusTest` | subscribe/unsubscribe, dispatches |
+| `ModernApiLadderTest` | promote/demote, rank metadata |
+| `ApiLayerInvariantTest` | architectural composition guards |
+| `WorldsTest`, `PermissionContextTest` | pure utility unit tests |
+
+Run: `mvn -pl platform/permissionsex-core test -Dtest='ModernApi*Test,ApiLayerInvariantTest,WorldsTest,PermissionContextTest'`
+
 ## Related docs
 
 - [COMPATIBILITY.md](../COMPATIBILITY.md) — Minecraft/Java version matrix

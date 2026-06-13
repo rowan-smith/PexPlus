@@ -9,12 +9,38 @@ import java.util.function.Predicate;
 /** Rank ladder registry with explicit find/get/create/exists lifecycle and promotion operations. */
 public interface LadderManager {
 
+    /**
+     * Looks up a known ladder without creating a record.
+     *
+     * @param name ladder name
+     * @return the ladder when referenced by stored groups; empty if unknown
+     */
     Optional<Ladder> findLadder(String name);
 
+    /**
+     * Returns a known ladder by name.
+     *
+     * @param name ladder name
+     * @return live ladder adapter
+     * @throws LadderNotFoundException if no groups reference {@code name} as a rank ladder
+     */
     Ladder getLadder(String name) throws LadderNotFoundException;
 
+    /**
+     * Registers a new rank ladder name.
+     *
+     * @param name ladder name
+     * @return live ladder adapter
+     * @throws LadderAlreadyExistsException if {@code name} is already known
+     */
     Ladder createLadder(String name) throws LadderAlreadyExistsException;
 
+    /**
+     * Reports whether a ladder name is known.
+     *
+     * @param name ladder name
+     * @return {@code true} if the ladder exists in the registry
+     */
     boolean exists(String name);
 
     /**

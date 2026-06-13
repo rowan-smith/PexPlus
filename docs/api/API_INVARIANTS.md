@@ -148,7 +148,7 @@ When adding API or engine features:
 3. Preserve the four invariants above
 4. Route timed expiry through `TimedExpiryCoordinator`
 5. Keep `SubjectWorldContexts` as delegation-only
-6. Route group graph traversal through `GroupHierarchyEngine` or `DefaultPermissionManager`
+6. Route group graph traversal through {@code GroupHierarchyEngine} (in {@code core.api.pex}) or {@code DefaultPermissionManager}
 7. Update [MODERN_API.md](MODERN_API.md) and this file when behavior or layering changes
 
 ---

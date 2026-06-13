@@ -31,10 +31,13 @@ public final class Worlds {
      * @return {@code null} for global, otherwise the trimmed world name
      */
     public static String normalize(String world) {
+        if (world != null) {
+            world = world.trim();
+        }
         if (isGlobal(world)) {
             return GLOBAL;
         }
-        return world.trim();
+        return world;
     }
 
     /**

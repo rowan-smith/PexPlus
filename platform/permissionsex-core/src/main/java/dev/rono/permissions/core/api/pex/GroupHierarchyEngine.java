@@ -1,5 +1,6 @@
-package dev.rono.permissions.core;
+package dev.rono.permissions.core.api.pex;
 
+import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 
