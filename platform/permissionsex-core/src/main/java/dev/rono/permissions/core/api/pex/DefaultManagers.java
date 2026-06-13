@@ -127,7 +127,7 @@ final class DefaultUserManager implements UserManager {
     }
 
     private User wrapUser(UUID id, PermissionUser delegate) {
-        return new UserImpl(id, delegate);
+        return new UserImpl(id, delegate, manager);
     }
 
     private static UUID parseId(String identifier) {
@@ -160,7 +160,7 @@ final class DefaultGroupManager implements GroupManager {
         if (name == null || name.isEmpty() || !manager.getBackend().hasGroup(name)) {
             return Optional.empty();
         }
-        return Optional.of(new GroupImpl(name, manager.getGroup(name)));
+        return Optional.of(new GroupImpl(name, manager.getGroup(name), manager));
     }
 
     @Override
@@ -168,7 +168,7 @@ final class DefaultGroupManager implements GroupManager {
         if (!exists(name)) {
             throw new GroupNotFoundException(name);
         }
-        return new GroupImpl(name, manager.getGroup(name));
+        return new GroupImpl(name, manager.getGroup(name), manager);
     }
 
     @Override
@@ -179,7 +179,7 @@ final class DefaultGroupManager implements GroupManager {
         manager.getBackend().getGroupData(name);
         var created = manager.getGroup(name);
         created.save();
-        return new GroupImpl(name, created);
+        return new GroupImpl(name, created, manager);
     }
 
     @Override
@@ -338,5 +338,59 @@ final class DefaultLadderManager implements dev.rono.permissions.api.ladder.Ladd
 
     private CoreCommandService commandService() {
         return new CoreCommandService(manager);
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group promote(
+            dev.rono.permissions.api.user.User user, String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        return promote(null, user, ladderName);
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group promote(
+            dev.rono.permissions.api.user.User actor,
+            dev.rono.permissions.api.user.User user,
+            String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        try {
+            return SubjectSupport.wrapGroup(
+                    SubjectSupport.requireUser(user).promote(SubjectSupport.optionalUser(actor), ladderName),
+                    manager);
+        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
+            throw SubjectSupport.toRankingException(ex);
+        }
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group demote(
+            dev.rono.permissions.api.user.User user, String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        return demote(null, user, ladderName);
+    }
+
+    @Override
+    public dev.rono.permissions.api.group.Group demote(
+            dev.rono.permissions.api.user.User actor,
+            dev.rono.permissions.api.user.User user,
+            String ladderName)
+            throws dev.rono.permissions.api.RankingException {
+        try {
+            return SubjectSupport.wrapGroup(
+                    SubjectSupport.requireUser(user).demote(SubjectSupport.optionalUser(actor), ladderName),
+                    manager);
+        } catch (ru.tehkode.permissions.exceptions.RankingException ex) {
+            throw SubjectSupport.toRankingException(ex);
+        }
+    }
+
+    @Override
+    public boolean isRanked(dev.rono.permissions.api.user.User user, String ladderName) {
+        return SubjectSupport.requireUser(user).isRanked(ladderName);
+    }
+
+    @Override
+    public int rank(dev.rono.permissions.api.user.User user, String ladderName) {
+        return SubjectSupport.requireUser(user).getRank(ladderName);
     }
 }

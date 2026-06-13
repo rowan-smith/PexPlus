@@ -202,7 +202,7 @@ class BungeeFileBackendTest {
         }
 
         @Override
-        public void publish(dev.rono.permissions.api.bus.PexPermissionDispatch dispatch) {}
+        public void publish(dev.rono.permissions.api.bus.PermissionDispatch dispatch) {}
 
         @Override
         public boolean isOperator(java.util.UUID uuid) {

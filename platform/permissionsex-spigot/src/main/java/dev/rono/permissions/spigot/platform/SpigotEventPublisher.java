@@ -1,8 +1,8 @@
 package dev.rono.permissions.spigot.platform;
 
-import dev.rono.permissions.api.bus.PexEntityDispatch;
-import dev.rono.permissions.api.bus.PexPermissionDispatch;
-import dev.rono.permissions.api.bus.PexSystemDispatch;
+import dev.rono.permissions.api.bus.EntityDispatch;
+import dev.rono.permissions.api.bus.PermissionDispatch;
+import dev.rono.permissions.api.bus.SystemDispatch;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionManager;
@@ -24,8 +24,8 @@ public final class SpigotEventPublisher {
         plugin.getServer().getPluginManager().callEvent(event);
     }
 
-    public void publish(PexPermissionDispatch dispatch) {
-        if (dispatch instanceof PexEntityDispatch ed) {
+    public void publish(PermissionDispatch dispatch) {
+        if (dispatch instanceof EntityDispatch ed) {
             PermissionManager manager = plugin.getServer().getServicesManager()
                     .getRegistration(PermissionManager.class)
                     .getProvider();
@@ -36,7 +36,7 @@ public final class SpigotEventPublisher {
                     PermissionEntityEvent.Action.valueOf(ed.mutation().name())));
             return;
         }
-        if (dispatch instanceof PexSystemDispatch sd) {
+        if (dispatch instanceof SystemDispatch sd) {
             callEvent(new PermissionSystemEvent(
                     sd.sourceId(),
                     PermissionSystemEvent.Action.valueOf(sd.mutation().name())));

@@ -1,6 +1,6 @@
 package ru.tehkode.permissions.spigot;
 
-import dev.rono.permissions.api.bus.PexPermissionDispatch;
+import dev.rono.permissions.api.bus.PermissionDispatch;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import dev.rono.permissions.core.PermissionsExConfig;
@@ -159,7 +159,7 @@ public abstract class PermissionsExSpigotTestBase {
                     }
 
                     @Override
-                    public void publish(PexPermissionDispatch dispatch) {}
+                    public void publish(PermissionDispatch dispatch) {}
 
                     @Override
                     public String onlineRealm(UUID uuid) {

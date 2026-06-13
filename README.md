@@ -66,7 +66,7 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
 | `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
-| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PexPermissionService` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
+| `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionsExApi` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
 
 ### `platform` — engine, runtimes, bootstrap
 
@@ -177,20 +177,20 @@ Add **`permissionsex-core-api`** only if you implement a **custom platform host*
 
 #### Runtime registration (Spigot/Paper only)
 
-On game servers, PEX registers **`PexPermissionService`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
+On game servers, PEX registers **`PermissionsExApi`** on Bukkit **`ServicesManager`**. The same object also implements legacy **`PermissionManager`** — modern and classic APIs share one runtime manager.
 
 ```java
-RegisteredServiceProvider<PexPermissionService> reg =
-        getServer().getServicesManager().getRegistration(PexPermissionService.class);
+PermissionsEx.getApi() reg =
+        getServer().getServicesManager().getRegistration(PermissionService.class);
 if (reg != null) {
-    PexPermissionService pex = reg.getProvider();
+    var api = PermissionsEx.getApi();
     getLogger().info("PEX backend: " + pex.backend().simpleName());
     getLogger().info("Users: " + pex.users().count()
             + ", groups: " + pex.groups().count());
 }
 ```
 
-**Bungee/Waterfall:** `PexPermissionService` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
+**Bungee/Waterfall:** `PermissionsExApi` is **not** published via `ServicesManager` on proxies. Use legacy `PermissionManager` where available or proxy-specific integration.
 
 New features are added on **`dev.rono.permissions.api.*`** only — the legacy `PermissionManager` interface is not expanded.
 
@@ -202,20 +202,20 @@ Detailed documentation lives under **[`docs/api/`](docs/api/README.md)**:
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](docs/api/MODERN_API.md) | `PexPermissionService`, subjects, world contexts, timed permissions |
+| [MODERN_API.md](docs/api/MODERN_API.md) | managers, subjects, world contexts, timed permissions |
 | [LEGACY_API.md](docs/api/LEGACY_API.md) | Classic `PermissionManager`, events, stub |
 | [FUTURE.md](docs/api/FUTURE.md) | Recommended API additions and gaps |
 
 Summary below; see the linked docs for complete method lists and examples.
 
-#### `PexPermissionService` (`permissionsex-api`)
+#### `PermissionsExApi` (`permissionsex-api`)
 
-Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers and `getPermissionManager()` (classic + holder-based permission ops). The same runtime object also implements the fluent `PexPermissionService` surface.
+Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers and `getPermissionManager()` (classic + holder-based permission ops). The same runtime object also implements the manager-based API.
 
 | Method | Description |
 |--------|-------------|
 | **`user(uuid)`** / **`user(name)`** | Materialize user; `hasPermission("node")` checks global namespace |
-| **`findUser(uuid\|name)`** | Optional persisted lookup via `PexFoundUser` |
+| **`findUser(uuid\|name)`** | Optional persisted lookup via `FoundUser` |
 | **`world(w).user(uuid)`** | Per-world permission checks |
 | **`users().count()`** / **`groups().count()`** / **`worlds().count()`** | Registry counts |
 | **`backend().getActive()`** / **`activate(alias)`** | Backend snapshot and administration |
@@ -224,13 +224,13 @@ Primary entry: **`PermissionsEx.getApi()`** → `PermissionsExApi` with managers
 
 See [Flat API](docs/api/MODERN_API.md#flat-api-canonical-entry) for the full reference.
 
-Source: `api/src/main/java/dev/rono/permissions/api/service/PexPermissionService.java`
+Source: `api/src/main/java/dev/rono/permissions/api/service/PermissionService.java`
 
-#### `PexPermissionSubject`, `PexUser`, `PexGroup` (`permissionsex-api`)
+#### `PermissionSubject`, `User`, `Group` (`permissionsex-api`)
 
-Subject operations are accessed through `PexUser` and `PexGroup` instances from `PexPermissionService`. Both extend `PexPermissionSubject`.
+Subject operations are accessed through `User` and `Group` instances from `PermissionsExApi`. Both extend `PermissionSubject`.
 
-| `PexPermissionSubject` | Description |
+| `PermissionSubject` | Description |
 |---------------------|-------------|
 | `type()`, `identifier()`, `name()`, `virtual()` | Subject metadata |
 | `has(permission, world)` / `hasPermission(permission)` | Effective check (global when world omitted) |
@@ -240,24 +240,24 @@ Subject operations are accessed through `PexUser` and `PexGroup` instances from 
 | `addTimedPermission` / `removeTimedPermission` / `timedPermissions` | Timed permission nodes |
 | `timedPermissionEntries(world)` / `allTimedPermissionEntries()` | Timed nodes with remaining seconds |
 | `timedPermissionRemainingSeconds(permission, world)` | Seconds until a timed permission expires |
-| `configuredWorlds()` | PexWorlds where this subject has data |
+| `configuredWorlds()` | Worlds where this subject has data |
 | `permissionsByWorld()` / `effectivePermissionsByWorld()` | Per-world permission maps |
-| `inWorld(world)` / `global()` | World-scoped view (`PexSubjectWorldContext`) |
+| `inWorld(world)` / `global()` | World-scoped view (`SubjectWorldContext`) |
 | `prefix` / `suffix` / `setPrefix` / `setSuffix` | Chat meta |
 | `option` / `setOption` / `options` | Arbitrary options map |
 | `save()` / `delete()` | Persist or remove the subject |
 
-| `PexUser` (additional) | Description |
+| `User` (additional) | Description |
 |---------------------|-------------|
 | `uniqueId()` | Parsed UUID when identifier is UUID-shaped |
-| `groups(world)` / `groups(world, inherit)` | PexGroup membership |
+| `groups(world)` / `groups(world, inherit)` | Group membership |
 | `inGroup(name, world, inherit)` | Membership test |
-| `addGroup` / `removeGroup` | PexGroup membership CRUD (supports timed membership) |
+| `addGroup` / `removeGroup` | Group membership CRUD (supports timed membership) |
 | `timedGroupMemberships(world)` / `allTimedGroupMemberships()` | Timed group memberships with remaining seconds |
 | `groupMembershipRemainingSeconds(group, world)` | Seconds until timed membership expires |
-| `inWorld(world)` / `global()` | World-scoped view (`PexUserWorldContext`) |
+| `inWorld(world)` / `global()` | World-scoped view (`UserWorldContext`) |
 
-| `PexGroup` (additional) | Description |
+| `Group` (additional) | Description |
 |----------------------|-------------|
 | `weight()` / `setWeight()` | Sort weight |
 | `isDefault(world)` / `setDefault(value, world)` | Default group flag |
@@ -268,18 +268,18 @@ Subject operations are accessed through `PexUser` and `PexGroup` instances from 
 | `rank()` / `rankLadder()` / `setRank(rank, ladder)` | Rank ladder metadata |
 | `memberIdentifiers(world)` / `members(world)` | Users in this group |
 | `activeMembers()` / `activeMembers(inherit)` | Online members |
-| `inWorld(world)` / `global()` | World-scoped view (`PexGroupWorldContext`) |
+| `inWorld(world)` / `global()` | World-scoped view (`GroupWorldContext`) |
 
 #### World helpers & timed records
 
 | Type | Description |
 |------|-------------|
-| `PexWorlds.GLOBAL` | Global namespace (`null`); empty strings normalize to global |
-| `PexTimedPermissionEntry` | Record: permission, world, remainingSeconds |
-| `PexTimedGroupMembership` | Record: groupName, world, remainingSeconds |
-| `PexSubjectWorldContext` | World-scoped permission/meta view for any subject |
-| `PexUserWorldContext` | Adds group membership operations |
-| `PexGroupWorldContext` | Adds inheritance/default operations |
+| `Worlds.GLOBAL` | Global namespace (`null`); empty strings normalize to global |
+| `TimedPermissionEntry` | Record: permission, world, remainingSeconds |
+| `TimedGroupMembership` | Record: groupName, world, remainingSeconds |
+| `SubjectWorldContext` | World-scoped permission/meta view for any subject |
+| `UserWorldContext` | Adds group membership operations |
+| `GroupWorldContext` | Adds inheritance/default operations |
 
 `world` is `null` or empty for the global context (classic PEX `null` world). Prefer `user.inWorld("world_nether").addPermission("node")` for world-specific edits.
 
@@ -296,7 +296,7 @@ Platform-neutral host bridge implemented by Spigot/Bungee runtimes. **Not regist
 | `isOnline(UUID)` | Whether the holder is connected |
 | `serverId()` | Logical server / container UUID |
 | `realmNames()` | World names (game server) or backend ids (proxy) |
-| `publish(PexPermissionDispatch)` | Emit engine notification (see bus types below) |
+| `publish(PermissionDispatch)` | Emit engine notification (see bus types below) |
 | `onlineRealm(UUID)` | Current world/realm when online, else `null` |
 | `onlineDisplayName(UUID)` | Display name when online, else `null` |
 | `isOperator(UUID)` | Operator flag when online |
@@ -311,11 +311,11 @@ Immutable notifications from the engine to the active `PlatformAdapter`. On **Sp
 
 | Type | Role |
 |------|------|
-| `PexPermissionDispatch` | Sealed root: `PexEntityDispatch` \| `PexSystemDispatch` |
-| `PexEntityDispatch` | Record: `(sourceId, entityIdentifier, entityType, mutation)` — user/group change |
-| `PexSystemDispatch` | Record: `(sourceId, mutation)` — engine/system change |
-| `PexEntityMutation` | `PERMISSIONS_CHANGED`, `OPTIONS_CHANGED`, `INHERITANCE_CHANGED`, `INFO_CHANGED`, `TIMEDPERMISSION_EXPIRED`, `RANK_CHANGED`, `DEFAULTGROUP_CHANGED`, `WEIGHT_CHANGED`, `SAVED`, `REMOVED` |
-| `PexSystemMutation` | `BACKEND_CHANGED`, `RELOADED`, `WORLDINHERITANCE_CHANGED`, `DEFAULTGROUP_CHANGED`, `DEBUGMODE_TOGGLE`, `REINJECT_PERMISSIBLES` |
+| `PermissionDispatch` | Sealed root: `EntityDispatch` \| `SystemDispatch` |
+| `EntityDispatch` | Record: `(sourceId, entityIdentifier, entityType, mutation)` — user/group change |
+| `SystemDispatch` | Record: `(sourceId, mutation)` — engine/system change |
+| `EntityMutation` | `PERMISSIONS_CHANGED`, `OPTIONS_CHANGED`, `INHERITANCE_CHANGED`, `INFO_CHANGED`, `TIMEDPERMISSION_EXPIRED`, `RANK_CHANGED`, `DEFAULTGROUP_CHANGED`, `WEIGHT_CHANGED`, `SAVED`, `REMOVED` |
+| `SystemMutation` | `BACKEND_CHANGED`, `RELOADED`, `WORLDINHERITANCE_CHANGED`, `DEFAULTGROUP_CHANGED`, `DEBUGMODE_TOGGLE`, `REINJECT_PERMISSIBLES` |
 
 **Listening from a hook plugin today:** subscribe to legacy **`PermissionEntityEvent`** / **`PermissionSystemEvent`** on Spigot rather than consuming bus records directly.
 
@@ -332,29 +332,29 @@ These are used inside PEX platform wiring, not typical hook-plugin entry points.
 
 #### Minimal modern hook example (Spigot)
 
-Modern-only integration via `PexPermissionService`:
+Modern-only integration via `PermissionsExApi`:
 
 ```java
-import dev.rono.permissions.api.service.PexPermissionService;
-import dev.rono.permissions.api.subject.PexUser;
+import dev.rono.permissions.api.service.PermissionService;
+import dev.rono.permissions.api.subject.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public void onEnable() {
-    RegisteredServiceProvider<PexPermissionService> reg =
-            getServer().getServicesManager().getRegistration(PexPermissionService.class);
+    PermissionsEx.getApi() reg =
+            getServer().getServicesManager().getRegistration(PermissionService.class);
     if (reg == null) {
         getLogger().warning("PermissionsEx is not available.");
         return;
     }
-    PexPermissionService pex = reg.getProvider();
+    var api = PermissionsEx.getApi();
     getLogger().info("PEX " + pex.backend().simpleName()
             + " — " + pex.groups().count() + " groups");
 }
 
-public void onJoin(PlayerJoinEvent event, PexPermissionService pex) {
+public void onJoin(PlayerJoinEvent event, PermissionsExApi pex) {
     Player player = event.getPlayer();
     var manager = PermissionsEx.getApi().getPermissionManager();
     if (manager.has(player, "my.permission")) {
@@ -373,7 +373,7 @@ For a full modern sample, see [`plugin/permissionsex-example-plugin/`](plugin/pe
 | Situation | Use |
 |-----------|-----|
 | Maintaining an existing PEX hook plugin | **Legacy API** + **legacy stub** (if you call `PermissionsEx.*`) |
-| Brand-new plugin on a PEX server | **Modern API** (`PexPermissionService`) |
+| Brand-new plugin on a PEX server | **Modern API** (`PermissionsExApi`) |
 | Listening to permission change events on Spigot | **Legacy API** events (`ru.tehkode.permissions.events.*`) — still published on game servers |
 | Proxy (Bungee) integration | **Modern / core** paths; Bukkit events are not fired on proxy |
 
@@ -393,8 +393,8 @@ For a full modern sample, see [`plugin/permissionsex-example-plugin/`](plugin/pe
 
 ## Features
 
-- PexUser and group permission management
-- PexGroup inheritance and hierarchy support
+- User and group permission management
+- Group inheritance and hierarchy support
 - Prefix and suffix management
 - Timed permissions and timed group membership
 - Multi-world permission handling
@@ -420,7 +420,7 @@ MockBukkit full-server tests **skip automatically** when the test Paper API does
 
 ### Done
 
-- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PexPermissionService`)
+- [x] **Modern platform abstractions** — `dev.rono.permissions.api` (`PlatformAdapter`, bus dispatches, `PermissionsExApi`)
 - [x] **Automated tests for core permission logic** — hierarchy, matcher, backends, commands, concurrency, legacy contract tests (~30 test classes)
 - [x] **Legacy API cleanup and isolation** — `legacy-api` + `legacy-stub` split, `InternalPermissionManager`, `legacy-compat` module, utils in `legacy-api`
 - [x] **Documentation** — `ARCHITECTURE.md`, `docs/COMPATIBILITY.md`, `docs/testing/REAL_SERVER_MATRIX.md`, `docs/examples/`
@@ -506,7 +506,7 @@ Keep only **`PermissionsExPlus-{version}.jar`** on that installation when using 
 /pex help [page] [count] - Show command help
 ```
 
-### PexUser commands
+### User commands
 
 ```text
 /pex users list
@@ -532,7 +532,7 @@ Keep only **`PermissionsExPlus-{version}.jar`** on that installation when using 
 /pex users cleanup <group> [threshold]
 ```
 
-### PexGroup commands
+### Group commands
 
 ```text
 /pex groups list [world]

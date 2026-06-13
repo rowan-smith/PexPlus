@@ -42,7 +42,7 @@ var manager = api.getPermissionManager();
 ## Quick start
 
 ```java
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.permission.PermissionContext;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 if (!PermissionsEx.isAvailable()) {
@@ -52,156 +52,97 @@ if (!PermissionsEx.isAvailable()) {
 var api = PermissionsEx.getApi();
 var user = api.getUserManager().getUser(player.getUniqueId());
 var manager = api.getPermissionManager();
-if (manager.hasPermission(user.asHolder(), "my.plugin.use")) {
+if (manager.hasPermission(
+        user.asHolder(),
+        "my.plugin.use",
+        PermissionContext.of(
+                player.getWorld().getName(),
+                getServer().getName(),
+                "spawn",
+                player.getGameMode().name()))) {
     ...
 }
 
-// Classic + fluent PexPermissionService (same runtime object)
-if (manager.has(player, "my.plugin.use")) {
-    var pex = (PexPermissionService) manager;
-    pex.world(player.getWorld().getName())
-            .user(player.getUniqueId())
-            .addTimedPermission("my.plugin.temp", 3600);
-    manager.getUser(player).save();
-}
+// Per-world subject operations
+user.inWorld(player.getWorld().getName()).addPermission("my.plugin.temp");
+user.save();
 ```
 
 ---
 
-## Flat API (canonical entry)
+## Managers
 
-All operations are methods on `PexPermissionService`:
+| Manager | `find` | `get` | `create` | `count()` |
+|---------|--------|-------|----------|-----------|
+| `UserManager` | no materialize | requires persisted | explicit create | backend users |
+| `GroupManager` | no materialize | requires persisted | explicit create | backend groups |
+| `WorldManager` | registered realms | requires exists | explicit create | worlds |
+| `LadderManager` | known ladders | requires exists | explicit create | ladders |
+
+`LadderManager` also exposes `promote(user, ladder)`, `demote(user, ladder)`, `isRanked(user, ladder)`, and `rank(user, ladder)`.
+
+Subject operations (`hasPermission`, groups, meta, timed grants) are on `User` / `Group` returned by managers.
+
+Holder-based checks and edits use `api.getPermissionManager()` (`hasPermission(holder, node, context)`, `addPermission`, etc.).
+
+### Events
 
 ```java
-// Global checks (PexWorlds.GLOBAL — applies to all worlds unless overridden)
-pex.user(uuid).hasPermission("node");
-pex.user("Steve").inGroup("vip", null, true);
-
-// Per-world checks
-pex.world(world).user(uuid).hasPermission("node");
-pex.world(world).user(uuid).inGroup("vip", true);
-
-// Optional persisted lookup
-pex.findUser("Steve").get().hasPermission("node");
-pex.findUser(uuid).optional().map(u -> u.hasPermission("node")).orElse(false);
-
-// Registry
-pex.users().count();
-pex.groups().count();
-pex.worlds().count();
-pex.group("vip").members(null, true);
-
-// Backend
-pex.backend().getActive();
-pex.backend().activate("file");
-pex.backend().exportData();
-
-// Maintenance
-pex.reload();
-pex.session().start();
-pex.events();
+var sub = api.getEventBus().subscribe(dispatch -> { ... });
+api.getEventBus().unsubscribe(sub);
 ```
-
-### `PexPermissionService`
-
-| Method | Returns | Role |
-|--------|---------|------|
-| `user(uuid\|name)` | `PexUser` | Materialize subject (creates virtual if absent) |
-| `findUser(uuid\|name)` | `PexFoundUser` | Optional persisted lookup |
-| `group(name)` | `PexGroup` | Materialize group |
-| `findGroup(name)` | `PexFoundGroup` | Optional persisted lookup |
-| `world(name)` / `global()` | `PexWorldScope` | World-bound subject chains |
-| `findWorld(name)` | `Optional<PexWorldScope>` | When realm is registered |
-| `users()` | `PexUsersScope` | PexUser registry |
-| `groups()` | `PexGroupsScope` | PexGroup registry |
-| `worlds()` | `PexWorldsScope` | Registered realms |
-| `backend()` | `PexBackendScope` | Backend admin |
-| `session()` | `PexSessionScope` | Batch edit sessions |
-| `events()` | `PexPermissionEventBus` | Notifications |
-| `isDebug()` | `boolean` | Debug flag |
-| `reload()` / `reloadAsync()` | — | Reload backend |
-
-### `PexWorldScope`
-
-| Method | Description |
-|--------|-------------|
-| `user(uuid\|name)` | `PexUserWorldContext` in this world |
-| `findUser(uuid\|name)` | `Optional<PexUserWorldContext>` |
-| `group(name)` | `PexGroupWorldContext` in this world |
-| `findGroup(name)` | `Optional<PexGroupWorldContext>` |
-| `defaultGroups()` / `inheritance()` / `rankLadder(ladder)` | World config |
-
-### `PexUsersScope` / `PexGroupsScope` / `PexWorldsScope`
-
-| Scope | Method | Description |
-|-------|--------|-------------|
-| `PexUsersScope` | `count()` / `identifiers()` / `delete(id)` | PexUser registry |
-| `PexGroupsScope` | `count()` / `names()` / `delete(name)` | PexGroup registry |
-| `PexWorldsScope` | `count()` / `names()` | Registered realms |
-
-### `PexFoundUser` / `PexFoundGroup`
-
-| Method | Description |
-|--------|-------------|
-| `get()` | Persisted subject; throws if absent |
-| `optional()` | `Optional<PexUser>` / `Optional<PexGroup>` |
-| `inWorld(w)` / `global()` | Optional world context |
-
-### `PexBackendScope`
-
-| Method | Description |
-|--------|-------------|
-| `getActive()` / `type()` / `simpleName()` | Active backend |
-| `isActive()` / `isActive(alias)` | Whether a backend is active |
-| `activate(alias)` | Switch backend |
-| `createHandle(alias)` | Non-active handle |
-| `importFrom(alias)` | Copy from configured backend |
-| `exportData()` / `importData(doc, mode)` | YAML import/export |
-
-Runtime implementors use {@link dev.rono.permissions.api.service.PexPermissionServiceBridge}; plugins use `PexPermissionService` only.
 
 ---
 
 ## World model
 
-| Modern constant | Meaning |
-|-----------------|---------|
-| `PexWorlds.GLOBAL` | `null` — global namespace |
-| Empty string `""` | Normalized to global when passed to API methods |
+| Constant | Meaning |
+|----------|---------|
+| `Worlds.GLOBAL` | `null` — global namespace |
+| Empty string `""` | Normalized to global |
 
-`pex.user(id).hasPermission("node")` checks the **global** namespace — effective across all worlds unless a per-world override exists.
+`user.hasPermission("node")` checks the **global** namespace. Use `user.inWorld(world).hasPermission("node")` or `hasPermission(holder, node, context)` for per-world checks.
 
-Helpers in `dev.rono.permissions.api.world.PexWorlds`: `normalize`, `isGlobal`, `mapKey`, `fromMapKey`.
+### Permission context maps
+
+Structured context for holder checks uses standard keys from `PermissionContext`:
+
+| Key | Role |
+|-----|------|
+| `world` | Primary realm/world for resolution |
+| `server` | Fallback realm on proxies when `world` is absent |
+| `region` | Optional; for plugin interpreters |
+| `gamemode` | Optional; for plugin interpreters |
+| `state` | Optional (for example `event` during minigames) |
+
+```java
+import dev.rono.permissions.api.permission.PermissionContext;
+
+var context = PermissionContext.of("survival", "lobby-1", "spawn", "creative");
+manager.hasPermission(holder, "my.node", context);
+
+var eventContext = PermissionContext.withState("arena", "event");
+```
+
+Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `mapKey`, `fromMapKey`.
 
 ---
 
-## Events (`PexPermissionEventBus`)
+## Events (`PermissionEventBus`)
 
-Subscribe via `pex.events()`:
+Subscribe via `api.getEventBus()`:
 
 ```java
-var sub = pex.events().subscribe(new PexPermissionEventListener() {
+var sub = api.getEventBus().subscribe(new PermissionEventListener() {
     @Override
-    public void onEntity(PexEntityDispatch dispatch) {
+    public void onEntity(EntityDispatch dispatch) {
         // entityIdentifier, entityType, mutation
     }
 });
-pex.events().unsubscribe(sub);
+api.getEventBus().unsubscribe(sub);
 ```
 
-Uses types from `permissionsex-core-api`: `PexEntityDispatch`, `PexSystemDispatch`, `PexEntityMutation`, `PexSystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
-
----
-
-## Batch edits (`PexPermissionEditSession`)
-
-```java
-try (var session = pex.session().start()) {
-    session.editUser("Steve", user -> user.addPermission("foo.bar", null));
-    session.editGroup("vip", group -> group.setPrefix("&6", null));
-    session.save();
-}
-```
+Uses types from `permissionsex-core-api`: `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
 
 ---
 
@@ -218,15 +159,15 @@ Maven artifact: `permissionsex-api-bungee` (optional; includes `ProxyPermissionS
 
 ---
 
-## `PexPermissionSubject`
+## `PermissionSubject`
 
-Shared by `PexUser` and `PexGroup`.
+Shared by `User` and `Group`.
 
 ### Metadata
 
 | Method | Description |
 |--------|-------------|
-| `type()` | `PexSubjectType.USER` or `GROUP` |
+| `type()` | `SubjectType.USER` or `GROUP` |
 | `identifier()` / `name()` | Backend id and display name |
 | `virtual()` | In-memory-only, not yet persisted |
 
@@ -241,7 +182,7 @@ Shared by `PexUser` and `PexGroup`.
 | `addPermission` / `removePermission` / `setPermissions` | Direct CRUD |
 | `permissionsByWorld()` | Map of world → direct permissions |
 | `effectivePermissionsByWorld()` | Map of world → effective permissions |
-| `configuredWorlds()` | PexWorlds with any subject data |
+| `configuredWorlds()` | Worlds with any subject data |
 
 ### Timed permissions
 
@@ -250,7 +191,7 @@ Shared by `PexUser` and `PexGroup`.
 | `addTimedPermission(permission, [world,] seconds)` | Temporary grant |
 | `removeTimedPermission(permission[, world])` | Remove timed node |
 | `timedPermissions([world])` | Active timed permission names |
-| `timedPermissionEntries([world])` | `PexTimedPermissionEntry(permission, world, remainingSeconds)` |
+| `timedPermissionEntries([world])` | `TimedPermissionEntry(permission, world, remainingSeconds)` |
 | `allTimedPermissionEntries()` | Across all configured worlds |
 | `timedPermissionRemainingSeconds(permission[, world])` | Seconds until expiry; `0` if absent |
 | `hasTimedPermission(permission[, world])` | Whether timed node is active |
@@ -266,8 +207,8 @@ Shared by `PexUser` and `PexGroup`.
 
 | Method | Description |
 |--------|-------------|
-| `inWorld(world)` | `PexSubjectWorldContext` — world-scoped facade |
-| `global()` | Same as `inWorld(PexWorlds.GLOBAL)` |
+| `inWorld(world)` | `SubjectWorldContext` — world-scoped facade |
+| `global()` | Same as `inWorld(Worlds.GLOBAL)` |
 
 ### Persistence
 
@@ -278,31 +219,30 @@ Shared by `PexUser` and `PexGroup`.
 
 ---
 
-## `PexUser`
+## `User`
 
-Extends `PexPermissionSubject`.
+Extends `PermissionSubject`.
 
 | Method | Description |
 |--------|-------------|
 | `uniqueId()` | `Optional<UUID>` when identifier is UUID-shaped |
-| `groups([world,] inherit)` | PexGroup membership list |
+| `groups([world,] inherit)` | Group membership list |
 | `inGroup(name[, world, inherit])` | Membership test |
 | `addGroup(name[, world])` | Add to group |
 | `addGroup(name, [world,] lifetimeSeconds)` | Timed membership |
 | `removeGroup(name[, world])` | Remove from group |
-| `timedGroupMemberships([world])` | `PexTimedGroupMembership(group, world, remainingSeconds)` |
+| `timedGroupMemberships([world])` | `TimedGroupMembership(group, world, remainingSeconds)` |
 | `allTimedGroupMemberships()` | Across all worlds |
 | `groupMembershipRemainingSeconds(group[, world])` | Seconds until timed membership expires |
-| `promote(ladder)` / `promote(promoter, ladder)` | Rank ladder promotion; throws `PexRankingException` |
-| `demote(ladder)` / `demote(demoter, ladder)` | Rank ladder demotion |
-| `isRanked(ladder)` / `rank(ladder)` | Rank metadata |
-| `inWorld(world)` / `global()` | Returns `PexUserWorldContext` |
+| `inWorld(world)` / `global()` | Returns `UserWorldContext` |
+
+Rank-ladder promotion/demotion is on `LadderManager` (`promote(user, ladder)`, `demote(user, ladder)`, `rank(user, ladder)`).
 
 ---
 
-## `PexGroup`
+## `Group`
 
-Extends `PexPermissionSubject`.
+Extends `PermissionSubject`.
 
 | Method | Description |
 |--------|-------------|
@@ -313,12 +253,12 @@ Extends `PexPermissionSubject`.
 | `addParent` / `removeParent` / `setParents` | Inheritance CRUD |
 | `isChildOf(name[, world, inherit])` | Hierarchy test |
 | `rank()` / `rankLadder()` / `setRank(rank, ladder)` | Promotion ladder |
-| `memberIdentifiers([world])` | PexUser ids with direct membership |
-| `members([world,] inherit)` | `List<PexUser>` in this group (`inherit=true` includes descendant groups) |
+| `memberIdentifiers([world])` | User ids with direct membership |
+| `members([world,] inherit)` | `List<User>` in this group (`inherit=true` includes descendant groups) |
 | `children([world,] inherit)` | Direct or all descendant child groups |
 | `descendants([world])` | All descendant groups (`children(world, true)`) |
 | `activeMembers([inherit])` | Online members |
-| `inWorld(world)` / `global()` | Returns `PexGroupWorldContext` |
+| `inWorld(world)` / `global()` | Returns `GroupWorldContext` |
 
 ---
 
@@ -328,9 +268,9 @@ Ergonomic world-scoped views (same operations without repeating `world` paramete
 
 | Type | Extends | Extra operations |
 |------|---------|------------------|
-| `PexSubjectWorldContext` | — | Permissions, timed perms, prefix/suffix, options |
-| `PexUserWorldContext` | `PexSubjectWorldContext` | Groups, timed membership |
-| `PexGroupWorldContext` | `PexSubjectWorldContext` | Parents, default, hierarchy, members, children, descendants |
+| `SubjectWorldContext` | — | Permissions, timed perms, prefix/suffix, options |
+| `UserWorldContext` | `SubjectWorldContext` | Groups, timed membership |
+| `GroupWorldContext` | `SubjectWorldContext` | Parents, default, hierarchy, members, children, descendants |
 
 Obtain via `subject.inWorld("world_nether")`, `user.global()`, or `pex.world("world_nether").user(uuid)`.
 
@@ -340,18 +280,18 @@ Obtain via `subject.inWorld("world_nether")`, `user.global()`, or `pex.world("wo
 
 | Type | Role |
 |------|------|
-| `PexBackendInfo` | Record: backend alias, implementation class name, label |
-| `PexTimedPermissionEntry` | Record: permission, world, remainingSeconds |
-| `PexTimedGroupMembership` | Record: groupName, world, remainingSeconds |
-| `PexPermissionsExException` | Checked exception for reload/backend failures |
-| `PexRankingException` | Promotion/demotion failures |
-| `PexBackendHandle` | Non-active backend for copy/apply |
-| `PexImportMode` | `MERGE` / `REPLACE` for `importData` |
-| `PexPermissionEventBus` / `PexPermissionEventListener` | Modern event subscription |
-| `PexPermissionEditSession` | Batch edit helper |
-| `PexWorldScope` / `PexUsersScope` / `PexGroupsScope` / `PexWorldsScope` / `PexBackendScope` / `PexSessionScope` | Flat API scopes |
-| `PexFoundUser` / `PexFoundGroup` | Optional persisted lookups |
-| `PexSubjectType` | `USER`, `GROUP` |
+| `BackendInfo` | Record: backend alias, implementation class name, label |
+| `TimedPermissionEntry` | Record: permission, world, remainingSeconds |
+| `TimedGroupMembership` | Record: groupName, world, remainingSeconds |
+| `PermissionContext` | Standard context map keys and builders |
+| `PermissionsExException` | Checked exception for reload/backend failures |
+| `RankingException` | Promotion/demotion failures |
+| `BackendHandle` | Non-active backend for copy/apply |
+| `ImportMode` | `MERGE` / `REPLACE` for `importData` |
+| `PermissionEventBus` / `PermissionEventListener` | Modern event subscription |
+| `PermissionEventBus` / `PermissionEventListener` | Modern event subscription via `PermissionsExApi.getEventBus()` |
+| `FoundUser` / `FoundGroup` | Optional persisted lookups |
+| `SubjectType` | `USER`, `GROUP` |
 
 ---
 
@@ -362,8 +302,8 @@ Not required for typical hook plugins. Used by platform modules and deep integra
 | Type | Role |
 |------|------|
 | `PlatformAdapter` | Host bridge (UUID/name, realms, event publish) |
-| `PexPermissionDispatch` | `PexEntityDispatch` / `PexSystemDispatch` notifications |
-| `PexEntityMutation` / `PexSystemMutation` | Change kinds |
+| `PermissionDispatch` | `EntityDispatch` / `SystemDispatch` notifications |
+| `EntityMutation` / `SystemMutation` | Change kinds |
 | `SchedulerBridge` | Sync/async scheduling |
 | `ContextResolver` | `realmFor(UUID)` |
 

@@ -1,6 +1,6 @@
 package dev.rono.permissions.core.api;
 
-import dev.rono.permissions.api.PexPermissionsExException;
+import dev.rono.permissions.api.PermissionsExException;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.PEXBackendConfiguration;
 import ru.tehkode.permissions.backends.PermissionBackend;
@@ -16,18 +16,18 @@ import java.util.Map;
 public final class BackendSnapshotSupport {
     private BackendSnapshotSupport() {}
 
-    public static String export(PermissionBackend backend) throws PexPermissionsExException {
+    public static String export(PermissionBackend backend) throws PermissionsExException {
         StringWriter writer = new StringWriter();
         try {
             backend.writeContents(writer);
         } catch (IOException e) {
-            throw new PexPermissionsExException("Failed to export backend data", e);
+            throw new PermissionsExException("Failed to export backend data", e);
         }
         return writer.toString();
     }
 
     public static PermissionBackend snapshotFromYaml(DefaultPermissionManager manager, String document)
-            throws PexPermissionsExException {
+            throws PermissionsExException {
         try {
             var tempFile = Files.createTempFile("pex-import-", ".yml");
             Files.writeString(tempFile, document, StandardCharsets.UTF_8);
@@ -39,7 +39,7 @@ public final class BackendSnapshotSupport {
             PEXBackendConfiguration config = new MapBackendConfiguration("import-snapshot", values);
             return PermissionBackend.getBackend("file", manager, config);
         } catch (IOException | PermissionBackendException e) {
-            throw new PexPermissionsExException("Failed to parse import document", e);
+            throw new PermissionsExException("Failed to parse import document", e);
         }
     }
 

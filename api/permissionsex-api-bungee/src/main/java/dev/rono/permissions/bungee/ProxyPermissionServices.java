@@ -1,7 +1,6 @@
 package dev.rono.permissions.bungee;
 
 import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.service.PexPermissionService;
 import ru.tehkode.permissions.PermissionManager;
 
 import java.util.Objects;
@@ -14,23 +13,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ProxyPermissionServices {
     private static final AtomicReference<PermissionsExApi> PERMISSIONS_EX_API = new AtomicReference<>();
-    private static final AtomicReference<PexPermissionService> PERMISSION_SERVICE = new AtomicReference<>();
     private static final AtomicReference<PermissionManager> PERMISSION_MANAGER = new AtomicReference<>();
 
     private ProxyPermissionServices() {}
 
-    public static void register(
-            PermissionsExApi api,
-            PexPermissionService service,
-            PermissionManager manager) {
+    public static void register(PermissionsExApi api, PermissionManager manager) {
         PERMISSIONS_EX_API.set(Objects.requireNonNull(api, "api"));
-        PERMISSION_SERVICE.set(Objects.requireNonNull(service, "service"));
         PERMISSION_MANAGER.set(Objects.requireNonNull(manager, "manager"));
     }
 
     public static void unregister() {
         PERMISSIONS_EX_API.set(null);
-        PERMISSION_SERVICE.set(null);
         PERMISSION_MANAGER.set(null);
     }
 
@@ -46,14 +39,6 @@ public final class ProxyPermissionServices {
         return api;
     }
 
-    public static PexPermissionService permissionService() {
-        var service = PERMISSION_SERVICE.get();
-        if (service == null) {
-            throw new IllegalStateException("PexPermissionService is not registered on this proxy");
-        }
-        return service;
-    }
-
     public static PermissionManager permissionManager() {
         var manager = PERMISSION_MANAGER.get();
         if (manager == null) {
@@ -67,9 +52,6 @@ public final class ProxyPermissionServices {
         Objects.requireNonNull(type, "type");
         if (PermissionsExApi.class.equals(type)) {
             return (T) permissionsExApi();
-        }
-        if (PexPermissionService.class.equals(type)) {
-            return (T) permissionService();
         }
         if (PermissionManager.class.equals(type)) {
             return (T) permissionManager();

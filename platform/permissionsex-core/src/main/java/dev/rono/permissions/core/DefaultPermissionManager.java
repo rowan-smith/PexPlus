@@ -19,22 +19,12 @@
 package dev.rono.permissions.core;
 
 import dev.rono.permissions.api.PermissionsExApi;
-import dev.rono.permissions.api.PexPermissionsExException;
-import dev.rono.permissions.api.backend.PexBackendHandle;
-import dev.rono.permissions.api.backend.PexBackendInfo;
-import dev.rono.permissions.api.bus.PexEntityDispatch;
-import dev.rono.permissions.api.bus.PexEntityMutation;
-import dev.rono.permissions.api.bus.PexSystemDispatch;
-import dev.rono.permissions.api.bus.PexSystemMutation;
-import dev.rono.permissions.api.data.PexImportMode;
-import dev.rono.permissions.api.event.PexPermissionEventBus;
+import dev.rono.permissions.api.bus.EntityDispatch;
+import dev.rono.permissions.api.bus.EntityMutation;
+import dev.rono.permissions.api.bus.SystemDispatch;
+import dev.rono.permissions.api.bus.SystemMutation;
+import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.runtime.PlatformAdapter;
-import dev.rono.permissions.api.service.PexPermissionService;
-import dev.rono.permissions.api.service.PexPermissionServiceBridge;
-import dev.rono.permissions.api.session.PexPermissionEditSession;
-import dev.rono.permissions.api.subject.PexGroup;
-import dev.rono.permissions.api.subject.PexUser;
-import dev.rono.permissions.api.world.PexWorlds;
 import dev.rono.permissions.core.api.*;
 import dev.rono.permissions.core.api.pex.HolderPermissionService;
 import dev.rono.permissions.core.api.pex.PermissionsExApiImpl;
@@ -55,7 +45,7 @@ import java.util.logging.Logger;
 /**
  * @author t3hk0d3
  */
-public class DefaultPermissionManager implements PermissionManager, PexPermissionService, PexPermissionServiceBridge, InternalPermissionManager {
+public class DefaultPermissionManager implements PermissionManager, InternalPermissionManager {
 	protected ConcurrentMap<String, PermissionUser> users = new ConcurrentHashMap<>();
 	protected ConcurrentMap<String, PermissionGroup> groups = new ConcurrentHashMap<>();
 	protected PermissionBackend backend = null;
@@ -63,7 +53,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	private final PlatformAdapter platform;
 	private final Logger logger;
 	protected ScheduledExecutorService executor;
-	private final Map<String, ScheduledFuture<?>> clearTimedGroupsTasks = new HashMap<>();
+	private final TimedExpiryCoordinator timedExpiryCoordinator;
 	protected boolean debugMode = false;
 	protected boolean allowOps = false;
 	protected boolean userAddGroupsLast = false;
@@ -83,6 +73,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		this.allowOps = config.allowOps();
 		this.userAddGroupsLast = config.userAddGroupsLast();
 		this.initBackend();
+		this.timedExpiryCoordinator = new TimedExpiryCoordinator(this);
 		this.holderPermissions = new HolderPermissionService(this);
 		this.permissionsExApi = new PermissionsExApiImpl(this);
 	}
@@ -114,6 +105,11 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	@Override
 	public boolean hasPermission(PermissionHolder holder, String permission) {
 		return holderPermissions.hasPermission(holder, permission);
+	}
+
+	@Override
+	public boolean hasPermission(PermissionHolder holder, String permission, Map<String, String> context) {
+		return holderPermissions.hasPermission(holder, permission, context);
 	}
 
 	@Override
@@ -161,19 +157,17 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	}
 
 	@Override
-	public void scheduleTimedGroupsCheck(long nextExpiration, final String identifier) {
-		ScheduledFuture<?> future = clearTimedGroupsTasks.get(identifier);
-		long newDelay = (nextExpiration - (System.currentTimeMillis() / 1000));
+	public TimedExpiryCoordinator timedExpiry() {
+		return timedExpiryCoordinator;
+	}
 
-		if (future == null || future.isDone() || future.getDelay(TimeUnit.SECONDS) > newDelay) {
-			clearTimedGroupsTasks.put(identifier, executor.schedule(new Runnable() {
-				@Override
-				public void run() {
-					getUser(identifier).updateTimedGroups();
-					clearTimedGroupsTasks.remove(identifier);
-				}
-			}, newDelay, TimeUnit.SECONDS));
+	@Override
+	public void registerTask(TimerTask task, int delay) {
+		if (executor == null || delay == PermissionManager.TRANSIENT_PERMISSION) {
+			return;
 		}
+
+		executor.schedule(task, delay, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -297,7 +291,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 						data.setOption("name", fallbackName, null);
 						resetUser(fallbackName); // In case somebody requested the old user but conversion was previously unsuccessful
 					} else {
-						throw new IllegalStateException("PexUser already exists with new id " + identifier + " (converting from " + fallbackName + ")");
+						throw new IllegalStateException("User already exists with new id " + identifier + " (converting from " + fallbackName + ")");
 					}
 				}
 			}
@@ -310,7 +304,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 				}
 			}
 		} else {
-			throw new IllegalStateException("PexUser " + identifier + " is null");
+			throw new IllegalStateException("User " + identifier + " is null");
 		}
 
 		return user;
@@ -483,7 +477,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 					throw new IllegalStateException("Error initializing group " + groupname, e);
 				}
 			} else {
-				throw new IllegalStateException("PexGroup " + groupname + " is null");
+				throw new IllegalStateException("Group " + groupname + " is null");
 			}
 		}
 
@@ -601,7 +595,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 	 */
 	public void setDebug(boolean debug) {
 		this.debugMode = debug;
-		this.publishSystem(PexSystemMutation.DEBUGMODE_TOGGLE);
+		this.publishSystem(SystemMutation.DEBUGMODE_TOGGLE);
 	}
 
 	/**
@@ -656,7 +650,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		for (PermissionUser user : getActiveUsers()) { // Clear user cache
 			user.clearCache();
 		}
-		this.publishSystem(PexSystemMutation.WORLDINHERITANCE_CHANGED);
+		this.publishSystem(SystemMutation.WORLDINHERITANCE_CHANGED);
 	}
 
 	/**
@@ -668,234 +662,14 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		return this.backend;
 	}
 
-	@Override
-	public PexBackendInfo activeBackend() {
-		String type = config.getDefaultBackend();
-		PermissionBackend active = this.backend;
-		String simpleName = active != null ? active.getClass().getSimpleName() : "?";
-		return new PexBackendInfo(type, simpleName, type + " (" + simpleName + ")");
-	}
-
-	@Override
-	public PexPermissionEventBus events() {
+	public PermissionEventBus events() {
 		return eventBus;
-	}
-
-	@Override
-	public int userCount() {
-		return getUserIdentifiers().size();
-	}
-
-	@Override
-	public int groupCount() {
-		return getGroupNames().size();
-	}
-
-	@Override
-	public Collection<String> registeredWorlds() {
-		return getWorldNames();
-	}
-
-	@Override
-	public Optional<PexUser> lookupUser(String identifier) {
-		if (identifier == null || identifier.isEmpty()) {
-			return Optional.empty();
-		}
-		if (!backend.hasUser(identifier)) {
-			try {
-				UUID.fromString(identifier);
-			} catch (IllegalArgumentException ignored) {
-				UUID resolved = platform.nameToUuid(identifier);
-				if (resolved == null || !backend.hasUser(resolved.toString())) {
-					return Optional.empty();
-				}
-			}
-		}
-		return Optional.of(wrapUser(getUser(identifier)));
-	}
-
-	@Override
-	public Optional<PexUser> lookupUser(UUID uuid) {
-		if (uuid == null || !backend.hasUser(uuid.toString())) {
-			return Optional.empty();
-		}
-		return Optional.of(wrapUser(getUser(uuid)));
-	}
-
-	@Override
-	public PexUser user(String identifier) {
-		return wrapUser(getUser(identifier));
-	}
-
-	@Override
-	public PexUser user(UUID uuid) {
-		return wrapUser(getUser(uuid));
-	}
-
-	@Override
-	public Set<String> userIdentifiers() {
-		return Set.copyOf(getUserIdentifiers());
-	}
-
-	@Override
-	public void deleteUser(String identifier) {
-		PermissionUser user = getUser(identifier);
-		user.remove();
-		resetUser(user.getIdentifier());
-	}
-
-	@Override
-	public Optional<PexGroup> lookupGroup(String name) {
-		if (name == null || name.isEmpty() || !backend.hasGroup(name)) {
-			return Optional.empty();
-		}
-		return Optional.of(wrapGroup(getGroup(name)));
-	}
-
-	@Override
-	public PexGroup group(String name) {
-		if (name == null || name.isEmpty()) {
-			throw new IllegalArgumentException("PexGroup name must not be empty");
-		}
-		return wrapGroup(getGroup(name));
-	}
-
-	@Override
-	public Set<String> groupNames() {
-		return Set.copyOf(getGroupNames());
-	}
-
-	@Override
-	public void deleteGroup(String name) {
-		PermissionGroup group = getGroup(name);
-		String id = group.getIdentifier();
-		group.remove();
-		resetGroup(id);
-	}
-
-	@Override
-	public List<String> worldInheritance(String world) {
-		return List.copyOf(getWorldInheritance(PexWorlds.normalize(world)));
-	}
-
-	@Override
-	public Map<String, List<String>> worldInheritanceMap() {
-		LinkedHashMap<String, List<String>> mapped = new LinkedHashMap<>();
-		for (Map.Entry<String, List<String>> entry : backend.getAllWorldInheritance().entrySet()) {
-			mapped.put(PexWorlds.fromMapKey(entry.getKey()), List.copyOf(entry.getValue()));
-		}
-		return Map.copyOf(mapped);
-	}
-
-	@Override
-	public List<PexGroup> defaultGroups(String world) {
-		List<PexGroup> defaults = new ArrayList<>();
-		for (PermissionGroup group : getDefaultGroups(PexWorlds.normalize(world))) {
-			defaults.add(wrapGroup(group));
-		}
-		return List.copyOf(defaults);
-	}
-
-	@Override
-	public Map<Integer, PexGroup> rankLadder(String ladderName) {
-		Map<Integer, PexGroup> ladder = new LinkedHashMap<>();
-		for (Map.Entry<Integer, PermissionGroup> entry : getRankLadder(ladderName).entrySet()) {
-			ladder.put(entry.getKey(), wrapGroup(entry.getValue()));
-		}
-		return Map.copyOf(ladder);
-	}
-
-	@Override
-	public void setActiveBackend(String alias) throws PexPermissionsExException {
-		try {
-			setBackend(alias);
-		} catch (PermissionBackendException e) {
-			throw new PexPermissionsExException("Failed to activate backend " + alias, e);
-		}
-	}
-
-	@Override
-	public PexBackendHandle createBackendHandle(String alias) throws PexPermissionsExException {
-		try {
-			PermissionBackend created = createBackend(alias);
-			return new ModernBackendHandle(created, alias, this);
-		} catch (PermissionBackendException e) {
-			throw new PexPermissionsExException("Failed to create backend " + alias, e);
-		}
-	}
-
-	@Override
-	public void importFromBackend(String backendAlias) throws PexPermissionsExException {
-		try {
-			PermissionBackend source = createBackend(backendAlias);
-			backend.loadFrom(source);
-			clearCache();
-			publishSystem(PexSystemMutation.RELOADED);
-		} catch (PermissionBackendException e) {
-			throw new PexPermissionsExException("Failed to import from backend " + backendAlias, e);
-		}
-	}
-
-	@Override
-	public String exportData() throws PexPermissionsExException {
-		return BackendSnapshotSupport.export(backend);
-	}
-
-	@Override
-	public void importData(String document, PexImportMode mode) throws PexPermissionsExException {
-		PermissionBackend snapshot = BackendSnapshotSupport.snapshotFromYaml(this, document);
-        if (mode == PexImportMode.REPLACE) {
-            clearCache();
-        }
-        backend.loadFrom(snapshot);
-        publishSystem(PexSystemMutation.RELOADED);
-    }
-
-	@Override
-	public void reload() throws PexPermissionsExException {
-		try {
-			reset();
-		} catch (PermissionBackendException e) {
-			throw new PexPermissionsExException("Failed to reload PermissionsEx backend", e);
-		}
-	}
-
-	@Override
-	public CompletableFuture<Void> reloadAsync() {
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Runnable task = () -> {
-			try {
-				reload();
-				future.complete(null);
-			} catch (Exception ex) {
-				future.completeExceptionally(ex);
-			}
-		};
-		if (executor != null) {
-			executor.execute(task);
-		} else {
-			task.run();
-		}
-		return future;
-	}
-
-	@Override
-	public PexPermissionEditSession openEditSession() {
-		return new PermissionEditSessionImpl(this);
 	}
 
 	public void applyBackendData(PermissionBackend source) {
 		backend.loadFrom(source);
 		clearCache();
-		publishSystem(PexSystemMutation.RELOADED);
-	}
-
-	private PexUser wrapUser(PermissionUser user) {
-		return new ModernUserAdapter(user, this);
-	}
-
-	private PexGroup wrapGroup(PermissionGroup group) {
-		return new ModernGroupAdapter(group, this);
+		publishSystem(SystemMutation.RELOADED);
 	}
 
 	/**
@@ -915,7 +689,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 			this.preloadGroups();
 		}
 
-		this.publishSystem(PexSystemMutation.BACKEND_CHANGED);
+		this.publishSystem(SystemMutation.BACKEND_CHANGED);
 	}
 
 	/**
@@ -930,21 +704,6 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		}
 
 		return PermissionBackend.getBackend(backendType, this, backendSection);
-	}
-
-	/**
-	 * Register new timer task
-	 *
-	 * @param task  TimerTask object
-	 * @param delay delay in seconds
-	 */
-	@Override
-	public void registerTask(TimerTask task, int delay) {
-		if (executor == null || delay == PermissionManager.TRANSIENT_PERMISSION) {
-			return;
-		}
-
-		executor.schedule(task, delay, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -965,7 +724,7 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		if (this.backend != null) {
 			this.backend.reload();
 		}
-		if (callEvent) this.publishSystem(PexSystemMutation.RELOADED);
+		if (callEvent) this.publishSystem(SystemMutation.RELOADED);
 	}
 
 	public void end() {
@@ -988,6 +747,9 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		}
 
 		executor = Executors.newSingleThreadScheduledExecutor();
+		if (timedExpiryCoordinator != null) {
+			timedExpiryCoordinator.reset();
+		}
 	}
 
 	protected void clearCache() {
@@ -1003,15 +765,15 @@ public class DefaultPermissionManager implements PermissionManager, PexPermissio
 		this.setBackend(config.getDefaultBackend());
 	}
 
-	protected void publishSystem(PexSystemMutation mutation) {
-		PexSystemDispatch dispatch = new PexSystemDispatch(getServerUUID(), mutation);
+	protected void publishSystem(SystemMutation mutation) {
+		SystemDispatch dispatch = new SystemDispatch(getServerUUID(), mutation);
 		eventBus.dispatch(dispatch);
 		platform.publish(dispatch);
 	}
 
 	@Override
-	public void publishEntity(String entityIdentifier, String entityType, PexEntityMutation mutation) {
-		PexEntityDispatch dispatch = new PexEntityDispatch(getServerUUID(), entityIdentifier, entityType, mutation);
+	public void publishEntity(String entityIdentifier, String entityType, EntityMutation mutation) {
+		EntityDispatch dispatch = new EntityDispatch(getServerUUID(), entityIdentifier, entityType, mutation);
 		eventBus.dispatch(dispatch);
 		platform.publish(dispatch);
 	}

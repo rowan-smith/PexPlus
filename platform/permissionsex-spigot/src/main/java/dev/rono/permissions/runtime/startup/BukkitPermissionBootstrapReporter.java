@@ -1,6 +1,6 @@
 package dev.rono.permissions.runtime.startup;
 
-import dev.rono.permissions.api.service.PexPermissionService;
+import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.bootstrap.PlatformDescriptor;
 import dev.rono.permissions.bootstrap.PlatformFamily;
 import dev.rono.permissions.core.InternalPermissionManager;
@@ -41,20 +41,20 @@ public final class BukkitPermissionBootstrapReporter {
         log.info(PREFIX + "Platform adapter: "
                 + InternalPermissionManager.require(manager).getPlatform().getClass().getSimpleName());
         log.info(PREFIX + "Core engine: started");
-        logModernApi(plugin, manager, log);
+        logModernApi(plugin, log);
         log.info(PREFIX + "API: legacy v1 compatibility enabled");
         log.info(PREFIX + "Context resolvers: world, server, static");
         log.info(PREFIX + "Storage: " + manager.getBackend().diagnosticLabel());
         logConsumerScan(plugin, log);
     }
 
-    private static void logModernApi(SpigotPermissionsExPlugin plugin, PermissionManager manager, Logger log) {
-        RegisteredServiceProvider<PexPermissionService> reg =
-                plugin.getServer().getServicesManager().getRegistration(PexPermissionService.class);
-        if (reg != null && reg.getProvider() == manager) {
-            log.info(PREFIX + "API: modern v2 registered via ServicesManager");
+    private static void logModernApi(SpigotPermissionsExPlugin plugin, Logger log) {
+        RegisteredServiceProvider<PermissionsExApi> reg =
+                plugin.getServer().getServicesManager().getRegistration(PermissionsExApi.class);
+        if (reg != null) {
+            log.info(PREFIX + "API: PermissionsExApi registered via ServicesManager");
         } else {
-            log.warning(PREFIX + "API: modern v2 PexPermissionService registration missing or superseded");
+            log.warning(PREFIX + "API: PermissionsExApi registration missing or superseded");
         }
     }
 
