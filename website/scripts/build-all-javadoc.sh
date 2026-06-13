@@ -32,7 +32,7 @@ LEGACY_DIR="$REPO_ROOT/legacy-api/permissionsex-legacy-api/target/reports/apidoc
 
 mvn -f "$REPO_ROOT/pom.xml" \
   -pl api/permissionsex-api,legacy-api/permissionsex-legacy-api \
-  -am javadoc:javadoc \
+  -am compile javadoc:javadoc \
   -Ddoclint=none \
   -DskipTests \
   -q
