@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Guards architectural invariants documented in docs/api/API_INVARIANTS.md. */
+/** Guards architectural invariants documented in website/docs/developers/api/invariants.md. */
 class ApiLayerInvariantTest extends PEXTestBase {
 
     @Test
