@@ -191,8 +191,9 @@ Two parallel scoping systems coexist:
 
 | System | Where | Primary use |
 |--------|-------|-------------|
-| **`String world`** | `PermissionSubject`, `User`, `Group`, `SubjectWorldContext` | Subject CRUD, checks, meta — first-class in modern API |
-| **`Map<String, String>` context** | `PermissionContext`, `PermissionAddRequest`, holder `hasPermission` | Holder bridge, proxy/server/region/gamemode keys |
+| **`PermissionContext`** | `PermissionSubject`, `User`, `Group`, holder `hasPermission` | Platform-neutral scope (preferred modern API) |
+| **`String world`** | Legacy overloads on subject APIs | Bukkit-style convenience; delegates to `PermissionContext` |
+| **`Map<String, String>` context** | Legacy holder `hasPermission(holder, node, map)` | Holder bridge interop; converted via `PermissionContext.fromMap` |
 
 Rules today:
 

@@ -1,7 +1,6 @@
 package dev.rono.permissions.api.group;
 
 import dev.rono.permissions.api.permission.PermissionHolder;
-import dev.rono.permissions.api.subject.GroupServerContext;
 import dev.rono.permissions.api.subject.GroupWorldContext;
 import dev.rono.permissions.api.subject.PermissionSubject;
 import dev.rono.permissions.api.subject.SubjectType;
@@ -86,7 +85,7 @@ public interface Group extends PermissionSubject {
      * @param server backend server id on proxies, or a realm name; {@link Worlds#GLOBAL} for the global namespace
      * @return server-bound group context
      */
-    default GroupServerContext inServer(String server) {
+    default GroupWorldContext inServer(String server) {
         return SubjectServerContexts.group(this, server);
     }
 

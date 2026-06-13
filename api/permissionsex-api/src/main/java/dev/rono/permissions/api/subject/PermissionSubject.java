@@ -1,5 +1,7 @@
 package dev.rono.permissions.api.subject;
 
+import dev.rono.permissions.api.permission.PermissionContext;
+import dev.rono.permissions.api.subject.SubjectContexts;
 import dev.rono.permissions.api.world.Worlds;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return {@code true} if the permission is granted, {@code false} otherwise
      */
     default boolean hasPermission(String permission) {
-        return has(permission, Worlds.GLOBAL);
+        return has(permission, PermissionContext.global());
     }
 
     /**
@@ -53,7 +55,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return unmodifiable list of own permission expressions (not inherited)
      */
     default List<String> permissions() {
-        return permissions(Worlds.GLOBAL);
+        return permissions(PermissionContext.global());
     }
 
     /**
@@ -64,7 +66,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return unmodifiable list of effective permission expressions
      */
     default List<String> effectivePermissions() {
-        return effectivePermissions(Worlds.GLOBAL);
+        return effectivePermissions(PermissionContext.global());
     }
 
     /**
@@ -75,7 +77,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param permission permission node to add
      */
     default void addPermission(String permission) {
-        addPermission(permission, Worlds.GLOBAL);
+        addPermission(permission, PermissionContext.global());
     }
 
     /**
@@ -86,7 +88,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param permission permission node to remove
      */
     default void removePermission(String permission) {
-        removePermission(permission, Worlds.GLOBAL);
+        removePermission(permission, PermissionContext.global());
     }
 
     /**
@@ -97,7 +99,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param permissions new permission expressions
      */
     default void setPermissions(List<String> permissions) {
-        setPermissions(permissions, Worlds.GLOBAL);
+        setPermissions(permissions, PermissionContext.global());
     }
 
     /**
@@ -109,7 +111,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param lifetimeSeconds  seconds until expiry; {@code 0} for transient (in-memory only)
      */
     default void addTimedPermission(String permission, int lifetimeSeconds) {
-        addTimedPermission(permission, Worlds.GLOBAL, lifetimeSeconds);
+        addTimedPermission(permission, PermissionContext.global(), lifetimeSeconds);
     }
 
     /**
@@ -120,7 +122,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param permission permission node to remove from timed grants
      */
     default void removeTimedPermission(String permission) {
-        removeTimedPermission(permission, Worlds.GLOBAL);
+        removeTimedPermission(permission, PermissionContext.global());
     }
 
     /**
@@ -131,7 +133,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return list of timed permission nodes
      */
     default List<String> timedPermissions() {
-        return timedPermissions(Worlds.GLOBAL);
+        return timedPermissions(PermissionContext.global());
     }
 
     /**
@@ -142,7 +144,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return list of timed permission entries
      */
     default List<TimedPermissionEntry> timedPermissionEntries() {
-        return timedPermissionEntries(Worlds.GLOBAL);
+        return timedPermissionEntries(PermissionContext.global());
     }
 
     /**
@@ -154,7 +156,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return seconds until expiry; {@code 0} if the timed permission is absent
      */
     default int timedPermissionRemainingSeconds(String permission) {
-        return timedPermissionRemainingSeconds(permission, Worlds.GLOBAL);
+        return timedPermissionRemainingSeconds(permission, PermissionContext.global());
     }
 
     /**
@@ -167,7 +169,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return {@code true} if a timed grant exists for the node, {@code false} otherwise
      */
     default boolean hasTimedPermission(String permission) {
-        return hasTimedPermission(permission, Worlds.GLOBAL);
+        return hasTimedPermission(permission, PermissionContext.global());
     }
 
     /**
@@ -178,7 +180,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return resolved prefix, or empty string when none is defined
      */
     default String prefix() {
-        return prefix(Worlds.GLOBAL);
+        return prefix(PermissionContext.global());
     }
 
     /**
@@ -189,7 +191,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return resolved suffix, or empty string when none is defined
      */
     default String suffix() {
-        return suffix(Worlds.GLOBAL);
+        return suffix(PermissionContext.global());
     }
 
     /**
@@ -200,7 +202,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param prefix new prefix value
      */
     default void setPrefix(String prefix) {
-        setPrefix(prefix, Worlds.GLOBAL);
+        setPrefix(prefix, PermissionContext.global());
     }
 
     /**
@@ -211,7 +213,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param suffix new suffix value
      */
     default void setSuffix(String suffix) {
-        setSuffix(suffix, Worlds.GLOBAL);
+        setSuffix(suffix, PermissionContext.global());
     }
 
     /**
@@ -223,7 +225,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return option value, or {@code null} if unset
      */
     default String option(String key) {
-        return option(key, Worlds.GLOBAL);
+        return option(key, PermissionContext.global());
     }
 
     /**
@@ -235,7 +237,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param value option value; {@code null} or empty removes the option
      */
     default void setOption(String key, String value) {
-        setOption(key, value, Worlds.GLOBAL);
+        setOption(key, value, PermissionContext.global());
     }
 
     /**
@@ -246,7 +248,26 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @return map of option keys to resolved values
      */
     default Map<String, String> options() {
-        return options(Worlds.GLOBAL);
+        return options(PermissionContext.global());
+    }
+
+    /**
+     * Returns a context-scoped view of this subject for permission and metadata operations.
+     *
+     * @param context permission scope
+     * @return context-bound facade
+     */
+    default SubjectContext inContext(PermissionContext context) {
+        return SubjectContexts.subject(this, context);
+    }
+
+    /**
+     * Returns a view of this subject bound to the global namespace.
+     *
+     * @return global context for this subject
+     */
+    default SubjectContext globalContext() {
+        return inContext(PermissionContext.global());
     }
 
     /**
@@ -285,7 +306,7 @@ public interface PermissionSubject extends SubjectIdentity, PermissionView, Perm
      * @param server backend server id on proxies, or a realm name; {@link Worlds#GLOBAL} for the global namespace
      * @return server-bound context for this subject
      */
-    default SubjectServerContext inServer(String server) {
+    default SubjectWorldContext inServer(String server) {
         return SubjectServerContexts.subject(this, server);
     }
 }

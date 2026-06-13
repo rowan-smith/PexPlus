@@ -1,7 +1,9 @@
 package dev.rono.permissions.api.subject;
 
 import dev.rono.permissions.api.group.Group;
+import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.user.User;
+import dev.rono.permissions.api.world.Worlds;
 
 /**
  * Factory for server-bound {@link SubjectServerContext} facades.
@@ -22,8 +24,11 @@ public final class SubjectServerContexts {
      * @param server  backend server id on proxies, or a realm name; {@link dev.rono.permissions.api.world.Worlds#GLOBAL} for global
      * @return thin server projection; delegates all operations back to {@code subject}
      */
-    public static SubjectServerContext subject(PermissionSubject subject, String server) {
-        return (SubjectServerContext) SubjectWorldContexts.subject(subject, server);
+    public static SubjectWorldContext subject(PermissionSubject subject, String server) {
+        PermissionContext context = Worlds.isGlobal(server)
+                ? PermissionContext.global()
+                : PermissionContext.server(Worlds.normalize(server));
+        return SubjectWorldContexts.subject(subject, context);
     }
 
     /**
@@ -33,8 +38,11 @@ public final class SubjectServerContexts {
      * @param server backend server id on proxies, or a realm name; {@link dev.rono.permissions.api.world.Worlds#GLOBAL} for global
      * @return thin server projection; delegates all operations back to {@code user}
      */
-    public static UserServerContext user(User user, String server) {
-        return (UserServerContext) SubjectWorldContexts.user(user, server);
+    public static UserWorldContext user(User user, String server) {
+        PermissionContext context = Worlds.isGlobal(server)
+                ? PermissionContext.global()
+                : PermissionContext.server(Worlds.normalize(server));
+        return SubjectWorldContexts.user(user, context);
     }
 
     /**
@@ -44,7 +52,10 @@ public final class SubjectServerContexts {
      * @param server backend server id on proxies, or a realm name; {@link dev.rono.permissions.api.world.Worlds#GLOBAL} for global
      * @return thin server projection; delegates all operations back to {@code group}
      */
-    public static GroupServerContext group(Group group, String server) {
-        return (GroupServerContext) SubjectWorldContexts.group(group, server);
+    public static GroupWorldContext group(Group group, String server) {
+        PermissionContext context = Worlds.isGlobal(server)
+                ? PermissionContext.global()
+                : PermissionContext.server(Worlds.normalize(server));
+        return SubjectWorldContexts.group(group, context);
     }
 }

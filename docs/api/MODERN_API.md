@@ -123,17 +123,16 @@ api.getEventBus().unsubscribe(sub);
 
 `user.hasPermission("node")` checks the **global** namespace. Use `user.inWorld(world).hasPermission("node")` or `hasPermission(holder, node, context)` for per-world checks.
 
-### Permission context maps
+### Permission context (platform-neutral)
 
-Structured context for holder checks uses standard keys from `PermissionContext`:
+Structured scope for holder checks and the modern subject API uses {@link dev.rono.permissions.api.permission.PermissionContext}:
 
 | Key | Role |
 |-----|------|
-| `world` | Primary realm/world for resolution |
-| `server` | Fallback realm on proxies when `world` is absent |
-| `region` | Optional; for plugin interpreters |
-| `gamemode` | Optional; for plugin interpreters |
-| `state` | Optional (for example `event` during minigames) |
+| `world` | Loaded world / realm (game servers) |
+| `server` | Backend or logical server id (proxies, Sponge) |
+| `dimension` | Sponge dimension (optional) |
+| `region`, `gamemode`, `state` | Optional plugin metadata |
 
 ```java
 import dev.rono.permissions.api.permission.PermissionContext;
@@ -141,10 +140,12 @@ import dev.rono.permissions.api.permission.PermissionContext;
 var context = PermissionContext.of("survival", "lobby-1", "spawn", "creative");
 manager.hasPermission(holder, "my.node", context);
 
-var eventContext = PermissionContext.withState("arena", "event");
+user.inContext(PermissionContext.server("lobby")).addPermission("proxy.admin");
 ```
 
-Helpers in `dev.rono.permissions.api.world.Worlds`: `normalize`, `isGlobal`, `mapKey`, `fromMapKey`.
+Each platform supplies a {@link dev.rono.permissions.api.runtime.ContextResolver} via {@link dev.rono.permissions.api.runtime.PlatformAdapter#getContextResolver()} for inheritance ordering (for example Bukkit: `world → server → global`; Velocity: `server → global`; Sponge: `dimension → world → server → global`).
+
+Legacy {@code String world} overloads on {@code User} / {@code Group} remain for Bukkit-style code; they delegate to {@link PermissionContext}.
 
 ---
 

@@ -13,7 +13,6 @@ class ModernApiServerContextTest extends ModernApiTestSupport {
         var user = api().getUserManager().createUser("server-ctx-user");
         var ctx = user.inServer("lobby");
 
-        assertEquals("lobby", ctx.server());
         assertEquals("lobby", ctx.world());
         assertSame(user, ctx.subject());
 

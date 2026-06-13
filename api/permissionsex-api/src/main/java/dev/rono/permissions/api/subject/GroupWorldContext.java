@@ -8,8 +8,6 @@ import java.util.Set;
 
 /**
  * World-scoped view of a {@link Group}.
- *
- * <p>Every method applies to the bound world from {@link #world()} (see {@link SubjectWorldContext}).</p>
  */
 public interface GroupWorldContext extends SubjectWorldContext {
 

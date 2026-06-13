@@ -2,6 +2,7 @@ package dev.rono.permissions.api.subject;
 
 import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.user.User;
+import dev.rono.permissions.api.permission.PermissionContext;
 import dev.rono.permissions.api.world.Worlds;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,15 @@ import java.util.Set;
 public final class SubjectWorldContexts {
     private SubjectWorldContexts() {}
 
-    static SubjectWorldContext subject(PermissionSubject subject, String world) {
-        String normalized = Worlds.normalize(world);
-        return new SubjectServerContext() {
+    static SubjectWorldContext subject(PermissionSubject subject, PermissionContext context) {
+        PermissionContext bound = context == null ? PermissionContext.global() : context;
+        String normalized = worldLabel(bound);
+        return new SubjectWorldContext() {
+            @Override
+            public PermissionContext context() {
+                return bound;
+            }
+
             @Override
             public String world() {
                 return normalized;
@@ -31,7 +38,7 @@ public final class SubjectWorldContexts {
 
             @Override
             public boolean hasPermission(String permission) {
-                return subject.has(permission, normalized);
+                return subject.has(permission, bound);
             }
 
             @Override
@@ -41,107 +48,117 @@ public final class SubjectWorldContexts {
 
             @Override
             public List<String> permissions() {
-                return subject.permissions(normalized);
+                return subject.permissions(bound);
             }
 
             @Override
             public List<String> effectivePermissions() {
-                return subject.effectivePermissions(normalized);
+                return subject.effectivePermissions(bound);
             }
 
             @Override
             public void addPermission(String permission) {
-                subject.addPermission(permission, normalized);
+                subject.addPermission(permission, bound);
             }
 
             @Override
             public void removePermission(String permission) {
-                subject.removePermission(permission, normalized);
+                subject.removePermission(permission, bound);
             }
 
             @Override
             public void setPermissions(List<String> permissions) {
-                subject.setPermissions(permissions, normalized);
+                subject.setPermissions(permissions, bound);
             }
 
             @Override
             public void addTimedPermission(String permission, int lifetimeSeconds) {
-                subject.addTimedPermission(permission, normalized, lifetimeSeconds);
+                subject.addTimedPermission(permission, bound, lifetimeSeconds);
             }
 
             @Override
             public void removeTimedPermission(String permission) {
-                subject.removeTimedPermission(permission, normalized);
+                subject.removeTimedPermission(permission, bound);
             }
 
             @Override
             public List<String> timedPermissions() {
-                return subject.timedPermissions(normalized);
+                return subject.timedPermissions(bound);
             }
 
             @Override
             public List<TimedPermissionEntry> timedPermissionEntries() {
-                return subject.timedPermissionEntries(normalized);
+                return subject.timedPermissionEntries(bound);
             }
 
             @Override
             public int timedPermissionRemainingSeconds(String permission) {
-                return subject.timedPermissionRemainingSeconds(permission, normalized);
+                return subject.timedPermissionRemainingSeconds(permission, bound);
             }
 
             @Override
             public boolean hasTimedPermission(String permission) {
-                return subject.hasTimedPermission(permission, normalized);
+                return subject.hasTimedPermission(permission, bound);
             }
 
             @Override
             public String prefix() {
-                return subject.prefix(normalized);
+                return subject.prefix(bound);
             }
 
             @Override
             public String suffix() {
-                return subject.suffix(normalized);
+                return subject.suffix(bound);
             }
 
             @Override
             public void setPrefix(String prefix) {
-                subject.setPrefix(prefix, normalized);
+                subject.setPrefix(prefix, bound);
             }
 
             @Override
             public void setSuffix(String suffix) {
-                subject.setSuffix(suffix, normalized);
+                subject.setSuffix(suffix, bound);
             }
 
             @Override
             public String option(String key) {
-                return subject.option(key, normalized);
+                return subject.option(key, bound);
             }
 
             @Override
             public void setOption(String key, String value) {
-                subject.setOption(key, value, normalized);
+                subject.setOption(key, value, bound);
             }
 
             @Override
             public Map<String, String> options() {
-                return subject.options(normalized);
+                return subject.options(bound);
             }
         };
     }
 
+    static SubjectWorldContext subject(PermissionSubject subject, String world) {
+        return subject(subject, PermissionView.legacyWorldContext(world));
+    }
+
     /**
      * Creates a world-bound {@link UserWorldContext} facade for {@code user}.
-     *
-     * @param user  user subject
-     * @param world world name, or {@link Worlds#GLOBAL} for the global namespace
-     * @return thin world projection; delegates all operations back to {@code user}
      */
     public static UserWorldContext user(User user, String world) {
-        String normalized = Worlds.normalize(world);
-        SubjectWorldContext base = subject(user, normalized);
-        return new UserServerContext() {
+        return user(user, PermissionView.legacyWorldContext(world));
+    }
+
+    public static UserWorldContext user(User user, PermissionContext context) {
+        PermissionContext bound = context == null ? PermissionContext.global() : context;
+        String normalized = worldLabel(bound);
+        SubjectWorldContext base = subject(user, bound);
+        return new UserWorldContext() {
+            @Override
+            public PermissionContext context() {
+                return bound;
+            }
+
             @Override
             public String world() {
                 return base.world();
@@ -291,15 +308,21 @@ public final class SubjectWorldContexts {
 
     /**
      * Creates a world-bound {@link GroupWorldContext} facade for {@code group}.
-     *
-     * @param group group subject
-     * @param world world name, or {@link Worlds#GLOBAL} for the global namespace
-     * @return thin world projection; delegates all operations back to {@code group}
      */
     public static GroupWorldContext group(Group group, String world) {
-        String normalized = Worlds.normalize(world);
-        SubjectWorldContext base = subject(group, normalized);
-        return new GroupServerContext() {
+        return group(group, PermissionView.legacyWorldContext(world));
+    }
+
+    public static GroupWorldContext group(Group group, PermissionContext context) {
+        PermissionContext bound = context == null ? PermissionContext.global() : context;
+        String normalized = worldLabel(bound);
+        SubjectWorldContext base = subject(group, bound);
+        return new GroupWorldContext() {
+            @Override
+            public PermissionContext context() {
+                return bound;
+            }
+
             @Override
             public String world() {
                 return base.world();
@@ -505,5 +528,15 @@ public final class SubjectWorldContexts {
                 return group.activeMembers(inherit);
             }
         };
+    }
+
+    private static String worldLabel(PermissionContext context) {
+        if (context.isGlobal()) {
+            return Worlds.GLOBAL;
+        }
+        return context.get(PermissionContext.WORLD)
+                .or(() -> context.get(PermissionContext.DIMENSION))
+                .or(() -> context.get(PermissionContext.SERVER))
+                .orElse(Worlds.GLOBAL);
     }
 }
