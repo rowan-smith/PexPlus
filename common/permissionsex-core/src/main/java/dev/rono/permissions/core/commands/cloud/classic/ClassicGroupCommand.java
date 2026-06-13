@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
@@ -6,14 +6,14 @@ import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 
 /**
  * Bare {@code pex group} / {@code pex groups} / default-group commands. Registered after
- * {@link GroupScopedCommand} so {@code pex group &lt;group&gt;} tab completion is not shadowed
+ * {@link ClassicGroupScopedCommand} so {@code pex group &lt;group&gt;} tab completion is not shadowed
  * by the list command.
  *
  * @param <C> command sender type
  */
-public final class GroupCommand<C> extends AbstractPexCloudCommand<C> {
+public final class ClassicGroupCommand<C> extends AbstractClassicPexCloudCommand<C> {
 
-    public GroupCommand(CoreCloudCommandContext<C> ctx) {
+    public ClassicGroupCommand(CoreCloudCommandContext<C> ctx) {
         super(ctx);
     }
 

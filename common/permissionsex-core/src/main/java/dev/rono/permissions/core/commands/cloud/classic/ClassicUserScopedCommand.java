@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
@@ -6,14 +6,14 @@ import cloud.commandframework.annotations.specifier.Greedy;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 
 /**
- * {@code pex user &lt;user&gt; …} routes. Parsed before {@link UserCommand} so the bare
+ * {@code pex user &lt;user&gt; …} routes. Parsed before {@link ClassicUserCommand} so the bare
  * {@code pex user} list command does not shadow the user-argument branch for tab completion.
  *
  * @param <C> command sender type
  */
-public final class UserScopedCommand<C> extends AbstractPexCloudCommand<C> {
+public final class ClassicUserScopedCommand<C> extends AbstractClassicPexCloudCommand<C> {
 
-    public UserScopedCommand(CoreCloudCommandContext<C> ctx) {
+    public ClassicUserScopedCommand(CoreCloudCommandContext<C> ctx) {
         super(ctx);
     }
 

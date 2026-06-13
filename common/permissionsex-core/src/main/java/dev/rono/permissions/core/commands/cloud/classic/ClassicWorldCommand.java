@@ -1,12 +1,12 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.CommandMethod;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 
 /** Shared default hierarchy route — registered on game servers and proxies. */
-public final class WorldCommand<C> extends AbstractPexCloudCommand<C> {
+public final class ClassicWorldCommand<C> extends AbstractClassicPexCloudCommand<C> {
 
-    public WorldCommand(CoreCloudCommandContext<C> ctx) {
+    public ClassicWorldCommand(CoreCloudCommandContext<C> ctx) {
         super(ctx);
     }
 

@@ -2,7 +2,8 @@ package dev.rono.permissions.core.commands;
 
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.meta.SimpleCommandMeta;
-import dev.rono.permissions.core.commands.cloud.*;
+import dev.rono.permissions.core.commands.cloud.PexCloudSuggestions;
+import dev.rono.permissions.core.commands.cloud.classic.*;
 import dev.rono.permissions.core.commands.cloud.modern.*;
 import dev.rono.permissions.core.config.CommandFramework;
 
@@ -23,18 +24,18 @@ final class CoreCloudAnnotationCommands {
     }
 
     private static <C> void registerClassic(AnnotationParser<C> parser, CoreCloudCommandContext<C> context) {
-        parser.parse(new RootCommand<>(context));
-        parser.parse(new SystemCommand<>(context));
-        parser.parse(new WorldCommand<>(context));
+        parser.parse(new ClassicRootCommand<>(context));
+        parser.parse(new ClassicSystemCommand<>(context));
+        parser.parse(new ClassicWorldCommand<>(context));
         switch (context.cloudPlatform()) {
-            case GAME_SERVER -> parser.parse(new RealmSubtreeCommand.Game<>(context));
-            case PROXY -> parser.parse(new RealmSubtreeCommand.Proxy<>(context));
+            case GAME_SERVER -> parser.parse(new ClassicRealmSubtreeCommand.Game<>(context));
+            case PROXY -> parser.parse(new ClassicRealmSubtreeCommand.Proxy<>(context));
         }
-        parser.parse(new PromotionCommand<>(context));
-        parser.parse(new UserScopedCommand<>(context));
-        parser.parse(new UserCommand<>(context));
-        parser.parse(new GroupScopedCommand<>(context));
-        parser.parse(new GroupCommand<>(context));
+        parser.parse(new ClassicPromotionCommand<>(context));
+        parser.parse(new ClassicUserScopedCommand<>(context));
+        parser.parse(new ClassicUserCommand<>(context));
+        parser.parse(new ClassicGroupScopedCommand<>(context));
+        parser.parse(new ClassicGroupCommand<>(context));
     }
 
     private static <C> void registerModern(AnnotationParser<C> parser, CoreCloudCommandContext<C> context) {

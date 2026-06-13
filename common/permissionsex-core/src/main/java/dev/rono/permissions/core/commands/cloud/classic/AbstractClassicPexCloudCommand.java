@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 
@@ -9,11 +9,11 @@ import java.util.List;
  *
  * @param <C> command sender type
  */
-abstract class AbstractPexCloudCommand<C> {
+abstract class AbstractClassicPexCloudCommand<C> {
 
     protected final CoreCloudCommandContext<C> ctx;
 
-    protected AbstractPexCloudCommand(CoreCloudCommandContext<C> ctx) {
+    protected AbstractClassicPexCloudCommand(CoreCloudCommandContext<C> ctx) {
         this.ctx = ctx;
     }
 

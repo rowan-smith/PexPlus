@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
@@ -6,9 +6,9 @@ import cloud.commandframework.annotations.specifier.Greedy;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
-public final class SystemCommand<C> extends AbstractPexCloudCommand<C> {
+public final class ClassicSystemCommand<C> extends AbstractClassicPexCloudCommand<C> {
 
-    public SystemCommand(CoreCloudCommandContext<C> ctx) {
+    public ClassicSystemCommand(CoreCloudCommandContext<C> ctx) {
         super(ctx);
     }
 

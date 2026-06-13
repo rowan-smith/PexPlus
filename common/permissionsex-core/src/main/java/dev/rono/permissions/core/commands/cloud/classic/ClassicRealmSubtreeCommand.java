@@ -1,4 +1,4 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
@@ -10,13 +10,13 @@ import java.util.List;
 /**
  * World/server hierarchy commands. Game servers register {@link Game}; proxies register {@link Proxy}.
  */
-public final class RealmSubtreeCommand {
-    private RealmSubtreeCommand() {}
+public final class ClassicRealmSubtreeCommand {
+    private ClassicRealmSubtreeCommand() {}
 
     /**
      * {@code pex worlds}, {@code pex hierarchy <world>}, and {@code pex world <world>} — game servers only.
      */
-    public static final class Game<C> extends AbstractPexCloudCommand<C> {
+    public static final class Game<C> extends AbstractClassicPexCloudCommand<C> {
 
         public Game(CoreCloudCommandContext<C> ctx) {
             super(ctx);
@@ -50,7 +50,7 @@ public final class RealmSubtreeCommand {
     /**
      * Proxy-only mirrors — uses {@code pex server}/{@code servers} instead of {@code world}/{@code worlds}.
      */
-    public static final class Proxy<C> extends AbstractPexCloudCommand<C> {
+    public static final class Proxy<C> extends AbstractClassicPexCloudCommand<C> {
 
         public Proxy(CoreCloudCommandContext<C> ctx) {
             super(ctx);

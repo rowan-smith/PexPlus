@@ -1,12 +1,12 @@
-package dev.rono.permissions.core.commands.cloud;
+package dev.rono.permissions.core.commands.cloud.classic;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
 import dev.rono.permissions.core.commands.CoreCloudCommandContext;
 
-public final class RootCommand<C> extends AbstractPexCloudCommand<C> {
+public final class ClassicRootCommand<C> extends AbstractClassicPexCloudCommand<C> {
 
-    public RootCommand(CoreCloudCommandContext<C> ctx) {
+    public ClassicRootCommand(CoreCloudCommandContext<C> ctx) {
         super(ctx);
     }
 
