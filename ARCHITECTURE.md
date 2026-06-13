@@ -39,7 +39,7 @@ Dependency direction: **platform** → **legacy-api** / **api** → **core-api**
 
 New implementation code belongs under `dev.rono`. Public contracts consumed by third-party plugins remain under `ru.tehkode` as thin types delegating to core where needed.
 
-**Hook plugin API documentation:** [`docs/api/README.md`](docs/api/README.md) (modern + legacy reference and roadmap).
+**Hook plugin API documentation:** [`docs/api/README.md`](docs/api/README.md) (modern + legacy reference and roadmap). Architectural invariants: [`docs/api/API_INVARIANTS.md`](docs/api/API_INVARIANTS.md).
 
 ## Permission resolution
 

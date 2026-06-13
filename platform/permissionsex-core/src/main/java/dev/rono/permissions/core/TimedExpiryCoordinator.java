@@ -7,7 +7,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Single scheduler and sweep path for timed permissions and timed group memberships.
+ * Unified expiry engine for timed permissions and timed group memberships.
+ *
+ * <p>Timed grants use two storage shapes (permission maps vs {@code group-*-until} options) but
+ * <strong>all expiry scheduling and sweeps must go through this coordinator</strong>. Callers register
+ * the earliest known expiry via {@link #notifyEarliestExpiry(long)}; {@link #runSweep()} removes
+ * expired timed permissions and group memberships in one pass.</p>
+ *
+ * <p>Do not add parallel timer tasks or ad-hoc expiry loops elsewhere in the engine.</p>
  */
 final class TimedExpiryCoordinator {
 

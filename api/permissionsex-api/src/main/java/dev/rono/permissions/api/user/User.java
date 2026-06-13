@@ -16,14 +16,36 @@ import java.util.UUID;
  *
  * <p>Extends {@link PermissionSubject} with group membership and timed group assignment.
  * Rank-ladder promotion/demotion lives on {@link dev.rono.permissions.api.ladder.LadderManager}.</p>
+ *
+ * <p><strong>Identifier vs entity naming:</strong> {@link #groups(String, boolean)} returns group
+ * identifiers ({@code String}). For resolved {@link dev.rono.permissions.api.group.Group} objects,
+ * use {@code getGroupManager().getGroup(name)}. This mirrors {@link dev.rono.permissions.api.group.Group#members(String, boolean)}
+ * returning {@link User} entities while {@link dev.rono.permissions.api.group.Group#memberIdentifiers(String)}
+ * returns identifiers.</p>
  */
 public interface User extends PermissionSubject {
 
 
+    /**
+     * Returns the stable UUID for this user adapter.
+     *
+     * @return user UUID (parsed from the backend identifier when UUID-shaped)
+     */
     UUID getId();
 
+    /**
+     * Returns the display/login name for this user.
+     *
+     * @return user name, or the UUID string when no name is set
+     */
     String getName();
 
+    /**
+     * Returns a {@link dev.rono.permissions.api.permission.PermissionHolder} identity for holder-based
+     * permission operations on {@link ru.tehkode.permissions.PermissionManager}.
+     *
+     * @return holder view of this user
+     */
     PermissionHolder asHolder();
 
     /**
@@ -71,8 +93,10 @@ public interface User extends PermissionSubject {
     /**
      * Returns group identifiers the user inherits in the given world.
      *
-     * <p>When {@code inherit} is {@code true}, includes parents of parents; when {@code false}, returns
-     * only direct group assignments.</p>
+     * <p>When {@code inherit} is {@code true}, uses expanded parent resolution ({@code getParentIdentifiers});
+     * when {@code false}, returns only direct group assignments ({@code getOwnParentIdentifiers}). This lists
+     * the user's group memberships — not the parent-group hierarchy of those groups. Use
+     * {@link #hasPermission(String)} / effective permission checks for inherited group permissions.</p>
      *
      * @param world   world name, or {@link Worlds#GLOBAL} for the global namespace
      * @param inherit when {@code true}, expand transitive group inheritance

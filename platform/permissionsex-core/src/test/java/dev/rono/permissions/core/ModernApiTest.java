@@ -1,10 +1,11 @@
 package dev.rono.permissions.core;
 
-import dev.rono.permissions.api.PermissionsExApi;
+import dev.rono.permissions.api.group.Group;
 import dev.rono.permissions.api.permission.PermissionAddRequest;
+import dev.rono.permissions.api.permission.PermissionContext;
+import dev.rono.permissions.api.user.User;
 import dev.rono.permissions.api.world.Worlds;
 import org.junit.jupiter.api.Test;
-import ru.tehkode.permissions.PEXTestBase;
 
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ModernApiTest extends PEXTestBase {
-
-  private PermissionsExApi api() {
-    return ((DefaultPermissionManager) manager).permissionsExApi();
-  }
+class ModernApiTest extends ModernApiTestSupport {
 
   @Test
   void userAndGroupCrudViaManagers() {
@@ -98,6 +95,14 @@ class ModernApiTest extends PEXTestBase {
   }
 
   @Test
+  void permissionContextResolveWorld() {
+    assertNull(PermissionContext.resolveWorld(null));
+    assertNull(PermissionContext.resolveWorld(PermissionContext.global()));
+    assertEquals("survival", PermissionContext.resolveWorld(PermissionContext.of("survival", null, null, null)));
+    assertEquals("proxy-1", PermissionContext.resolveWorld(Map.of(PermissionContext.SERVER, "proxy-1")));
+  }
+
+  @Test
   void groupMembers() {
     var group = api().getGroupManager().createGroup("member-group");
     var user = api().getUserManager().createUser("member-user");
@@ -106,6 +111,19 @@ class ModernApiTest extends PEXTestBase {
 
     assertTrue(group.memberIdentifiers().contains(user.identifier()));
     assertFalse(group.members().isEmpty());
+    assertEquals(List.of(user.identifier()), group.members().stream().map(User::identifier).toList());
+  }
+
+  @Test
+  void groupChildIdentifiers() {
+    var parent = api().getGroupManager().createGroup("parent-id-group");
+    var child = api().getGroupManager().createGroup("child-id-group");
+    child.addParent(parent.getName(), Worlds.GLOBAL);
+    child.save();
+
+    assertTrue(parent.childIdentifiers().contains(child.getName()));
+    assertTrue(parent.descendantIdentifiers().contains(child.getName()));
+    assertEquals(parent.childIdentifiers(), parent.children().stream().map(Group::getName).toList());
   }
 
   @Test

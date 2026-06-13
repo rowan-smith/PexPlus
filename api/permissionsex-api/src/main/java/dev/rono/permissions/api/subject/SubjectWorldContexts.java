@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Factory for world-bound {@link SubjectWorldContext} facades.
+ *
+ * <p>Every implementation here is a pure delegate: bind {@link Worlds#normalize(String)} and forward
+ * to {@link PermissionSubject}, {@link User}, or {@link Group}. Do not add business logic in this class.</p>
+ */
 public final class SubjectWorldContexts {
     private SubjectWorldContexts() {}
 
@@ -125,6 +131,13 @@ public final class SubjectWorldContexts {
         };
     }
 
+    /**
+     * Creates a world-bound {@link UserWorldContext} facade for {@code user}.
+     *
+     * @param user  user subject
+     * @param world world name, or {@link Worlds#GLOBAL} for the global namespace
+     * @return thin world projection; delegates all operations back to {@code user}
+     */
     public static UserWorldContext user(User user, String world) {
         String normalized = Worlds.normalize(world);
         SubjectWorldContext base = subject(user, normalized);
@@ -276,6 +289,13 @@ public final class SubjectWorldContexts {
         };
     }
 
+    /**
+     * Creates a world-bound {@link GroupWorldContext} facade for {@code group}.
+     *
+     * @param group group subject
+     * @param world world name, or {@link Worlds#GLOBAL} for the global namespace
+     * @return thin world projection; delegates all operations back to {@code group}
+     */
     public static GroupWorldContext group(Group group, String world) {
         String normalized = Worlds.normalize(world);
         SubjectWorldContext base = subject(group, normalized);
@@ -458,6 +478,21 @@ public final class SubjectWorldContexts {
             @Override
             public List<Group> descendants() {
                 return group.descendants(normalized);
+            }
+
+            @Override
+            public List<String> childIdentifiers() {
+                return group.childIdentifiers(normalized);
+            }
+
+            @Override
+            public List<String> childIdentifiers(boolean inherit) {
+                return group.childIdentifiers(normalized, inherit);
+            }
+
+            @Override
+            public List<String> descendantIdentifiers() {
+                return group.descendantIdentifiers(normalized);
             }
 
             @Override

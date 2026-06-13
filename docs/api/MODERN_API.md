@@ -20,12 +20,32 @@ Sample plugin: [`plugin/permissionsex-example-plugin/`](../../plugin/permissions
 
 ---
 
+## Documentation
+
+Every public type under `dev.rono.permissions.api.*` is documented with Javadoc. Generate HTML reference from the repository root:
+
+```bash
+# Recommended — unified docs for core-api + permissionsex-api
+mvn -pl api javadoc:aggregate -am
+
+# Single-module docs (builds dependencies via -am)
+mvn -pl api/permissionsex-api javadoc:javadoc -am
+```
+
+Output: `api/target/reports/apidocs/` (aggregate) or `api/permissionsex-api/target/reports/apidocs/` (single module).
+
+Package overviews live in `package-info.java` files. Architectural rules: [API_INVARIANTS.md](API_INVARIANTS.md).
+
+---
+
 ## Entry point
 
 ```java
-var api = PermissionsEx.getApi();
-var manager = api.getPermissionManager();
+var api = PermissionsEx.getApi();  // primary API — see API_INVARIANTS.md
+var manager = api.getPermissionManager();  // legacy bridge + holder operations
 ```
+
+**Primary API:** `PermissionsExApi` via `PermissionsEx.getApi()`. Subject operations use managers; `PermissionManager` is the legacy/holder bridge. See [API_INVARIANTS.md](API_INVARIANTS.md).
 
 | Method | Role |
 |--------|------|
