@@ -22,20 +22,23 @@ Browse the generated API documentation for each release.
 |-----|---------|---------|
 | **Modern** | `dev.rono.permissions.api.*` | [1.23.5]({{ site.baseurl }}/apidocs/1.23.5/dev/rono/permissions/api/package-summary.html) |
 | **Legacy** | `ru.tehkode.permissions.*` | [1.23.5]({{ site.baseurl }}/apidocs/1.23.5/ru/tehkode/permissions/package-summary.html) |
-| **Classic (archive)** | `ru.tehkode.permissions.*` | [1.22.1]({{ site.baseurl }}/apidocs/1.22.1/apidocs/ru/tehkode/permissions/package-summary.html) |
+| **Classic** | `ru.tehkode.permissions.*` | [1.23.4]({{ site.baseurl }}/apidocs/1.23.4/ru/tehkode/permissions/package-summary.html) · [1.23.1]({{ site.baseurl }}/apidocs/1.23.1/ru/tehkode/permissions/package-summary.html) · [1.22.1]({{ site.baseurl }}/apidocs/1.22.1/apidocs/ru/tehkode/permissions/package-summary.html) |
+
+Versions **1.23.1 – 1.23.4** are built from the original PermissionsEx `STABLE-1.23.x` tags. **1.23.5** includes the new `dev.rono.permissions.api` packages.
 
 ## Generate locally
 
-From the repository root:
+**PermissionsExPlus 1.23.5** (from repo root):
 
 ```bash
 mvn -pl api/permissionsex-api,legacy-api/permissionsex-legacy-api javadoc:javadoc -am -Ddoclint=none
 ```
 
-Output:
+**Classic 1.23.x** (from a `STABLE-1.23.x` tag):
 
-- `api/permissionsex-api/target/reports/apidocs/`
-- `legacy-api/permissionsex-legacy-api/target/reports/apidocs/`
+```bash
+./scripts/build-classic-javadoc.sh STABLE-1.23.4 1.23.4
+```
 
 ## Maven coordinates
 
