@@ -94,7 +94,7 @@ const config: Config = {
     ],
     image: 'img/pex-social-card.png',
     navbar: {
-      title: 'PermissionsExPlus',
+      title: 'PEX+',
       logo: {
         alt: 'PermissionsExPlus',
         src: 'img/pex-logo.svg',
@@ -115,19 +115,7 @@ const config: Config = {
             {type: 'doc', docId: 'concepts/meta', label: 'Prefix & Meta'},
           ],
         },
-        {
-          type: 'dropdown',
-          label: 'Commands',
-          position: 'left',
-          items: [
-            {type: 'doc', docId: 'commands/general', label: 'General'},
-            {type: 'doc', docId: 'commands/users', label: 'Users'},
-            {type: 'doc', docId: 'commands/groups', label: 'Groups'},
-            {type: 'doc', docId: 'commands/permissions', label: 'Permissions'},
-            {type: 'doc', docId: 'commands/worlds', label: 'Worlds'},
-            {type: 'doc', docId: 'commands/ranks', label: 'Ranks'},
-          ],
-        },
+        {type: 'doc', docId: 'commands/index', label: 'Commands', position: 'left'},
         {
           type: 'dropdown',
           label: 'Configuration',
@@ -224,7 +212,7 @@ const config: Config = {
         {
           title: 'Reference',
           items: [
-            {label: 'Commands', to: '/commands/general'},
+            {label: 'Commands', to: '/commands'},
             {label: 'Configuration', to: '/configuration'},
             {label: 'API Cookbook', to: '/developers/cookbook'},
             {label: 'Hook Plugin API', to: '/developers/api'},

@@ -18,14 +18,9 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Configuration',
-      collapsed: false,
-      items: ['configuration', 'storage'],
-    },
-    {
-      type: 'category',
       label: 'Commands',
       collapsed: false,
+      link: {type: 'doc', id: 'commands/index'},
       items: [
         'commands/general',
         'commands/users',
@@ -34,6 +29,12 @@ const sidebars: SidebarsConfig = {
         'commands/worlds',
         'commands/ranks',
       ],
+    },
+    {
+      type: 'category',
+      label: 'Configuration',
+      collapsed: false,
+      items: ['configuration', 'storage'],
     },
     {
       type: 'category',
