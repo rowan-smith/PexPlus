@@ -17,13 +17,16 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>permissionsex-core</artifactId>
+            <artifactId>permissionsex-proxy-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>permissionsex-bungee</artifactId>
-            <version>${project.version}</version>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.spongepowered</groupId>

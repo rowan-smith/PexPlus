@@ -17,7 +17,6 @@
     <modules>
         <module>permissionsex-core-api</module>
         <module>permissionsex-api</module>
-        <module>permissionsex-api-bungee</module>
     </modules>
 
     <build>
@@ -32,8 +31,6 @@
                             <goal>aggregate</goal>
                         </goals>
                         <configuration>
-                            <!-- Bungee helpers depend on provided proxy APIs -->
-                            <excludeArtifactIds>permissionsex-api-bungee</excludeArtifactIds>
                             <excludePackageNames>dev.rono.permissions.bootstrap:dev.rono.permissions.api.runtime</excludePackageNames>
                         </configuration>
                     </execution>

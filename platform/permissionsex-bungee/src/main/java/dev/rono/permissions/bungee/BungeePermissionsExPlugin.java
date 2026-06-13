@@ -9,6 +9,8 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
 import dev.rono.permissions.core.commands.CoreCloudPlatform;
 import dev.rono.permissions.core.commands.CoreCommandService;
+import dev.rono.permissions.core.commands.PexCloudCommands;
+import dev.rono.permissions.proxy.commands.ProxyConfigBridge;
 import dev.rono.permissions.runtime.startup.BungeePermissionBootstrapReporter;
 import dev.rono.permissions.runtime.startup.ProxyPlatformInitializer;
 import net.md_5.bungee.api.CommandSender;
@@ -48,23 +50,21 @@ public class BungeePermissionsExPlugin extends Plugin {
             this.config = startup.config();
             this.manager = startup.manager();
             getProxy().getPluginManager().registerListener(this, new BungeePexPermissionBridge(manager));
-            this.commandService = new CoreCommandService(manager);
             this.cloudManager = new StrippingBungeeCommandManager<>(
                     this,
                     CommandExecutionCoordinator.simpleCoordinator(),
                     Function.identity(),
                     Function.identity());
-            new CoreCloudCommandRegistrar<>(
+            this.commandService = PexCloudCommands.install(new PexCloudCommands.InstallRequest<>(
                             cloudManager,
                             CommandSender.class,
-                            commandService,
+                            manager,
                             new BungeeSenderAdapter(),
                             config::reload,
-                            new BungeeConfigBridge(),
+                            new ProxyConfigBridge(config),
                             force -> "UUID conversion is not supported on Bungee.",
-                            new BungeeImportBridge(),
                             CoreCloudPlatform.PROXY)
-                    .register();
+                    .withImportBridge(new BungeeImportBridge()));
             BungeePermissionBootstrapReporter.log(this, this.manager);
         } catch (PermissionBackendException ex) {
             getLogger().severe("Failed to initialize PermissionsExPlus Bungee adapter: " + ex.getMessage());
@@ -120,23 +120,6 @@ public class BungeePermissionsExPlugin extends Plugin {
         @Override
         public String pluginVersion() {
             return getDescription().getVersion();
-        }
-    }
-
-    private final class BungeeConfigBridge implements CoreCommandService.ConfigBridge {
-        @Override
-        public Object get(String path) {
-            return config.getNode(path);
-        }
-
-        @Override
-        public void set(String path, Object value) {
-            config.setNode(path, value);
-        }
-
-        @Override
-        public void save() {
-            config.save();
         }
     }
 

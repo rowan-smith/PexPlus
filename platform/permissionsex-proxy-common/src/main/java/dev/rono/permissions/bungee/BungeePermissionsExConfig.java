@@ -37,7 +37,7 @@ public class BungeePermissionsExConfig implements PermissionsExConfig, ru.tehkod
         reload();
     }
 
-    void reload() {
+    public void reload() {
         try {
             Files.createDirectories(configFile.getParent());
             if (!Files.exists(configFile)) {
@@ -148,11 +148,11 @@ public class BungeePermissionsExConfig implements PermissionsExConfig, ru.tehkod
         }
     }
 
-    Object getNode(String path) {
+    public Object getNode(String path) {
         return get(path);
     }
 
-    void setNode(String path, Object value) {
+    public void setNode(String path, Object value) {
         set(path, value);
     }
 

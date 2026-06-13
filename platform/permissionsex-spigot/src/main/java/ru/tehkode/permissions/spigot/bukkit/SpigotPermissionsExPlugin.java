@@ -28,7 +28,9 @@ import com.mojang.api.profiles.ProfileRepository;
 import dev.rono.permissions.api.PermissionsExApi;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
 import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
+import dev.rono.permissions.core.commands.CoreCloudPlatform;
 import dev.rono.permissions.core.commands.CoreCommandService;
+import dev.rono.permissions.core.commands.PexCloudCommands;
 import dev.rono.permissions.runtime.startup.BukkitPermissionBootstrapReporter;
 import dev.rono.permissions.spigot.platform.BukkitPlatformAdapter;
 import dev.rono.permissions.spigot.platform.BukkitPlatformScheduler;
@@ -204,7 +206,6 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			if (this.permissionsManager == null) {
 				this.permissionsManager = new SpigotPermissionManager(config, getLogger(), platformRuntime);
 			}
-            this.coreCommandService = new CoreCommandService(this.permissionsManager);
 
 			try {
 				OfflinePlayer.class.getMethod("getUniqueId");
@@ -225,15 +226,15 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
                         CommandExecutionCoordinator.simpleCoordinator(),
                         Function.identity(),
                         Function.identity());
-                new CoreCloudCommandRegistrar<>(
+                this.coreCommandService = PexCloudCommands.install(new PexCloudCommands.InstallRequest<>(
                         cloudManager,
                         CommandSender.class,
-                        coreCommandService,
+                        permissionsManager,
                         new SpigotSenderAdapter(),
                         this::reloadConfig,
                         new SpigotConfigBridge(),
-                        new SpigotUuidConversionBridge())
-                        .register();
+                        new SpigotUuidConversionBridge(),
+                        CoreCloudPlatform.GAME_SERVER));
                 tryRegisterPaperBrigadier();
             } catch (Exception cloudEx) {
                 getLogger().warning("Failed to initialize Cloud command registration: " + cloudEx.getMessage());

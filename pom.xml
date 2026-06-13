@@ -178,6 +178,11 @@
                 <version>${cloud.version}</version>
             </dependency>
             <dependency>
+                <groupId>cloud.commandframework</groupId>
+                <artifactId>cloud-velocity</artifactId>
+                <version>${cloud.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.mojang</groupId>
                 <artifactId>brigadier</artifactId>
                 <version>1.0.18</version>

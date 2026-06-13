@@ -17,8 +17,8 @@ final class CoreCloudAnnotationCommands {
         parser.parse(new SystemCommand<>(context));
         parser.parse(new WorldCommand<>(context));
         switch (context.cloudPlatform()) {
-            case GAME_SERVER -> parser.parse(new WorldGameSubtreeCommand<>(context));
-            case PROXY -> parser.parse(new ProxyServerSubtreeCommand<>(context));
+            case GAME_SERVER -> parser.parse(new RealmSubtreeCommand.Game<>(context));
+            case PROXY -> parser.parse(new RealmSubtreeCommand.Proxy<>(context));
         }
         parser.parse(new PromotionCommand<>(context));
         parser.parse(new UserScopedCommand<>(context));
