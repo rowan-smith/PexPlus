@@ -26,16 +26,29 @@ flowchart BT
     apiMod[permissionsex-api]
     apiMod --> coreapi
   end
-  subgraph platform [platform]
+  subgraph common [common]
+    platformapi[permissionsex-platform-api]
     core[permissionsex-core]
-    spigot[permissionsex-spigot]
-    bungee[permissionsex-bungee]
-    boot[permissionsex-bootstrap]
+    platformapi --> coreapi
+    core --> platformapi
     core --> coreapi
     core --> apiMod
     core --> legacyMod
+  end
+  subgraph platform [platform]
+    spigot[permissionsex-spigot]
+    bungee[permissionsex-bungee]
+    paper[permissionsex-paper]
+    velocity[permissionsex-velocity]
+    sponge[permissionsex-sponge]
     spigot --> core
     bungee --> core
+    paper --> platformapi
+    velocity --> platformapi
+    sponge --> platformapi
+  end
+  subgraph bootstrap [bootstrap]
+    boot[permissionsex-bootstrap]
     boot --> spigot
     boot --> bungee
   end
@@ -51,7 +64,7 @@ flowchart BT
 
 ## Modules
 
-Maven reactor order matches four groups (see root `pom.xml`). Maven still resolves **build order** from inter-module dependencies.
+Maven reactor order matches six groups (see root `pom.xml`). Maven still resolves **build order** from inter-module dependencies.
 
 ### `legacy-api` — classic hook compile surfaces
 
@@ -65,17 +78,31 @@ Maven reactor order matches four groups (see root `pom.xml`). Maven still resolv
 
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
-| `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Platform-neutral SPI: `PlatformAdapter`, bus dispatches, `SchedulerBridge`, `ContextResolver`. For platform hosts and deep integration. |
+| `api/permissionsex-core-api/` | `permissionsex-core-api` | Yes (shaded) | Engine ↔ API SPI: bus dispatches, `PermissionHolder`, `PermissionAddRequest`. |
 | `api/permissionsex-api/` | `permissionsex-api` | Yes (shaded) | **Modern hook surface:** `PermissionsExApi` on Bukkit `ServicesManager`. Preferred entry for new companion plugins. |
 
-### `platform` — engine, runtimes, bootstrap
+### `common` — engine and platform bridge
 
 | Directory | Artifact ID | Ships in plugin jar? | Purpose |
 |-----------|-------------|----------------------|---------|
-| `platform/permissionsex-core/` | `permissionsex-core` | Yes (shaded) | Engine: manager, backends (YAML/SQL/multi), hierarchy, commands, config. Internal — not a hook compile dependency. |
+| `common/permissionsex-platform-api/` | `permissionsex-platform-api` | Yes (shaded) | **Runtime bridge:** `PlatformAdapter`, `PlatformScheduler`, logging, identity — the only layer between engine and host. |
+| `common/permissionsex-core/` | `permissionsex-core` | Yes (shaded) | **The engine:** manager, backends (YAML/SQL/multi), hierarchy, commands, config. Internal — not a hook compile dependency. |
+
+### `platform` — thin runtime adapters
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
 | `platform/permissionsex-spigot/` | `permissionsex-spigot` | Yes (shaded) | Bukkit/Paper runtime: live `PermissionsEx` `JavaPlugin`, superperms bridge, Cloud commands, Bukkit events. |
 | `platform/permissionsex-bungee/` | `permissionsex-bungee` | Yes (shaded) | Bungee/Waterfall proxy runtime and permission bridge. |
-| `platform/permissionsex-bootstrap/` | `permissionsex-bootstrap` | **Install this jar** | Merges Spigot + Bungee → `PermissionsExPlus-{version}.jar`. |
+| `platform/permissionsex-paper/` | `permissionsex-paper` | No (placeholder) | Reserved Paper-specific adapter slot. |
+| `platform/permissionsex-velocity/` | `permissionsex-velocity` | No (placeholder) | Reserved Velocity proxy adapter slot. |
+| `platform/permissionsex-sponge/` | `permissionsex-sponge` | No (placeholder) | Reserved Sponge adapter slot. |
+
+### `bootstrap` — universal jar
+
+| Directory | Artifact ID | Ships in plugin jar? | Purpose |
+|-----------|-------------|----------------------|---------|
+| `bootstrap/permissionsex-bootstrap/` | `permissionsex-bootstrap` | **Install this jar** | Merges Spigot + Bungee → `PermissionsExPlus-{version}.jar`. |
 
 ### `plugin` — sample companion plugins
 
@@ -303,7 +330,7 @@ Platform-neutral host bridge implemented by Spigot/Bungee runtimes. **Not regist
 
 On Spigot, `SpigotPermissionsExPlugin` implements this interface; game-server logic is delegated to `SpigotPlatformBridge`.
 
-Source: `api/permissionsex-core-api/src/main/java/dev/rono/permissions/api/runtime/PlatformAdapter.java`
+Source: `common/permissionsex-platform-api/src/main/java/dev/rono/permissions/api/runtime/PlatformAdapter.java`
 
 #### Bus dispatches (`permissionsex-core-api`)
 
@@ -321,12 +348,15 @@ Immutable notifications from the engine to the active `PlatformAdapter`. On **Sp
 
 Sources: `api/permissionsex-core-api/src/main/java/dev/rono/permissions/api/bus/`
 
-#### Supporting runtime types (`permissionsex-core-api`)
+#### Supporting runtime types (`permissionsex-platform-api`)
 
 | Type | Role |
 |------|------|
 | `ContextResolver` | Functional: `realmFor(UUID)` — maps a holder to an active realm/world slug |
-| `SchedulerBridge` | `runSync`, `runAsync`, `runLater` — host scheduling abstraction |
+| `PlatformScheduler` | `runSync`, `runAsync`, `runLater` — host scheduling abstraction |
+| `PlatformLogger` | Host logging bridge |
+| `PlatformEventBus` | Publishes `PermissionDispatch` to native listeners |
+| `PlatformPlayer` / `PlatformWorld` | Unified identity and realm abstractions |
 
 These are used inside PEX platform wiring, not typical hook-plugin entry points.
 

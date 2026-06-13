@@ -5,7 +5,7 @@ package dev.rono.permissions.api.runtime;
  *
  * <p>Delay semantics for {@link #runLater(Runnable, long)} are host-defined (Minecraft ticks on Spigot).</p>
  */
-public interface SchedulerBridge {
+public interface PlatformScheduler {
 
     /**
      * Runs {@code task} on the platform main/synchronous thread.

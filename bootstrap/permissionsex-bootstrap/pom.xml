@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dev.rono.permissions</groupId>
-        <artifactId>platform</artifactId>
+        <artifactId>bootstrap</artifactId>
         <version>1.23.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dev.rono.permissions</groupId>
-        <artifactId>platform</artifactId>
+        <artifactId>common</artifactId>
         <version>1.23.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -15,6 +15,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>permissionsex-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>permissionsex-platform-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
