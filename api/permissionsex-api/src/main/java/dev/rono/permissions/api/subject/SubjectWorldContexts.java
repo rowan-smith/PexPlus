@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Factory for world-bound {@link SubjectWorldContext} facades.
+ *
+ * <p>Every implementation here is a pure delegate: bind {@link Worlds#normalize(String)} and forward
+ * to {@link PermissionSubject}, {@link User}, or {@link Group}. Do not add business logic in this class.</p>
+ */
 public final class SubjectWorldContexts {
     private SubjectWorldContexts() {}
 

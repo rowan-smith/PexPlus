@@ -1,0 +1,86 @@
+package dev.rono.permissions.core;
+
+import dev.rono.permissions.api.subject.PermissionMutator;
+import dev.rono.permissions.api.subject.PermissionSubject;
+import dev.rono.permissions.api.subject.PermissionView;
+import dev.rono.permissions.api.subject.SubjectIdentity;
+import dev.rono.permissions.api.subject.SubjectWorldContext;
+import dev.rono.permissions.api.subject.SubjectWorldContexts;
+import dev.rono.permissions.api.user.User;
+import org.junit.jupiter.api.Test;
+import ru.tehkode.permissions.PEXTestBase;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Guards architectural invariants documented in docs/api/API_INVARIANTS.md.
+ */
+class ApiLayerInvariantTest extends PEXTestBase {
+
+    @Test
+    void permissionSubjectComposesRoleInterfaces() {
+        assertTrue(SubjectIdentity.class.isAssignableFrom(PermissionSubject.class));
+        assertTrue(PermissionView.class.isAssignableFrom(PermissionSubject.class));
+        assertTrue(PermissionMutator.class.isAssignableFrom(PermissionSubject.class));
+    }
+
+    @Test
+    void roleInterfacesDeclareAllNonDefaultSubjectMethods() throws Exception {
+        var roleMethods = declaredAbstractMethods(SubjectIdentity.class);
+        roleMethods.addAll(declaredAbstractMethods(PermissionView.class));
+        roleMethods.addAll(declaredAbstractMethods(PermissionMutator.class));
+
+        var subjectMethods = declaredAbstractMethods(PermissionSubject.class);
+
+        assertEquals(roleMethods, subjectMethods,
+                "PermissionSubject abstract methods must match the union of role interfaces");
+    }
+
+    @Test
+    void subjectWorldContextFactoryIsPureDelegation() throws Exception {
+        var user = ((DefaultPermissionManager) manager).permissionsExApi()
+                .getUserManager()
+                .createUser("invariant-facade-user");
+
+        SubjectWorldContext context = SubjectWorldContexts.subject(user, "world");
+        user.addPermission("facade.test", "world");
+
+        assertTrue(context.hasPermission("facade.test"));
+        assertTrue(user.inWorld("world").hasPermission("facade.test"));
+        assertEquals("world", context.world());
+        assertSame(user, context.subject());
+
+        user.delete();
+    }
+
+    @Test
+    void userAdapterImplementsRoleInterfaces() {
+        var user = ((DefaultPermissionManager) manager).permissionsExApi()
+                .getUserManager()
+                .createUser("invariant-roles-user");
+
+        assertInstanceOf(SubjectIdentity.class, user);
+        assertInstanceOf(PermissionView.class, user);
+        assertInstanceOf(PermissionMutator.class, user);
+        assertInstanceOf(User.class, user);
+
+        user.delete();
+    }
+
+    private static Set<String> declaredAbstractMethods(Class<?> type) {
+        return Arrays.stream(type.getMethods())
+                .filter(m -> Modifier.isAbstract(m.getModifiers()))
+                .map(ApiLayerInvariantTest::signature)
+                .collect(Collectors.toSet());
+    }
+
+    private static String signature(Method method) {
+        return method.getName() + Arrays.toString(method.getParameterTypes());
+    }
+}

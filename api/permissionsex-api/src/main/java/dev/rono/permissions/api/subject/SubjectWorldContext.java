@@ -5,11 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * World-scoped view of a {@link PermissionSubject}.
+ * World-scoped projection of a {@link PermissionSubject}.
  *
  * <p>Obtained via {@link PermissionSubject#inWorld(String)}. Every method on this context applies to
  * the bound world returned by {@link #world()} — callers do not pass a world argument again.
  * {@link Worlds#GLOBAL} selects the global namespace.</p>
+ *
+ * <p><strong>Thin facade invariant:</strong> implementations must delegate to the underlying
+ * {@link PermissionSubject} with the bound world fixed. They must not duplicate permission resolution,
+ * inheritance, timed-expiry, or persistence logic. All evaluation flows through the subject/engine;
+ * all writes flow through the subject obtained from a manager.</p>
  */
 public interface SubjectWorldContext {
 

@@ -24,6 +24,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 |----------|----------|
 | [MODERN_API.md](MODERN_API.md) | `PermissionsEx.getApi()`, managers, holder permissions, managers, subjects, world contexts |
 | [LEGACY_API.md](LEGACY_API.md) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
+| [API_INVARIANTS.md](API_INVARIANTS.md) | Primary API layering, subject role split, timed expiry, world-context rules |
 | [FUTURE.md](FUTURE.md) | Recommended additions and known gaps |
 
 ## Runtime registration (Spigot/Paper)
