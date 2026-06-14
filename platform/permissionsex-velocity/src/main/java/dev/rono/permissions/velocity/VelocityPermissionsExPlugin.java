@@ -1,17 +1,26 @@
 package dev.rono.permissions.velocity;
 
+import cloud.commandframework.execution.CommandExecutionCoordinator;
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.permission.PermissionsSetupEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.permission.Tristate;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.rono.permissions.api.runtime.NoOpPlatformEventBus;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
+import dev.rono.permissions.bungee.BungeePermissionsExConfig;
 import dev.rono.permissions.core.DefaultPermissionManager;
+import dev.rono.permissions.core.commands.CoreCloudCommandRegistrar;
+import dev.rono.permissions.core.commands.CoreCloudPlatform;
+import dev.rono.permissions.core.commands.CoreCommandService;
+import dev.rono.permissions.core.commands.PexCloudCommands;
+import dev.rono.permissions.proxy.commands.ProxyConfigBridge;
 import dev.rono.permissions.runtime.startup.ProxyPlatformInitializer;
 import dev.rono.permissions.runtime.startup.VelocityPermissionBootstrapReporter;
 import dev.rono.permissions.velocity.platform.VelocityPlatformAdapter;
@@ -22,20 +31,30 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 
 import java.nio.file.Path;
+import java.util.function.Function;
 
 /**
  * Velocity proxy entry point. Shared proxy bootstrap lives in {@link ProxyPlatformInitializer}.
  */
 public final class VelocityPermissionsExPlugin {
     private final ProxyServer server;
+    private final PluginContainer pluginContainer;
     private final Logger logger;
     private final Path dataDirectory;
     private DefaultPermissionManager manager;
+    private BungeePermissionsExConfig config;
     private PlatformRuntime platformRuntime;
+    private CoreCommandService commandService;
+    private StrippingVelocityCommandManager<CommandSource> cloudManager;
 
     @Inject
-    public VelocityPermissionsExPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+    public VelocityPermissionsExPlugin(
+            ProxyServer server,
+            PluginContainer pluginContainer,
+            Logger logger,
+            @DataDirectory Path dataDirectory) {
         this.server = server;
+        this.pluginContainer = pluginContainer;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
     }
@@ -49,11 +68,28 @@ public final class VelocityPermissionsExPlugin {
         var adapter = new VelocityPlatformAdapter(server);
         var scheduler = new VelocityPlatformScheduler(this, server);
         platformRuntime = PlatformRuntime.of(adapter, NoOpPlatformEventBus.INSTANCE, scheduler);
-        manager = ProxyPlatformInitializer.start(
-                        dataDirectory.toFile(),
-                        java.util.logging.Logger.getLogger(logger.getName()),
-                        platformRuntime)
-                .manager();
+        var startup = ProxyPlatformInitializer.start(
+                dataDirectory.toFile(),
+                java.util.logging.Logger.getLogger(logger.getName()),
+                platformRuntime);
+        config = startup.config();
+        manager = startup.manager();
+        cloudManager = new StrippingVelocityCommandManager<>(
+                pluginContainer,
+                server,
+                CommandExecutionCoordinator.simpleCoordinator(),
+                Function.identity(),
+                Function.identity());
+        commandService = PexCloudCommands.install(new PexCloudCommands.InstallRequest<>(
+                cloudManager,
+                CommandSource.class,
+                manager,
+                new VelocitySenderAdapter(),
+                config::reload,
+                new ProxyConfigBridge(config),
+                force -> "UUID conversion is not supported on Velocity.",
+                CoreCloudPlatform.PROXY,
+                config.options().current().commandFramework()));
         VelocityPermissionBootstrapReporter.log(this, manager, logger);
     }
 
@@ -82,11 +118,47 @@ public final class VelocityPermissionsExPlugin {
     public void onShutdown(ProxyShutdownEvent event) {
         ProxyPlatformInitializer.shutdown(manager);
         manager = null;
+        config = null;
+        commandService = null;
+        cloudManager = null;
         platformRuntime = null;
         logger.info("PermissionsExPlus Velocity adapter disabled");
     }
 
     public PermissionManager manager() {
         return manager;
+    }
+
+    private final class VelocitySenderAdapter implements CoreCloudCommandRegistrar.SenderAdapter<CommandSource> {
+        @Override
+        public void reply(CommandSource sender, String message) {
+            sender.sendMessage(net.kyori.adventure.text.Component.text(message));
+        }
+
+        @Override
+        public String defaultWorld(CommandSource sender) {
+            if (sender instanceof Player player && player.getCurrentServer().isPresent()) {
+                return player.getCurrentServer().get().getServerInfo().getName();
+            }
+            return null;
+        }
+
+        @Override
+        public PermissionUser actor(CommandSource sender) {
+            if (sender instanceof Player player) {
+                return manager.getUser(player.getUniqueId());
+            }
+            return null;
+        }
+
+        @Override
+        public String helpText() {
+            return "PermissionsExPlus commands loaded. Use /pex help.";
+        }
+
+        @Override
+        public String pluginVersion() {
+            return pluginContainer.getDescription().getVersion().orElse("unknown");
+        }
     }
 }

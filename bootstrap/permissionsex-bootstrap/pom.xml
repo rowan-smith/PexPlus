@@ -29,11 +29,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>permissionsex-paper</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>permissionsex-velocity</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -66,7 +61,6 @@
                                 <includes>
                                     <include>dev.rono.permissions:permissionsex-spigot</include>
                                     <include>dev.rono.permissions:permissionsex-bungee</include>
-                                    <include>dev.rono.permissions:permissionsex-paper</include>
                                     <include>dev.rono.permissions:permissionsex-velocity</include>
                                     <include>dev.rono.permissions:permissionsex-sponge</include>
                                 </includes>

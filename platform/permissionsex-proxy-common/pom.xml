@@ -10,28 +10,34 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>permissionsex-sponge</artifactId>
-    <name>PermissionsEx Sponge</name>
-    <description>Sponge runtime adapter.</description>
+    <artifactId>permissionsex-proxy-common</artifactId>
+    <name>PermissionsEx Proxy Common</name>
+    <description>Shared proxy bootstrap (config, backends, API registry) for Bungee, Velocity, and Sponge.</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>permissionsex-proxy-common</artifactId>
+            <artifactId>permissionsex-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>cloud.commandframework</groupId>
-            <artifactId>cloud-core</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>permissionsex-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>cloud.commandframework</groupId>
-            <artifactId>cloud-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -15,9 +15,9 @@
     <name>PermissionsEx Platform (reactor)</name>
 
     <modules>
+        <module>permissionsex-proxy-common</module>
         <module>permissionsex-spigot</module>
         <module>permissionsex-bungee</module>
-        <module>permissionsex-paper</module>
         <module>permissionsex-velocity</module>
         <module>permissionsex-sponge</module>
     </modules>
