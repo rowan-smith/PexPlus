@@ -1,6 +1,8 @@
 package dev.rono.permissions.core.backends;
 
+import dev.rono.permissions.core.backends.file.YamlFileBackend;
 import dev.rono.permissions.core.backends.sql.SQLBackend;
+import dev.rono.permissions.core.storage.backend.LocalSqlBackend;
 
 import ru.tehkode.permissions.backends.PermissionBackend;
 /**
@@ -19,6 +21,9 @@ public final class CorePermissionBackendRegistrar {
             if (installed) {
                 return;
             }
+            PermissionBackend.registerBackendAlias("local", LocalSqlBackend.class);
+            PermissionBackend.registerBackendAlias("file", YamlFileBackend.class);
+            PermissionBackend.registerBackendAlias("yaml-import", YamlFileBackend.class);
             PermissionBackend.registerBackendAlias("sql", SQLBackend.class);
             PermissionBackend.registerBackendAlias("multi", MultiBackend.class);
             installed = true;

@@ -31,7 +31,7 @@ public interface PermissionBackend {
     /**
      * Default backend alias used when no backend name is specified.
      */
-    String DEFAULT_BACKEND = "file";
+    String DEFAULT_BACKEND = "local";
 
     /**
      * Internal holder for backend alias-to-class mappings.
@@ -177,6 +177,11 @@ public interface PermissionBackend {
             return constructor.newInstance(manager, config);
         } catch (ClassNotFoundException e) {
             manager.getLogger().warning("Specified backend \"" + backendName + "\" is unknown.");
+            if ("file".equalsIgnoreCase(backendName)) {
+                manager.getLogger().warning(
+                        "The 'file' YAML backend is deprecated for active storage. "
+                                + "Falling back to 'local' H2 storage. Use 'yaml-import' for one-time imports only.");
+            }
             if (fallBackBackend == null) {
                 throw new RuntimeException(e);
             }

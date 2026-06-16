@@ -205,7 +205,7 @@ public class BungeePermissionsExConfig implements PermissionsExConfig, ru.tehkod
 
     private void ensureDefaults() {
         Map<String, Object> perms = getOrCreateSection("permissions");
-        perms.putIfAbsent("backend", "file");
+        perms.putIfAbsent("backend", "local");
         perms.putIfAbsent("basedir", configFile.getParent().resolve("data").toString());
         perms.putIfAbsent("debug", false);
         perms.putIfAbsent("allowOps", false);
@@ -219,15 +219,16 @@ public class BungeePermissionsExConfig implements PermissionsExConfig, ru.tehkod
 
         Map<String, Object> backend = getOrCreateSection("permissions.backends.memory");
         backend.putIfAbsent("type", "memory");
-        Map<String, Object> fileBackend = getOrCreateSection("permissions.backends.file");
-        fileBackend.putIfAbsent("type", "file");
-        fileBackend.putIfAbsent("file", "permissions.yml");
+        Map<String, Object> localBackend = getOrCreateSection("permissions.backends.local");
+        localBackend.putIfAbsent("type", "local");
+        localBackend.putIfAbsent("database", "permissions");
+        localBackend.putIfAbsent("migration-source", "permissions.yml");
     }
 
     private static Map<String, Object> defaultConfig() {
         LinkedHashMap<String, Object> root = new LinkedHashMap<>();
         LinkedHashMap<String, Object> permissions = new LinkedHashMap<>();
-        permissions.put("backend", "file");
+        permissions.put("backend", "local");
         permissions.put("basedir", "plugins/PermissionsEx");
         permissions.put("debug", false);
         permissions.put("allowOps", false);
@@ -242,10 +243,11 @@ public class BungeePermissionsExConfig implements PermissionsExConfig, ru.tehkod
         LinkedHashMap<String, Object> memory = new LinkedHashMap<>();
         memory.put("type", "memory");
         backends.put("memory", memory);
-        LinkedHashMap<String, Object> file = new LinkedHashMap<>();
-        file.put("type", "file");
-        file.put("file", "permissions.yml");
-        backends.put("file", file);
+        LinkedHashMap<String, Object> local = new LinkedHashMap<>();
+        local.put("type", "local");
+        local.put("database", "permissions");
+        local.put("migration-source", "permissions.yml");
+        backends.put("local", local);
         permissions.put("backends", backends);
         root.put("permissions", permissions);
         return root;
