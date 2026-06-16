@@ -31,7 +31,7 @@ public interface PermissionBackend {
     /**
      * Default backend alias used when no backend name is specified.
      */
-    String DEFAULT_BACKEND = "file";
+    String DEFAULT_BACKEND = "local";
 
     /**
      * Internal holder for backend alias-to-class mappings.

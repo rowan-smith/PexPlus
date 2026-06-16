@@ -41,6 +41,17 @@ public final class PermissionsExConfig implements dev.rono.permissions.core.Perm
         setIfUnset(c, "permissions.backend", PermissionBackend.DEFAULT_BACKEND);
         setIfUnset(c, "permissions.basedir", "plugins/" + plugin.getDescription().getName());
 
+        ConfigurationSection backends = c.getConfigurationSection("permissions.backends");
+        if (backends == null) {
+            backends = c.createSection("permissions.backends");
+        }
+        if (!backends.isSet("local")) {
+            ConfigurationSection local = backends.createSection("local");
+            local.set("type", "local");
+            local.set("database", "permissions");
+            local.set("migration-source", "permissions.yml");
+        }
+
         ConfigurationSection inform = c.getConfigurationSection("permissions.informplayers");
         if (inform == null) {
             inform = c.createSection("permissions.informplayers");

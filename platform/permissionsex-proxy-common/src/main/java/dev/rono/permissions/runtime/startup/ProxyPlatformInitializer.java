@@ -3,7 +3,6 @@ package dev.rono.permissions.runtime.startup;
 import dev.rono.permissions.api.runtime.PlatformRuntime;
 import dev.rono.permissions.bungee.BungeePermissionsExConfig;
 import dev.rono.permissions.bungee.ProxyPermissionServices;
-import dev.rono.permissions.bungee.backends.file.BungeeFileBackend;
 import dev.rono.permissions.bungee.backends.memory.BungeeMemoryBackend;
 import dev.rono.permissions.core.DefaultPermissionManager;
 import ru.tehkode.permissions.backends.PermissionBackend;
@@ -23,7 +22,6 @@ public final class ProxyPlatformInitializer {
     public static ProxyStartupResult start(
             File dataDirectory, Logger logger, PlatformRuntime platformRuntime) throws PermissionBackendException {
         PermissionBackend.registerBackendAlias("memory", BungeeMemoryBackend.class);
-        PermissionBackend.registerBackendAlias("file", BungeeFileBackend.class);
         var config = new BungeePermissionsExConfig(dataDirectory, logger);
         var manager = new DefaultPermissionManager(config, logger, platformRuntime);
         manager.initTimer();
