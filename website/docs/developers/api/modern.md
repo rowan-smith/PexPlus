@@ -21,6 +21,8 @@ Add **`permissionsex-legacy-stub`** when calling `ru.tehkode.permissions.bukkit.
 
 Sample plugin: [`plugin/permissionsex-example-plugin/`](https://github.com/%%site.repo%%/tree/main/plugin/permissionsex-example-plugin/)
 
+**Recipes:** [API Cookbook](/developers/cookbook) — world, server, realm, timed grants, and proxy examples.
+
 ---
 
 ## Documentation
@@ -124,7 +126,9 @@ api.getEventBus().unsubscribe(sub);
 
 ---
 
-## Realm model
+## Realm model (3.0-SNAPSHOT)
+
+The modern API is **Realm-only** — `WorldManager`, `World`, and `Worlds` were removed from `permissionsex-api`. Use `RealmManager`, `Realm`, `Realms`, and `PermissionContext` instead.
 
 A **realm** is a named permission namespace in the backend — a loaded Bukkit world, a proxy backend server id, or another registered key. Realms are **not** the same as scoped checks:
 
