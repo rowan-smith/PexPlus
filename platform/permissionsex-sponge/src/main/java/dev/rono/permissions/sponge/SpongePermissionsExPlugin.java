@@ -77,7 +77,7 @@ public final class SpongePermissionsExPlugin implements PermissionsEx.ProxyLegac
                 cloud.commandframework.execution.CommandExecutionCoordinator.simpleCoordinator(),
                 Function.identity(),
                 Function.identity());
-        SpongePermissionBootstrapReporter.log(this, manager, server, logger, legacyBridge.isActive());
+        SpongePermissionBootstrapReporter.log(this, manager, server, logger);
     }
 
     @Override

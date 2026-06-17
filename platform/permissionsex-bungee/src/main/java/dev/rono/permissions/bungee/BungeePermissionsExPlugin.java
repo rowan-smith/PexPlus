@@ -71,7 +71,7 @@ public class BungeePermissionsExPlugin extends Plugin implements PermissionsEx.P
                             CoreCloudPlatform.PROXY,
                             config.options().current().commandFramework())
                     .withImportBridge(new BungeeImportBridge()));
-            BungeePermissionBootstrapReporter.log(this, this.manager, legacyBridge.isActive());
+            BungeePermissionBootstrapReporter.log(this, this.manager);
         } catch (PermissionBackendException ex) {
             getLogger().severe("Failed to initialize PermissionsExPlus Bungee adapter: " + ex.getMessage());
             throw new RuntimeException(ex);

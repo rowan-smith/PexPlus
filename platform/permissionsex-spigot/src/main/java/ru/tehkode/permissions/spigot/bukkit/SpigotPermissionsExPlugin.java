@@ -267,7 +267,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			// Start timed permissions cleaner timer
 			this.permissionsManager.initTimer();
 
-			BukkitPermissionBootstrapReporter.log(this, this.permissionsManager, legacyBridge.isActive());
+			BukkitPermissionBootstrapReporter.log(this, this.permissionsManager);
 
 		} catch (PermissionBackendException e) {
 			logBackendExc(e);

@@ -35,7 +35,7 @@ public final class BukkitPermissionBootstrapReporter {
 
     private BukkitPermissionBootstrapReporter() {}
 
-    public static void log(SpigotPermissionsExPlugin plugin, PermissionManager manager, boolean legacyApiActive) {
+    public static void log(SpigotPermissionsExPlugin plugin, PermissionManager manager) {
         Logger log = plugin.getLogger();
         PlatformDescriptor desc = describePlatform(plugin.getServer());
         log.info(PREFIX + "Runtime: " + desc.runtimeBannerLine());
@@ -43,11 +43,6 @@ public final class BukkitPermissionBootstrapReporter {
                 + InternalPermissionManager.require(manager).getPlatform().getClass().getSimpleName());
         log.info(PREFIX + "Core engine: started");
         logModernApi(plugin, log);
-        if (legacyApiActive) {
-            log.info(PREFIX + "API: legacy v1 compatibility enabled");
-        } else {
-            log.info(PREFIX + "API: legacy v1 compatibility deferred (no hook plugins detected)");
-        }
         log.info(PREFIX + "Context resolvers: world, server, static");
         log.info(PREFIX + "Storage: " + manager.getBackend().diagnosticLabel());
         logConsumerScan(plugin, log);

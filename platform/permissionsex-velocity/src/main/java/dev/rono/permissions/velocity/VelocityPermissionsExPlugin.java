@@ -96,7 +96,7 @@ public final class VelocityPermissionsExPlugin implements PermissionsEx.ProxyLeg
                 force -> "UUID conversion is not supported on Velocity.",
                 CoreCloudPlatform.PROXY,
                 config.options().current().commandFramework()));
-        VelocityPermissionBootstrapReporter.log(this, manager, logger, legacyBridge.isActive());
+        VelocityPermissionBootstrapReporter.log(this, manager, logger);
     }
 
     @Override
