@@ -46,6 +46,7 @@ const sidebars: SidebarsConfig = {
         'guides/import-export',
         'guides/troubleshooting',
         'faq/default-groups',
+        'faq/migrate-from-v1',
         'faq/migration',
         'changelog',
       ],

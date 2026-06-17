@@ -1,9 +1,11 @@
 ---
 title: Platform Compatibility
-description: Minecraft, JVM, proxy, and legacy hook plugin compatibility.
+description: Minecraft, JVM, proxy, and legacy hook plugin compatibility for PermissionsExPlus 3.0.0.
 slug: /developers/compatibility
 ---
-PermissionsExPlus targets **Minecraft `1.8.8` through `1.26.1`** on Spigot/Paper and compatible forks.
+PermissionsExPlus **%%site.version%%** (Version 3) targets **Minecraft `1.8.8` through `1.26.1`** on Spigot/Paper and compatible forks.
+
+Upgrading from the 1.x (`1.23.x`) line? See [Migrating from Version 1](/faq/migrate-from-v1).
 
 ## JVM requirements
 

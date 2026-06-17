@@ -220,7 +220,7 @@ public interface PermissionUser extends PermissionEntity {
      *             (modern {@code dev.rono.permissions.api.ladder.LadderManager}). This method remains for
      *             binary compatibility with hook plugins compiled against older releases.
      */
-    @Deprecated(since = "1.23.5")
+    @Deprecated(since = "3.0.0")
     PermissionGroup promote(PermissionUser promoter, String ladderName) throws RankingException;
 
     /**
@@ -242,7 +242,7 @@ public interface PermissionUser extends PermissionEntity {
      *             (modern {@code dev.rono.permissions.api.ladder.LadderManager}). This method remains for
      *             binary compatibility with hook plugins compiled against older releases.
      */
-    @Deprecated(since = "1.23.5")
+    @Deprecated(since = "3.0.0")
     PermissionGroup demote(PermissionUser demoter, String ladderName) throws RankingException;
 
     /**
