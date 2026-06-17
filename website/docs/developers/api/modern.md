@@ -264,7 +264,10 @@ Extends `PermissionSubject`.
 | `inGroup(name[, context, inherit])` | Membership test |
 | `addGroup(name[, context])` | Add to group |
 | `addGroup(name, [context,] lifetimeSeconds)` | Timed membership |
+| Method | Description |
+|--------|-------------|
 | `removeGroup(name[, context])` | Remove from group |
+| `removeTimedGroup(name[, context])` | Remove timed membership (clears expiry option and membership) |
 | `timedGroupMemberships([context])` | `TimedGroupMembership(group, context, remainingSeconds)` |
 | `allTimedGroupMemberships()` | Across all realms |
 | `groupMembershipRemainingSeconds(group[, context])` | Seconds until timed membership expires |
@@ -322,9 +325,7 @@ Obtain via `subject.inContext(PermissionContext.world("world_nether"))`, `user.g
 | `RankingException` | Promotion/demotion failures |
 | `BackendHandle` | Non-active backend for copy/apply |
 | `ImportMode` | `MERGE` / `REPLACE` for `importData` |
-| `PermissionEventBus` / `PermissionEventListener` | Modern event subscription |
 | `PermissionEventBus` / `PermissionEventListener` | Modern event subscription via `PermissionsExApi.getEventBus()` |
-| `FoundUser` / `FoundGroup` | Optional persisted lookups |
 | `SubjectType` | `USER`, `GROUP` |
 
 ---

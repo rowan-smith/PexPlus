@@ -33,6 +33,11 @@ public final class GroupImpl extends AbstractPermissionSubjectAdapter implements
 
     @Override
     public String getName() {
+        return name();
+    }
+
+    @Override
+    public String name() {
         return name;
     }
 

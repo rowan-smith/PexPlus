@@ -160,7 +160,7 @@ public final class ModernUserCommand<C> extends AbstractModernPexCloudCommand<C>
             @Argument(value = "user", suggestions = "pex-user") String user,
             @Argument(value = "group", suggestions = "pex-group") String group,
             @Argument(value = "flags", parserName = "pex-flags") PexCommandFlags flags) {
-        reply(sender, ctx.commandService().userRemoveGroup(user, group, realm(sender, flags)));
+        reply(sender, ctx.commandService().userRemoveTimedGroup(user, group, realm(sender, flags)));
     }
 
     @CommandMethod("pex user <user> options list [flags]")

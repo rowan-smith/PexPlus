@@ -40,8 +40,13 @@ public final class UserImpl extends AbstractPermissionSubjectAdapter implements 
 
     @Override
     public String getName() {
-        String name = user.getName();
-        return name != null ? name : id.toString();
+        return name();
+    }
+
+    @Override
+    public String name() {
+        String displayName = user.getName();
+        return displayName != null ? displayName : id.toString();
     }
 
     @Override
@@ -87,6 +92,13 @@ public final class UserImpl extends AbstractPermissionSubjectAdapter implements 
     @Override
     public void removeGroup(String groupName, PermissionContext context) {
         user.removeGroup(groupName, storageRealm(context));
+    }
+
+    @Override
+    public void removeTimedGroup(String groupName, PermissionContext context) {
+        var legacyWorld = storageRealm(context);
+        user.setOption("group-" + groupName + "-until", null, legacyWorld);
+        user.removeGroup(groupName, legacyWorld);
     }
 
     @Override

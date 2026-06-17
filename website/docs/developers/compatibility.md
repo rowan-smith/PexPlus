@@ -7,6 +7,22 @@ PermissionsExPlus **%%site.version%%** (PermissionsExPlus 3.0) targets **Minecra
 
 Upgrading from **PermissionsEx 1.23.4**? See [Migrating from PermissionsEx 1.23.4](/faq/migrate-from-v1). PermissionsExPlus 3.0 is a new major line with full backwards compatibility for data, commands, and hook plugins.
 
+## PermissionsEx 1.23.4 (upstream baseline)
+
+Verified against git tag **`STABLE-1.23.4`** (upstream release `1.23.4`, January 2016):
+
+| Area | PermissionsEx 1.23.4 |
+|------|----------------------|
+| Platforms | **Bukkit / Spigot / Paper only** — single-module plugin (`plugin.yml` → `ru.tehkode.permissions.bukkit.PermissionsEx`) |
+| Proxy | **Not supported** — no BungeeCord, Waterfall, Velocity, or Sponge artifacts in upstream |
+| Minecraft | Built against Bukkit **`1.8.8-R0.1-SNAPSHOT`**; typical deployments were **1.8.x era** servers |
+| Java | Compiled for **Java 7** bytecode |
+| Storage backends | `file` (YAML), `memory`, `sql` — no embedded H2 `local` default |
+| Commands | Classic `/pex` tree only |
+| Hook API | `ru.tehkode.permissions.*` only |
+
+Proxy and multi-platform support are **new in PermissionsExPlus 3.0**.
+
 ## JVM requirements
 
 | Server era | Typical Minecraft | Minimum JVM for **this build** |

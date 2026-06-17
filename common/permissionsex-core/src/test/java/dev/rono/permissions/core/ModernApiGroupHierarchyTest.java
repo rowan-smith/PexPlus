@@ -75,6 +75,11 @@ class ModernApiGroupHierarchyTest extends ModernApiTestSupport {
         assertEquals(1, memberships.size());
         assertEquals("timed-hier-group", memberships.get(0).groupName());
         assertTrue(user.groupMembershipRemainingSeconds("timed-hier-group") > 0);
+
+        user.removeTimedGroup("timed-hier-group");
+        user.save();
+        assertTrue(user.timedGroupMemberships().isEmpty());
+        assertFalse(user.inGroup("timed-hier-group"));
     }
 
     @Test

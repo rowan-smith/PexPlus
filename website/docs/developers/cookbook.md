@@ -42,7 +42,7 @@ if (user.has("myplugin.use")) {
 }
 ```
 
-**Javadoc:** [User](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/User.html) · [PermissionSubject.has()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/PermissionSubject.html)
+**Javadoc:** [User](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/user/User.html) · [PermissionSubject.has()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/PermissionSubject.html)
 
 ---
 
@@ -68,7 +68,7 @@ group.addPermission("essentials.fly");
 group.save();
 ```
 
-**Javadoc:** [GroupManager](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/service/GroupManager.html) · [Group](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/Group.html)
+**Javadoc:** [GroupManager](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/group/GroupManager.html) · [Group](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/group/Group.html)
 
 ---
 
@@ -82,7 +82,7 @@ group.setPrefix("&6[VIP] ");
 group.save();
 ```
 
-**Javadoc:** [GroupManager.createGroup()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/service/GroupManager.html)
+**Javadoc:** [GroupManager.createGroup()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/group/GroupManager.html)
 
 ---
 
@@ -94,14 +94,17 @@ user.addGroup("vip");
 user.save();
 ```
 
-Replace all groups:
+Replace all groups (remove existing memberships, then add):
 
 ```java
-user.setGroups(java.util.List.of("admin"));
+for (String group : user.groups()) {
+    user.removeGroup(group);
+}
+user.addGroup("admin");
 user.save();
 ```
 
-**Javadoc:** [User.addGroup()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/User.html)
+**Javadoc:** [User.addGroup()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/user/User.html)
 
 ---
 
@@ -137,14 +140,16 @@ user.save();
 ## Promote / demote
 
 ```java
+import dev.rono.permissions.api.RankingException;
+
 try {
-    user.promote("staff");
+    api.getLadderManager().promote(user, "staff");
 } catch (RankingException e) {
     getLogger().warning("Cannot promote: " + e.getMessage());
 }
 ```
 
-**Javadoc:** [User.promote()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/subject/User.html)
+**Javadoc:** [LadderManager.promote()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/ladder/LadderManager.html)
 
 ---
 
@@ -165,12 +170,12 @@ public void onChange(PermissionEntityEvent event) {
 Modern event bus:
 
 ```java
-api.events().subscribe(dispatch -> {
+api.getEventBus().subscribe(dispatch -> {
     getLogger().info("Dispatch: " + dispatch);
 });
 ```
 
-**Javadoc:** [PermissionEntityEvent](pathname:///apidocs/%%site.version%%/ru/tehkode/permissions/events/PermissionEntityEvent.html) · [PermissionsExApi.events()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/service/PermissionsExApi.html)
+**Javadoc:** [PermissionEntityEvent](pathname:///apidocs/%%site.version%%/ru/tehkode/permissions/events/PermissionEntityEvent.html) · [PermissionsExApi.getEventBus()](pathname:///apidocs/%%site.version%%/dev/rono/permissions/api/PermissionsExApi.html)
 
 ---
 

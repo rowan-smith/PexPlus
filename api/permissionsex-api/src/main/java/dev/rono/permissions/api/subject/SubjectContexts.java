@@ -256,6 +256,11 @@ public final class SubjectContexts {
             }
 
             @Override
+            public void removeTimedGroup(String groupName) {
+                user.removeTimedGroup(groupName, bound);
+            }
+
+            @Override
             public List<TimedGroupMembership> timedGroupMemberships() {
                 return user.timedGroupMemberships(bound);
             }

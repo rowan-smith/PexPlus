@@ -294,4 +294,6 @@ Documented gaps intentionally left for backward compatibility:
 - Legacy `getGroup(name)` returning null vs modern `Optional`/`find`
 - `getActiveUsers()` live-set semantics on legacy manager vs snapshot lists on modern API
 
+Resolved in 3.0: `User.getName()` / `User.name()` and `Group.getName()` / `Group.name()` now share the same display-name logic on modern adapters.
+
 Track API improvements in [FUTURE.md](/developers/api/future).

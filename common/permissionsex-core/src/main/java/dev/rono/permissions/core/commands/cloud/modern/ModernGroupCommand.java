@@ -52,7 +52,7 @@ public final class ModernGroupCommand<C> extends AbstractModernPexCloudCommand<C
             @Argument(value = "group", suggestions = "pex-group") String group,
             @Argument(value = "permission", suggestions = "pex-permission") String permission,
             @Argument(value = "flags", parserName = "pex-flags") PexCommandFlags flags) {
-        reply(sender, ctx.commandService().groupCheckPermission(group, permission, realm(sender, flags)));
+        reply(sender, ctx.commandService().groupHas(group, permission, realm(sender, flags)));
     }
 
     @CommandMethod("pex group <group> permissions trace <permission> [flags]")

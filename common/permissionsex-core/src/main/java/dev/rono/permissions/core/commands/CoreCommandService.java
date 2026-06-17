@@ -250,12 +250,10 @@ public class CoreCommandService {
         return lines;
     }
 
-    public String groupCheckPermission(String groupIdentifier, String permission, String world) {
+    public String groupHas(String groupIdentifier, String permission, String world) {
         PermissionGroup group = manager.getGroup(groupIdentifier);
-        boolean has = group.getPermissions(world).contains(permission);
-        return "Group \"" + group.getIdentifier() + "\" "
-                + (has ? "has" : "does not have") + " \"" + permission + "\" in "
-                + PexCommandContexts.displayRealm(world);
+        return "Has '" + permission + "' in " + PexCommandContexts.displayRealm(world) + ": "
+                + group.has(permission, world);
     }
 
     public List<String> userTimedPermissionsLines(String userIdentifier, String world) {
@@ -562,6 +560,13 @@ public class CoreCommandService {
         int seconds = lifetime == null ? 0 : DateUtils.parseInterval(lifetime);
         user.addTimedPermission(permission, world, seconds);
         return "Timed permission \"" + permission + "\" added!";
+    }
+
+    public String userRemoveTimedGroup(String userIdentifier, String group, String world) {
+        PermissionUser user = manager.getUser(userIdentifier);
+        user.setOption("group-" + group + "-until", null, world);
+        user.removeGroup(group, world);
+        return "Timed group \"" + group + "\" removed from user \"" + user.getName() + "\"!";
     }
 
     public String userRemoveTimedPermission(String userIdentifier, String permission, String world) {

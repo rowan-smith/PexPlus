@@ -75,6 +75,12 @@ public interface User extends PermissionSubject {
         removeGroup(groupName, PermissionContext.global());
     }
 
+    void removeTimedGroup(String groupName, PermissionContext context);
+
+    default void removeTimedGroup(String groupName) {
+        removeTimedGroup(groupName, PermissionContext.global());
+    }
+
     List<TimedGroupMembership> timedGroupMemberships(PermissionContext context);
 
     default List<TimedGroupMembership> timedGroupMemberships() {
