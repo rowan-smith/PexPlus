@@ -31,7 +31,7 @@ permissions:
 | `debug` | Extra logging for troubleshooting |
 | `allowOps` | Whether server ops bypass PEX |
 | `createUserRecords` | Auto-create a user entry when someone joins |
-| `backend` | Active storage backend (`h2`, `sql`, `memory`; legacy `file` and `local` are normalized to `h2`) |
+| `backend` | Active storage backend (`h2`, `sql`, `memory`; legacy `file` is normalized to `h2`) |
 | `basedir` | Folder for config and data files |
 
 Change a setting in-game:
@@ -90,7 +90,7 @@ In-memory store for testing. Data is lost on restart.
 
 ### file (import only)
 
-YAML import backend for pulling data from `permissions.yml` via `/pex import file` (classic) or `/pex backend import file` (modern). Setting `backend: file` in config is automatically normalized to `h2` with the YAML path preserved as `migration-source`. Legacy `backend: local` configs are also normalized to `h2`.
+YAML import backend for pulling data from `permissions.yml` via `/pex import file` (classic) or `/pex backend import file` (modern). Setting `backend: file` in config is automatically normalized to `h2` with the YAML path preserved as `migration-source`.
 
 ## Permission data
 

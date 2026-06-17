@@ -38,8 +38,6 @@ public record PexConfigData(
     public static final String KEY_BACKENDS = "backends";
     public static final String FILE_BACKEND = "file";
     public static final String H2_BACKEND = "h2";
-    /** Legacy alias normalized to {@link #H2_BACKEND} at load time. */
-    public static final String LEGACY_LOCAL_BACKEND = "local";
     public static final String KEY_BACKEND_TYPE = "type";
     /** Path leaf inside {@code backends.file}. */
     public static final String KEY_BACKEND_FILE_LEAF = "file";
@@ -84,7 +82,6 @@ public record PexConfigData(
         }
         LinkedHashMap<String, Map<String, Object>> backends =
                 new LinkedHashMap<>(coerceBackendMap(copy.get(KEY_BACKENDS)));
-        normalizeLegacyBackendSections(backends);
         bk = normalizeActiveBackendAlias(bk, backends);
 
         String basedirLocal = stringify(copy.get(KEY_BASEDIR), "");
@@ -237,34 +234,11 @@ public record PexConfigData(
     }
 
     /**
-     * Maps legacy {@code backends.local} sections to {@code backends.h2} and normalizes {@code type: local}.
-     */
-    private static void normalizeLegacyBackendSections(LinkedHashMap<String, Map<String, Object>> backends) {
-        Map<String, Object> legacyLocal = backends.remove(LEGACY_LOCAL_BACKEND);
-        if (legacyLocal != null) {
-            Map<String, Object> h2 = backends.computeIfAbsent(H2_BACKEND, ignored -> new LinkedHashMap<>());
-            for (Map.Entry<String, Object> entry : legacyLocal.entrySet()) {
-                h2.putIfAbsent(entry.getKey(), entry.getValue());
-            }
-        }
-        Map<String, Object> h2Section = backends.get(H2_BACKEND);
-        if (h2Section != null) {
-            Object type = h2Section.get(KEY_BACKEND_TYPE);
-            if (LEGACY_LOCAL_BACKEND.equals(String.valueOf(type))) {
-                h2Section.put(KEY_BACKEND_TYPE, H2_BACKEND);
-            }
-        }
-    }
-
-    /**
-     * Maps legacy active {@code backend: file} or {@code backend: local} configs to {@code h2} while
-     * preserving the YAML path for one-time import via {@code migration-source}.
+     * Maps legacy active {@code backend: file} configs to {@code h2} while preserving the YAML path
+     * for one-time import via {@code migration-source}.
      */
     private static String normalizeActiveBackendAlias(
             String backend, LinkedHashMap<String, Map<String, Object>> backends) {
-        if (LEGACY_LOCAL_BACKEND.equalsIgnoreCase(backend)) {
-            return H2_BACKEND;
-        }
         if (!FILE_BACKEND.equalsIgnoreCase(backend)) {
             return backend;
         }

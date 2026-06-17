@@ -55,7 +55,7 @@ There is no automatic LuckPerms → PEX converter yet.
 
 ## From file backend configs
 
-Configs with `backend: file` are **automatically normalized to `h2`** at load time. The YAML path from `permissions.backends.file.file` is copied to `permissions.backends.h2.migration-source` so existing `permissions.yml` files still import on first startup. Legacy `backend: local` configs are also normalized to `h2`. You can update `config.yml` to `backend: h2` explicitly when convenient.
+Configs with `backend: file` are **automatically normalized to `h2`** at load time. The YAML path from `permissions.backends.file.file` is copied to `permissions.backends.h2.migration-source` so existing `permissions.yml` files still import on first startup. You can update `config.yml` to `backend: h2` explicitly when convenient.
 
 ## UUID migration
 

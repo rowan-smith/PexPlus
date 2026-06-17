@@ -27,24 +27,4 @@ class PexConfigDataLegacyBackendTest {
         assertEquals("customperms.yml", data.storeRelative());
         assertEquals("customperms.yml", data.backends().get("h2").get("migration-source"));
     }
-
-    @Test
-    void normalizesLegacyLocalBackendAliasToH2() {
-        LinkedHashMap<String, Object> localSection = new LinkedHashMap<>();
-        localSection.put(PexConfigData.KEY_BACKEND_TYPE, "local");
-        localSection.put(PexConfigData.KEY_DATABASE, "permissions");
-
-        Map<String, Object> root = new LinkedHashMap<>();
-        root.put(PexConfigData.KEY_BACKEND, "local");
-        LinkedHashMap<String, Object> backends = new LinkedHashMap<>();
-        backends.put("local", localSection);
-        root.put(PexConfigData.KEY_BACKENDS, backends);
-
-        PexConfigData data = PexConfigData.fromPermissionsMap(root, () -> ".", PexConfigFlavor.SPIGOT);
-
-        assertEquals("h2", data.backend());
-        assertEquals("h2", data.backends().get("h2").get("type"));
-        assertEquals("permissions", data.backends().get("h2").get("database"));
-        assertFalse(data.backends().containsKey("local"));
-    }
 }
