@@ -27,7 +27,9 @@ Apache License 2.0
 
 MIT License
   - Cloud Command Framework (cloud.commandframework:cloud-core,
-    cloud-bukkit, cloud-bungee, cloud-velocity, cloud-annotations)
+    cloud-annotations, cloud-bom, cloud-brigadier, cloud-bukkit, cloud-paper,
+    cloud-bungee, cloud-velocity, cloud-sponge7, cloud-cloudburst,
+    cloud-minecraft-extras)
     https://github.com/Incendo/cloud
   - Mojang Brigadier (com.mojang:brigadier)
     https://github.com/Mojang/brigadier

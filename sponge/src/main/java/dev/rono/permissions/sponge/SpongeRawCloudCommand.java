@@ -31,10 +31,10 @@ final class SpongeRawCloudCommand<C> implements org.spongepowered.api.command.Co
 
     private final StaticArgument<C> root;
     private final Command<C> cloudCommand;
-    private final SpongeCloudCommandManager<C> manager;
+    private final StrippingSpongeCommandManager<C> manager;
 
     SpongeRawCloudCommand(
-            StaticArgument<C> root, Command<C> cloudCommand, SpongeCloudCommandManager<C> manager) {
+            StaticArgument<C> root, Command<C> cloudCommand, StrippingSpongeCommandManager<C> manager) {
         this.root = root;
         this.cloudCommand = cloudCommand;
         this.manager = manager;
