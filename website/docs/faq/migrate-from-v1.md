@@ -56,10 +56,12 @@ What changes is the **project name**, **version label**, **documentation focus**
 
 | Area | PermissionsEx `1.23.4` | PermissionsExPlus `3.0.0-SNAPSHOT` |
 |------|------------------------|-------------------------------------|
-| Storage backend | YAML / file typical | **`local` (H2)** default |
+| Server platforms | **Bukkit / Spigot / Paper only** | Bukkit/Paper + **BungeeCord, Waterfall, Velocity, Sponge** |
+| Storage backend | **`file`** (YAML) typical | **`local` (H2)** default |
 | Command framework | Classic only | **`modern`** default (+ classic) |
 | YAML day-to-day storage | Common | **Import/migration** into H2 |
-| Java runtime | Java 8+ historically | **Java 21+** required |
+| Java runtime | **Java 7+** bytecode (Java 8+ typical in practice) | **Java 21+** required |
+| Minecraft versions | **1.8.x era** (upstream built against Bukkit `1.8.8`) | **1.8.8 – 1.26.1** (explicit target) |
 
 ### New in PermissionsExPlus 3.0
 
@@ -95,11 +97,11 @@ PermissionsExPlus 3.0 intentionally minimizes breaks. The items below are admini
 
 | Platform | PermissionsEx 1.23.4 | PermissionsExPlus 3.0.0-SNAPSHOT |
 |----------|------------------------|----------------------------------|
-| Spigot / Paper | Yes | Yes |
-| BungeeCord / Waterfall | Yes | Yes |
-| Velocity | — | Yes |
-| Sponge | — | Yes |
-| Minecraft `1.8.8` – `1.26.1` | Limited by upstream | Yes |
+| Bukkit / Spigot / Paper | **Yes** (only supported platforms) | Yes |
+| BungeeCord / Waterfall | **—** (no proxy module in upstream) | Yes |
+| Velocity | **—** | Yes |
+| Sponge | **—** | Yes |
+| Minecraft versions | **1.8.x era** (upstream `1.8.8` API baseline) | **1.8.8 – 1.26.1** |
 
 Details: [Platform Compatibility](/developers/compatibility)
 
@@ -203,7 +205,9 @@ Typical legacy plugins work without recompile. New development should use [Moder
 
 ### I run a proxy network
 
-Upgrade **every** backend and proxy to PermissionsExPlus 3.0. Use a shared **`sql`** backend. See [Network proxy setup](/guides/recipes/#network-proxy-bungee--backend).
+PermissionsEx **1.23.4** had **no BungeeCord, Waterfall, or Velocity module** — PEX ran on game servers only. PermissionsExPlus **3.0** adds proxy support from one jar.
+
+Upgrade **every** backend (and your proxy, if you use one) to PermissionsExPlus 3.0. Use a shared **`sql`** backend. See [Network proxy setup](/guides/recipes/#network-proxy-bungee--backend).
 
 ---
 

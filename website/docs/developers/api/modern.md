@@ -111,7 +111,12 @@ Holder-based checks and edits use `api.getPermissionManager()` (`hasPermission(h
 ### Events
 
 ```java
-var sub = api.getEventBus().subscribe(dispatch -> { ... });
+var sub = api.getEventBus().subscribe(new PermissionEventListener() {
+    @Override
+    public void onEntity(EntityDispatch dispatch) {
+        // entityIdentifier, entityType, mutation
+    }
+});
 api.getEventBus().unsubscribe(sub);
 ```
 
@@ -265,6 +270,8 @@ Extends `PermissionSubject`.
 | `addGroup(name[, context])` | Add to group |
 | `addGroup(name, [context,] lifetimeSeconds)` | Timed membership |
 | `removeGroup(name[, context])` | Remove from group |
+| `removeTimedGroup(name[, context])` | Remove timed membership (clears expiry option and membership) |
+| `hasTimedGroupMembership(group[, context])` | Whether timed membership is active |
 | `timedGroupMemberships([context])` | `TimedGroupMembership(group, context, remainingSeconds)` |
 | `allTimedGroupMemberships()` | Across all realms |
 | `groupMembershipRemainingSeconds(group[, context])` | Seconds until timed membership expires |
@@ -306,7 +313,7 @@ Ergonomic context-scoped views (same operations without repeating the `Permissio
 | `UserContext` | `SubjectContext` | Groups, timed membership |
 | `GroupContext` | `SubjectContext` | Parents, default, hierarchy, members, children, descendants |
 
-Obtain via `subject.inContext(PermissionContext.world("world_nether"))`, `user.global()`, or `pex.world("world_nether").user(uuid)`.
+Obtain via `subject.inContext(PermissionContext.world("world_nether"))`, `user.global()`, or resolve subjects through managers (`api.getUserManager().getUser(uuid)`).
 
 ---
 
@@ -322,9 +329,7 @@ Obtain via `subject.inContext(PermissionContext.world("world_nether"))`, `user.g
 | `RankingException` | Promotion/demotion failures |
 | `BackendHandle` | Non-active backend for copy/apply |
 | `ImportMode` | `MERGE` / `REPLACE` for `importData` |
-| `PermissionEventBus` / `PermissionEventListener` | Modern event subscription |
 | `PermissionEventBus` / `PermissionEventListener` | Modern event subscription via `PermissionsExApi.getEventBus()` |
-| `FoundUser` / `FoundGroup` | Optional persisted lookups |
 | `SubjectType` | `USER`, `GROUP` |
 
 ---

@@ -34,10 +34,10 @@ public final class ModernBackendCommand<C> extends AbstractModernPexCloudCommand
             if (ex.getCause() instanceof ClassNotFoundException) {
                 reply(sender, "Specified backend not found.");
             } else {
-                reply(sender, "Error during backend initialization.");
+                reply(sender, "Error during backend initialization: " + ex.getMessage());
             }
         } catch (PermissionBackendException ex) {
-            reply(sender, "Backend initialization failed! Fix your configuration!\nError: " + ex.getMessage());
+            reply(sender, "Backend initialization failed. Fix your configuration.\nError: " + ex.getMessage());
         } catch (Exception ex) {
             reply(sender, "Failed to switch backend: " + ex.getMessage());
         }
@@ -49,12 +49,14 @@ public final class ModernBackendCommand<C> extends AbstractModernPexCloudCommand
             reply(sender, ctx.commandService().importDataFromBackend(backend, ctx.importBridge()));
         } catch (RuntimeException ex) {
             if (ex.getCause() instanceof ClassNotFoundException) {
-                reply(sender, "Specified backend not found!");
+                reply(sender, "Specified backend not found.");
             } else {
-                reply(sender, "Error: " + ex.getMessage());
+                reply(sender, "Error during backend initialization: " + ex.getMessage());
             }
         } catch (PermissionBackendException ex) {
-            reply(sender, "Backend " + backend + " was unable to load due to user configuration error.");
+            reply(sender, "Backend \"" + backend + "\" failed to load due to a configuration error.");
+        } catch (Exception ex) {
+            reply(sender, "Import failed: " + ex.getMessage());
         }
     }
 

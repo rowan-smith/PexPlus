@@ -28,6 +28,8 @@ public interface UserContext extends SubjectContext {
 
     void removeGroup(String groupName);
 
+    void removeTimedGroup(String groupName);
+
     List<TimedGroupMembership> timedGroupMemberships();
 
     int groupMembershipRemainingSeconds(String groupName);

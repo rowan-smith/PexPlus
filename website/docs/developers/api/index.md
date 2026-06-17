@@ -18,7 +18,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 | PermissionsEx 1.23.4 hook plugin | [Legacy API](/developers/api/legacy) — no recompile required for typical hooks |
 | Static `PermissionsEx.getUser(...)` calls | Legacy API + `permissionsex-legacy-stub` |
 | Static modern entry | `permissionsex-api` + `PermissionsEx.getApi()` (`PermissionsExApi`) |
-| Permission change events (modern) | `pex.events()` or legacy Bukkit events on Spigot |
+| Permission change events (modern) | `api.getEventBus()` or legacy Bukkit events on Spigot |
 | Proxy (Bungee/Waterfall) | `PermissionsEx.getApi()` (+ deprecated classic `PermissionManager` methods) |
 
 ## Documentation

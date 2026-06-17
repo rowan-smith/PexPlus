@@ -11,21 +11,39 @@ Policy: **legacy `ru.tehkode.*` stays frozen**. New capabilities belong under `d
 
 | Feature | API |
 |---------|-----|
-| Modern event bus | `pex.events()` → `PermissionEventBus` |
+| Modern event bus | `api.getEventBus()` → `PermissionEventBus` |
 | Player checks (Bukkit) | `getPermissionManager().has(player, "node")` or `User.inContext(...)` / holder context |
-| Global permission checks | `pex.user(id).has("node")` |
-| Promote / demote (commands) | `LadderManager.promote/demote` | Modern: `/pex ladder <ladder> promote\|demote <user>`; classic: `/pex promote` |
-| Backend admin | `pex.backend().activate`, `createHandle`, `importFrom` |
-| Import / export | `pex.backend().exportData`, `importData(document, ImportMode)` |
+| Global permission checks | `api.getUserManager().getUser(id).has("node")` |
+| Promote / demote | `LadderManager.promote/demote` — Modern: `/pex ladder <ladder> promote\|demote <user>`; classic: `/pex promote` |
 | Hierarchy helpers | `Group.children` / `Group.descendants`, `Group.childIdentifiers`, `Group.members(world, inherit)` |
-| Flat API | `pex.user()`, `pex.world()`, `pex.users()`, `pex.groups()`, `pex.backend()` |
-| Batch edits | batch `save()` on subjects |
-| Async reload | `pex.reloadAsync()` → `CompletableFuture<Void>` |
-| Proxy `PermissionsExApi` | `PermissionsExPlus` on Bungee/Waterfall |
+| Timed group removal | `User.removeTimedGroup(name[, context])` |
+| Proxy `PermissionsExApi` | `dev.rono.permissions.bungee.PermissionsEx.getApi()` on Bungee/Waterfall |
 
 ---
 
 ## Still open
+
+### Backend admin surface
+
+Commands: `/pex backend list`, `switch`, `import`, `export`.
+
+**Proposed:** `PermissionsExApi` backend helpers (`activate`, `createHandle`, `importFrom`, `exportData`) for programmatic admin.
+
+### Import / export
+
+**Proposed:** `importData(document, ImportMode)` and `exportData()` on a backend handle type.
+
+### Flat convenience accessors
+
+**Proposed:** shorthand `pex.user()`, `pex.world()`, `pex.users()`, `pex.groups()`, `pex.backend()` on `PermissionsExApi`.
+
+### Batch edits
+
+**Proposed:** batch `save()` on subjects or manager-level flush helpers.
+
+### Async reload
+
+**Proposed:** `reloadAsync()` → `CompletableFuture<Void>` on `PermissionsExApi`.
 
 ### Permission check diagnostics
 

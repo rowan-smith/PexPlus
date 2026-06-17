@@ -52,7 +52,7 @@ public final class ModernGroupCommand<C> extends AbstractModernPexCloudCommand<C
             @Argument(value = "group", suggestions = "pex-group") String group,
             @Argument(value = "permission", suggestions = "pex-permission") String permission,
             @Argument(value = "flags", parserName = "pex-flags") PexCommandFlags flags) {
-        reply(sender, ctx.commandService().groupCheckPermission(group, permission, realm(sender, flags)));
+        reply(sender, ctx.commandService().groupHas(group, permission, realm(sender, flags)));
     }
 
     @CommandMethod("pex group <group> permissions trace <permission> [flags]")
@@ -209,8 +209,20 @@ public final class ModernGroupCommand<C> extends AbstractModernPexCloudCommand<C
     }
 
     private void showInfo(C sender, String group) {
-        var view = ctx.commandService().groupView(group);
-        reply(sender, "Group " + view.name());
-        reply(sender, "Permissions: " + view.permissions());
+        try {
+            var view = ctx.commandService().groupView(group);
+            reply(sender, "Group " + view.name());
+            reply(sender, "Weight: " + view.weight());
+            reply(sender, "Prefix: " + displayOrNone(view.prefix()));
+            reply(sender, "Parents: " + view.parents());
+            reply(sender, "Members: " + view.memberCount());
+            reply(sender, "Effective permissions (global): " + view.permissions());
+        } catch (IllegalArgumentException ex) {
+            reply(sender, ex.getMessage());
+        }
+    }
+
+    private static String displayOrNone(String value) {
+        return value == null || value.isBlank() ? "(none)" : value;
     }
 }

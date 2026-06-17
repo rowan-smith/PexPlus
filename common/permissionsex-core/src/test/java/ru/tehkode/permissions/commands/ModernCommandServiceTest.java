@@ -33,13 +33,13 @@ class ModernCommandServiceTest extends PEXTestBase {
     }
 
     @Test
-    void groupCheckPermissionReportsPresence() {
+    void groupHasReportsEffectiveResult() {
         CoreCommandService service = new CoreCommandService(manager);
         PermissionGroup group = manager.getGroup("staff");
         group.addPermission("staff.use", null);
 
-        String result = service.groupCheckPermission("staff", "staff.use", null);
-        assertTrue(result.contains("has \"staff.use\""));
+        String result = service.groupHas("staff", "staff.use", null);
+        assertTrue(result.contains("Has 'staff.use' in global: true"));
     }
 
     @Test
@@ -62,5 +62,15 @@ class ModernCommandServiceTest extends PEXTestBase {
         assertEquals(
                 "Timed permission \"temp.node\" removed!",
                 service.userRemoveTimedPermission("Rono", "temp.node", null));
+    }
+
+    @Test
+    void userTimedGroupRemoveClearsMembership() {
+        CoreCommandService service = new CoreCommandService(manager);
+        service.userAddGroupSeconds("Rono", "default", null, 3600);
+
+        String result = service.userRemoveTimedGroup("Rono", "default", null);
+        assertTrue(result.contains("Timed group \"default\" removed"));
+        assertFalse(manager.getUser("Rono").inGroup("default", null, false));
     }
 }
