@@ -42,7 +42,7 @@ public final class PermissionsEx {
     /**
      * @deprecated Use {@link #getApi()} and {@link PermissionsExApi#getPermissionManager()}.
      */
-    @Deprecated(since = "1.24.x", forRemoval = false)
+    @Deprecated(since = "3.0.0", forRemoval = false)
     public static PermissionManager getPermissionManager() {
         ensureLegacyBridge("PermissionsEx.getPermissionManager()");
         return getApi().getPermissionManager();
