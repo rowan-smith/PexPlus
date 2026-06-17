@@ -136,6 +136,17 @@
   letter-spacing: 0.04em;
 }
 
+.framework {
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.35rem;
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 [data-theme='dark'] .category {
   color: var(--pex-accent, #4ade80);
 }

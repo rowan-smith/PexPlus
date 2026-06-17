@@ -207,39 +207,39 @@ final class DefaultGroupManager implements GroupManager {
     }
 }
 
-final class DefaultWorldManager implements dev.rono.permissions.api.world.WorldManager {
+final class DefaultRealmManager implements dev.rono.permissions.api.realm.RealmManager {
 
     private final DefaultPermissionManager manager;
 
-    DefaultWorldManager(DefaultPermissionManager manager) {
+    DefaultRealmManager(DefaultPermissionManager manager) {
         this.manager = manager;
     }
 
     @Override
-    public Optional<dev.rono.permissions.api.world.World> findWorld(String name) {
+    public java.util.Optional<dev.rono.permissions.api.realm.Realm> findRealm(String name) {
         if (!exists(name)) {
-            return Optional.empty();
+            return java.util.Optional.empty();
         }
-        return Optional.of(new WorldImpl(name));
+        return java.util.Optional.of(realm(name));
     }
 
     @Override
-    public dev.rono.permissions.api.world.World getWorld(String name)
-            throws dev.rono.permissions.api.world.WorldNotFoundException {
+    public dev.rono.permissions.api.realm.Realm getRealm(String name)
+            throws dev.rono.permissions.api.realm.RealmNotFoundException {
         if (!exists(name)) {
-            throw new dev.rono.permissions.api.world.WorldNotFoundException(name);
+            throw new dev.rono.permissions.api.realm.RealmNotFoundException(name);
         }
-        return new WorldImpl(name);
+        return realm(name);
     }
 
     @Override
-    public dev.rono.permissions.api.world.World createWorld(String name)
-            throws dev.rono.permissions.api.world.WorldAlreadyExistsException {
+    public dev.rono.permissions.api.realm.Realm createRealm(String name)
+            throws dev.rono.permissions.api.realm.RealmAlreadyExistsException {
         if (exists(name)) {
-            throw new dev.rono.permissions.api.world.WorldAlreadyExistsException(name);
+            throw new dev.rono.permissions.api.realm.RealmAlreadyExistsException(name);
         }
         manager.getBackend().setWorldInheritance(name, java.util.Collections.emptyList());
-        return new WorldImpl(name);
+        return realm(name);
     }
 
     @Override
@@ -252,24 +252,33 @@ final class DefaultWorldManager implements dev.rono.permissions.api.world.WorldM
     }
 
     @Override
-    public int count() {
-        return allWorldNames().size();
+    public java.util.List<String> listRealmNames() {
+        return allRealmNames().stream().sorted().toList();
     }
 
     @Override
-    public int count(Predicate<dev.rono.permissions.api.world.World> filter) {
+    public int count() {
+        return allRealmNames().size();
+    }
+
+    @Override
+    public int count(java.util.function.Predicate<dev.rono.permissions.api.realm.Realm> filter) {
         Objects.requireNonNull(filter, "filter");
         int matched = 0;
-        for (String name : allWorldNames()) {
-            var world = findWorld(name);
-            if (world.isPresent() && filter.test(world.get())) {
+        for (String name : allRealmNames()) {
+            var realm = findRealm(name);
+            if (realm.isPresent() && filter.test(realm.get())) {
                 matched++;
             }
         }
         return matched;
     }
 
-    private java.util.Set<String> allWorldNames() {
+    private RealmImpl realm(String name) {
+        return new RealmImpl(name, manager);
+    }
+
+    private java.util.Set<String> allRealmNames() {
         var names = new HashSet<String>();
         names.addAll(manager.getWorldNames());
         names.addAll(manager.getBackend().getAllWorldInheritance().keySet());

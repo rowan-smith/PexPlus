@@ -25,7 +25,8 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](/developers/api/modern) | `PermissionsEx.getApi()`, managers, holder permissions, managers, subjects, world contexts |
+| [API Cookbook](/developers/cookbook) | Copy-paste recipes — context, realms, groups, timed grants, proxy |
+| [MODERN_API.md](/developers/api/modern) | `PermissionsEx.getApi()`, managers, realms, holder permissions, subjects, contexts |
 | [LEGACY_API.md](/developers/api/legacy) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
 | [API_INVARIANTS.md](/developers/api/invariants) | Primary API layering, subject role split, timed expiry, world-context rules |
 | [FUTURE.md](/developers/api/future) | Recommended additions and known gaps |
@@ -60,15 +61,18 @@ Modern API integration tests live in `common/permissionsex-core/src/test/java/de
 |-------|----------|
 | `ModernApiManagerLifecycleTest` | find/get/create/exists, exceptions, counts |
 | `ModernApiSubjectPermissionsTest` | permissions, negation, meta, timed grants |
+| `ModernApiRealmTest` | realm registry, inheritance |
 | `ModernApiWorldContextTest` | `inContext` facades, global vs realm scope |
 | `ModernApiGroupHierarchyTest` | membership graph, parent trees, identifiers |
 | `ModernApiHolderPermissionTest` | holder checks, `PermissionAddRequest` |
 | `ModernApiEventBusTest` | subscribe/unsubscribe, dispatches |
 | `ModernApiLadderTest` | promote/demote, rank metadata |
 | `ApiLayerInvariantTest` | architectural composition guards |
-| `WorldsTest`, `PermissionContextTest` | pure utility unit tests |
+| `RealmsTest`, `PermissionContextTest` | pure utility unit tests |
 
-Run: `mvn -pl common/permissionsex-core test -Dtest='ModernApi*Test,ApiLayerInvariantTest,WorldsTest,PermissionContextTest'`
+Run: `mvn -pl common/permissionsex-core test -Dtest='ModernApi*Test,ApiLayerInvariantTest,RealmsTest,PermissionContextTest'`
+
+The modern API is **Realm-only** in 3.0-SNAPSHOT: `RealmManager`, `Realm`, `Realms`, and `PermissionContext` replace the removed `World*` types. See the [Cookbook](/developers/cookbook) for world, server, and realm examples.
 
 ## Related docs
 

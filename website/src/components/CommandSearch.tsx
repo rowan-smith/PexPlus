@@ -13,12 +13,17 @@ function scoreCommand(entry: CommandEntry, query: string): number {
   const summary = entry.summary.toLowerCase();
   const category = entry.category.toLowerCase();
 
-  if (cmd.startsWith(q)) return 100;
-  if (cmd.includes(q)) return 80;
-  if (syntax.includes(q)) return 60;
-  if (summary.toLowerCase().includes(q)) return 40;
-  if (category.includes(q)) return 20;
-  return 0;
+  let score = 0;
+  if (cmd.startsWith(q)) score = 100;
+  else if (cmd.includes(q)) score = 80;
+  else if (syntax.includes(q)) score = 60;
+  else if (summary.includes(q)) score = 40;
+  else if (category.includes(q)) score = 20;
+
+  if (score > 0 && entry.framework === 'modern') {
+    score += 15;
+  }
+  return score;
 }
 
 export default function CommandSearch(): JSX.Element {
@@ -97,6 +102,7 @@ export default function CommandSearch(): JSX.Element {
                   <span className={styles.resultCommand}>{entry.command}</span>
                   <span className={styles.resultMeta}>
                     <span className={styles.category}>{entry.category}</span>
+                    <span className={styles.framework}>{entry.framework}</span>
                     {entry.summary && (
                       <span className={styles.summary}>{entry.summary}</span>
                     )}

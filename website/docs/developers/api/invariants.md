@@ -213,9 +213,11 @@ Groups hold rank values; ladders orchestrate movement. Direct `setRank` edits me
 
 ---
 
-## WorldManager: logical vs runtime worlds
+## RealmManager: logical vs runtime realms
 
-`WorldManager.count()` includes backend world-inheritance nodes that may not map to a loaded Bukkit/Proxy dimension. **World** in PEX is a permission namespace, not strictly “loaded world.” On proxies, realm names are **backend server ids** — use `PermissionContext.server(id)` in proxy plugins.
+`RealmManager.count()` includes backend inheritance nodes that may not map to a loaded Bukkit/proxy dimension. A **realm** is a permission namespace, not strictly a loaded world. On proxies, realm ids are often **backend server names** — use `PermissionContext.server(id)` for scoped checks in proxy plugins.
+
+Use `Realms` (`isGlobal`, `normalize`, `mapKey`, `fromMapKey`) when bridging map keys and API realm arguments.
 
 ---
 
