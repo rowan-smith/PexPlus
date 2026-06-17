@@ -4,24 +4,12 @@ import dev.rono.permissions.api.ladder.Ladder;
 import dev.rono.permissions.api.permission.PermissionHolder;
 import dev.rono.permissions.api.world.World;
 
-final class WorldImpl implements World {
+/** @deprecated Use {@link RealmImpl} */
+@Deprecated(since = "3.0.0")
+final class WorldImpl extends RealmImpl implements World {
 
-    private final String name;
-    private final PermissionHolder holder;
-
-    WorldImpl(String name) {
-        this.name = name;
-        this.holder = new WorldPermissionHolder(name);
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public PermissionHolder asHolder() {
-        return holder;
+    WorldImpl(String name, DefaultPermissionManager manager) {
+        super(name, manager);
     }
 }
 

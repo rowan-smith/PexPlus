@@ -1,66 +1,62 @@
 package dev.rono.permissions.api.world;
 
+import dev.rono.permissions.api.realm.RealmManager;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * World registry with explicit find/get/create/exists lifecycle.
  *
- * <p>Worlds are permission namespaces. {@link #count()} may include backend inheritance entries
- * that do not correspond to a loaded server dimension.</p>
+ * @deprecated Use {@link RealmManager} — {@code WorldManager} is the legacy name for the realm registry.
  */
-public interface WorldManager {
+@Deprecated(since = "3.0.0")
+public interface WorldManager extends RealmManager {
 
     /**
-     * Looks up a registered world without creating a record.
-     *
-     * @param name world name
-     * @return the world when registered; empty if absent
+     * @deprecated Use {@link #findRealm(String)}
      */
-    Optional<World> findWorld(String name);
+    @Deprecated(since = "3.0.0")
+    default Optional<World> findWorld(String name) {
+        return findRealm(name).map(World.class::cast);
+    }
 
     /**
-     * Returns a registered world by name.
-     *
-     * @param name world name
-     * @return live world adapter
-     * @throws WorldNotFoundException if {@code name} is not registered
+     * @deprecated Use {@link #getRealm(String)}
      */
-    World getWorld(String name) throws WorldNotFoundException;
+    @Deprecated(since = "3.0.0")
+    default World getWorld(String name) throws WorldNotFoundException {
+        try {
+            return (World) getRealm(name);
+        } catch (dev.rono.permissions.api.realm.RealmNotFoundException ex) {
+            throw new WorldNotFoundException(name);
+        }
+    }
 
     /**
-     * Registers a new world namespace.
-     *
-     * @param name world name
-     * @return live world adapter for the new record
-     * @throws WorldAlreadyExistsException if {@code name} is already registered
+     * @deprecated Use {@link #createRealm(String)}
      */
-    World createWorld(String name) throws WorldAlreadyExistsException;
+    @Deprecated(since = "3.0.0")
+    default World createWorld(String name) throws WorldAlreadyExistsException {
+        try {
+            return (World) createRealm(name);
+        } catch (dev.rono.permissions.api.realm.RealmAlreadyExistsException ex) {
+            throw new WorldAlreadyExistsException(name);
+        }
+    }
 
     /**
-     * Reports whether a world is registered.
-     *
-     * @param name world name
-     * @return {@code true} if the world exists in the registry
+     * @deprecated Use {@link #listRealmNames()}
      */
-    boolean exists(String name);
+    @Deprecated(since = "3.0.0")
+    default java.util.List<String> listWorldNames() {
+        return listRealmNames();
+    }
 
     /**
-     * Returns the number of registered worlds.
-     *
-     * <p>Includes both platform-registered realms ({@link World}) and backend world-inheritance
-     * entries that may not correspond to a loaded dimension. Do not assume every counted world is
-     * a live server world — use platform APIs to test whether a dimension is loaded.</p>
-     *
-     * @return total registered world count
+     * @deprecated Use {@link #listRealms()}
      */
-    int count();
-
-    /**
-     * Returns how many registered worlds match {@code filter}.
-     *
-     * @param filter predicate applied to each registered world; must not be {@code null}
-     * @return count of worlds for which the predicate is {@code true}
-     */
-    int count(Predicate<World> filter);
+    @Deprecated(since = "3.0.0")
+    default java.util.List<World> listWorlds() {
+        return listRealms().stream().map(World.class::cast).collect(Collectors.toUnmodifiableList());
+    }
 }

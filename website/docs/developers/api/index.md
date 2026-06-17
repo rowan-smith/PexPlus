@@ -25,7 +25,7 @@ PermissionsExPlus exposes **two compile surfaces** for companion plugins. Both t
 
 | Document | Contents |
 |----------|----------|
-| [MODERN_API.md](/developers/api/modern) | `PermissionsEx.getApi()`, managers, holder permissions, managers, subjects, world contexts |
+| [MODERN_API.md](/developers/api/modern) | `PermissionsEx.getApi()`, managers, realms, holder permissions, subjects, contexts |
 | [LEGACY_API.md](/developers/api/legacy) | `PermissionManager`, `PermissionUser`, `PermissionGroup`, `PermissionsEx` stub, events, utils |
 | [API_INVARIANTS.md](/developers/api/invariants) | Primary API layering, subject role split, timed expiry, world-context rules |
 | [FUTURE.md](/developers/api/future) | Recommended additions and known gaps |
@@ -68,7 +68,7 @@ Modern API integration tests live in `common/permissionsex-core/src/test/java/de
 | `ApiLayerInvariantTest` | architectural composition guards |
 | `WorldsTest`, `PermissionContextTest` | pure utility unit tests |
 
-Run: `mvn -pl common/permissionsex-core test -Dtest='ModernApi*Test,ApiLayerInvariantTest,WorldsTest,PermissionContextTest'`
+Run: `mvn -pl common/permissionsex-core test -Dtest='ModernApi*Test,ApiLayerInvariantTest,WorldsTest,RealmsTest,PermissionContextTest'`
 
 ## Related docs
 

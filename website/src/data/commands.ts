@@ -1,3 +1,5 @@
+export type CommandFramework = 'modern' | 'classic' | 'both';
+
 export type CommandEntry = {
   command: string;
   syntax: string;
@@ -5,4 +7,5 @@ export type CommandEntry = {
   category: string;
   docSlug: string;
   anchor: string;
+  framework: CommandFramework;
 };

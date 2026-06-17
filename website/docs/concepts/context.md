@@ -4,7 +4,9 @@ description: World context and scoped permissions in PermissionsExPlus.
 slug: /concepts/context
 ---
 
-**Context** is the scope a permission applies to. On a single game server, context usually means a **world name**. On a proxy network, it can also mean a **backend server**.
+**Context** is the scope a permission applies to. On a single game server, context usually means a **realm** (historically called a **world**). On a proxy network, it can also mean a **backend server**.
+
+Use **`PermissionContext`** for scoped checks and mutations in plugin code. Use **`RealmManager`** to register realms and configure inheritance chains.
 
 ## Global vs world-scoped
 

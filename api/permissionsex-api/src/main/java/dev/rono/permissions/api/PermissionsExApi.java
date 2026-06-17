@@ -3,6 +3,7 @@ package dev.rono.permissions.api;
 import dev.rono.permissions.api.event.PermissionEventBus;
 import dev.rono.permissions.api.group.GroupManager;
 import dev.rono.permissions.api.ladder.LadderManager;
+import dev.rono.permissions.api.realm.RealmManager;
 import dev.rono.permissions.api.user.UserManager;
 import dev.rono.permissions.api.world.WorldManager;
 import ru.tehkode.permissions.PermissionManager;
@@ -37,10 +38,19 @@ public interface PermissionsExApi {
     GroupManager getGroupManager();
 
     /**
+     * Returns the realm registry for permission namespace and inheritance management.
+     *
+     * @return shared {@link dev.rono.permissions.api.realm.RealmManager}
+     */
+    RealmManager getRealmManager();
+
+    /**
      * Returns the world registry for permission namespace management.
      *
-     * @return shared {@link dev.rono.permissions.api.world.WorldManager}
+     * @return shared {@link WorldManager} view of the realm registry
+     * @deprecated Use {@link #getRealmManager()}
      */
+    @Deprecated(since = "3.0.0")
     WorldManager getWorldManager();
 
     /**

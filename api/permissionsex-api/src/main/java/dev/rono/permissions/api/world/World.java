@@ -1,26 +1,21 @@
 package dev.rono.permissions.api.world;
 
-import dev.rono.permissions.api.permission.PermissionHolder;
+import dev.rono.permissions.api.realm.Realm;
 
 /**
  * Registered permission namespace (realm/world).
  *
- * <p>Represents a logical scoping key for permissions and inheritance — not necessarily a loaded
- * server dimension.</p>
+ * @deprecated Use {@link Realm} and {@link dev.rono.permissions.api.realm.RealmManager} — {@code World}
+ *     is the legacy name for a permission realm.
  */
-public interface World {
+@Deprecated(since = "3.0.0")
+public interface World extends Realm {
 
-    /**
-     * Returns the world name.
-     *
-     * @return registered world identifier
-     */
+    @Override
     String getName();
 
-    /**
-     * Returns a {@link PermissionHolder} identity for holder-based permission operations.
-     *
-     * @return holder view of this world
-     */
-    PermissionHolder asHolder();
+    @Override
+    default String name() {
+        return getName();
+    }
 }

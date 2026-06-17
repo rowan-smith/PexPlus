@@ -58,7 +58,7 @@ var manager = api.getPermissionManager();  // legacy bridge + holder operations
 
 **Bungee/Waterfall:** `dev.rono.permissions.bungee.PermissionsEx.getApi()`
 
-`PermissionsExApi` provides `getUserManager()`, `getGroupManager()`, `getWorldManager()`, and `getLadderManager()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`). Each manager also exposes `count()` (total stored/registry entries) and `count(Predicate)` (filtered count). Holder-based permission edits use `getPermissionManager().addPermission(holder, …)` / `hasPermission(holder, …)`.
+`PermissionsExApi` provides `getUserManager()`, `getGroupManager()`, `getRealmManager()`, and `getLadderManager()` with explicit `find` / `get` / `create` / `exists` lifecycle (no hidden creation in `getX()`). Each manager also exposes `count()` (total stored/registry entries) and `count(Predicate)` (filtered count). `getWorldManager()` remains as a deprecated alias for `getRealmManager()`. Holder-based permission edits use `getPermissionManager().addPermission(holder, …)` / `hasPermission(holder, …)`.
 
 ---
 
@@ -99,8 +99,12 @@ user.save();
 |---------|--------|-------|----------|-----------|
 | `UserManager` | no materialize | requires persisted | explicit create | backend users |
 | `GroupManager` | no materialize | requires persisted | explicit create | backend groups |
-| `WorldManager` | registered realms | requires exists | explicit create | worlds |
+| `RealmManager` | registered realms | requires exists | explicit create | realms |
 | `LadderManager` | known ladders | requires exists | explicit create | ladders |
+
+`RealmManager` also exposes `listRealmNames()` / `listRealms()`. Each `Realm` supports inheritance administration (`parents`, `setParents`, `addParent`, `removeParent`, `parentTree`).
+
+`WorldManager` / `World` / `Worlds` are **deprecated aliases** for the realm types — use `RealmManager`, `Realm`, and `Realms` in new code.
 
 `LadderManager` also exposes `promote(user, ladder)`, `demote(user, ladder)`, `isRanked(user, ladder)`, and `rank(user, ladder)`.
 
@@ -122,14 +126,35 @@ api.getEventBus().unsubscribe(sub);
 
 ---
 
-## World model
+## Realm model
 
-| Constant | Meaning |
-|----------|---------|
-| `Worlds.GLOBAL` | `null` — global namespace |
-| Empty string `""` | Normalized to global |
+A **realm** is a named permission namespace in the backend — a loaded Bukkit world, a proxy backend server id, or another registered key. Realms are **not** the same as scoped checks:
 
-`user.has("node")` checks the **global** namespace. Use `user.inContext(PermissionContext.world(name)).has("node")` or `hasPermission(holder, node, context)` for scoped checks.
+| Task | API |
+|------|-----|
+| Check or grant in a scope | `PermissionContext.world(name)` / `.server(name)` + `user.inContext(...)` |
+| Register / inspect inheritance | `api.getRealmManager()` + `Realm` |
+
+| Constant / helper | Meaning |
+|-------------------|---------|
+| `Realms.GLOBAL` | `null` — global namespace |
+| Empty string `""` | Normalized to global via `Realms.normalize` |
+
+```java
+var realms = api.getRealmManager();
+if (!realms.exists("world_nether")) {
+    realms.createRealm("world_nether");
+}
+var nether = realms.getRealm("world_nether");
+nether.addParent("world");
+nether.parentTree(); // ancestor realm names
+
+// Day-to-day scoped mutations use PermissionContext, not RealmManager:
+user.inContext(PermissionContext.world("world_nether")).addPermission("essentials.god");
+user.save();
+```
+
+On **proxies**, backend server names are realm ids — scope with `PermissionContext.server("lobby")` in plugin code even though the backend stores them in the legacy world namespace.
 
 ### Permission context (platform-neutral)
 

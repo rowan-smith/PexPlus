@@ -119,6 +119,18 @@ user.save();
 
 ---
 
+## Realm inheritance (admin)
+
+```java
+var realm = api.getRealmManager().getRealm("world_nether");
+realm.addParent("world");
+// realm.parentTree() lists all ancestor realm names
+```
+
+For day-to-day scoped permissions, use `PermissionContext` — see [World-scoped permissions](#world-scoped-permissions) below.
+
+---
+
 ## World-scoped permissions
 
 ```java
