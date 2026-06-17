@@ -15,9 +15,11 @@ Replace the placeholders below with repo-specific details:
 - This project is: a multi-module Java Minecraft server plugin built with Maven
 - Main feature folders/modules (flat at repository root):
     - `api-core`, `api`: public interfaces, shared contracts, exposed types, extension points
+    - `legacy-api`, `legacy-stub`, `legacy-compat`: frozen classic API, compile stub, regression tests
     - `platform-api`: runtime bridge between engine and host (`PlatformAdapter`, scheduler, logging)
     - `common`: shared business logic, services, managers, configuration handling, persistence abstractions, reusable utilities
     - `bukkit`: Bukkit/Paper platform bootstrap, command registration, listener registration, platform adapters, scheduler integration
     - `bungee`, `velocity`, `sponge`: platform-specific translation layers only — no permission logic
     - `proxy-common`: shared proxy bootstrap for Bungee, Velocity, and Sponge
     - `universal`: merged deployable jar for all platforms
+    - `example-plugin`, `example-legacy-plugin`: hook plugin samples

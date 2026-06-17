@@ -198,7 +198,7 @@ var sub = api.getEventBus().subscribe(new PermissionEventListener() {
 api.getEventBus().unsubscribe(sub);
 ```
 
-Uses types from `permissionsex-core-api`: `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
+Uses types from `api-core/` (Maven artifact `permissionsex-core-api`): `EntityDispatch`, `SystemDispatch`, `EntityMutation`, `SystemMutation`. On Spigot, the platform still publishes legacy Bukkit events in parallel.
 
 ---
 
@@ -361,9 +361,9 @@ Obtain via `subject.inContext(PermissionContext.world("world_nether"))`, `user.g
 
 ---
 
-## Advanced SPI (`permissionsex-core-api`)
+## Advanced SPI (`api-core/`)
 
-Not required for typical hook plugins. Used by platform modules and deep integration:
+Maven artifact: `permissionsex-core-api`. Not required for typical hook plugins. Used by platform modules and deep integration:
 
 | Type | Role |
 |------|------|

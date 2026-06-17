@@ -160,6 +160,29 @@ Classic hook-plugin compatibility is confined to **`legacy-api`** and thin platf
 | **Bukkit events** | Published only from `bukkit` | `SpigotEventPublisher` translates `dev.rono.permissions.api.bus.*` dispatches into `ru.tehkode.permissions.events.*`. Core does not depend on event publication. |
 | **Backend aliases** | `ru.tehkode.permissions.spigot.backends.*` (Bukkit), `dev.rono.permissions.bungee.backends.*` (Bungee) | Classpath-stable names delegating to `dev.rono.permissions.core.backends.*`. |
 
-**Baseline:** legacy `PermissionManager` / events / `NativeInterface` match commit **`628215f`** (plus `shouldSaveDefaultGroup`). Guarded by `LegacyApiContractTest` in `legacy-api`.
+**Baseline:** legacy `PermissionManager` / events / `NativeInterface` match commit **`628215f`** (plus `shouldSaveDefaultGroup`). Guarded by `LegacyApiContractTest` in `legacy-api/`.
 
 **Rule of thumb:** if a feature is new, add it to `dev.rono.permissions.api` or `InternalPermissionManager` — never expand `ru.tehkode.permissions.PermissionManager`.
+
+## Testing
+
+Tests live next to the module they exercise (`{module}/src/test/java/`). Run everything from the repo root:
+
+```bash
+mvn test
+```
+
+| Module | Focus |
+|--------|-------|
+| `api-core` | API SPI types (`PermissionContext`, bus dispatches, `PermissionAddRequest`) |
+| `platform-api` | Runtime bridge (`PlatformAdapter` descriptors, scheduler, event bus) |
+| `legacy-api` | Frozen legacy contract (`LegacyApiContractTest`) |
+| `common` | Permission engine, backends, commands, modern API integration |
+| `bukkit` | Spigot adapters, backends, MockBukkit integration |
+| `bungee` / `velocity` / `sponge` | Platform adapters and legacy hook detection |
+| `proxy-common` | Shared proxy wiring and legacy bridge |
+| `universal` | Shaded jar contents (run after `mvn package -pl universal -am`) |
+| `example-plugin` / `example-legacy-plugin` | Hook plugin compile contracts |
+| `legacy-compat` | End-to-end hook smoke tests with MockBukkit |
+
+Pre-release manual checks: [Real-Server Test Matrix](/developers/testing-matrix).

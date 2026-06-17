@@ -53,7 +53,7 @@ Pre-release verification: [Real-Server Test Matrix](/developers/testing-matrix).
 ## Code guidelines
 
 - Match existing code style in the module you are editing
-- Keep platform modules thin — permission logic belongs in `permissionsex-core`
+- Keep platform modules thin — permission logic belongs in `common/` (Maven artifact `permissionsex-core`)
 - New features go in the modern API (`dev.rono.permissions.api`), not the frozen legacy API
 - Add tests for behaviour changes where practical
 

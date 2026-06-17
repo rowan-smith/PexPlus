@@ -3,9 +3,9 @@ title: Universal Bootstrap Jar
 description: Merged jar routing, install, and build instructions.
 slug: /developers/bootstrap
 ---
-See the [Universal Bootstrap Jar](https://permissionsexplus.rono.dev/developers/bootstrap) documentation on the project website.
+Source directory: **`universal/`** (Maven module **`permissionsex-bootstrap`**, `dev.rono.permissions:permissionsex-bootstrap`).
 
-Maven module **`permissionsex-bootstrap`** (`dev.rono.permissions:permissionsex-bootstrap`) emits a single installable jar:
+This module emits a single installable jar:
 
 **`universal/target/PermissionsExPlus-{version}.jar`**
 

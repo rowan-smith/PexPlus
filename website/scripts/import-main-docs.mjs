@@ -20,7 +20,9 @@ fs.writeFileSync(
 
 See the [Universal Bootstrap Jar](https://permissionsexplus.rono.dev/developers/bootstrap) documentation on the project website.
 
-Maven module **\`permissionsex-bootstrap\`** (\`dev.rono.permissions:permissionsex-bootstrap\`) emits:
+Source directory: **\`universal/\`** (Maven module **\`permissionsex-bootstrap\`**, \`dev.rono.permissions:permissionsex-bootstrap\`).
+
+Output jar:
 
 **\`universal/target/PermissionsExPlus-{version}.jar\`**
 
