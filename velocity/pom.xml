@@ -25,6 +25,10 @@
             <artifactId>cloud-velocity</artifactId>
         </dependency>
         <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-brigadier</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
             <scope>provided</scope>

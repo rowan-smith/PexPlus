@@ -177,28 +177,10 @@
         <dependencies>
             <dependency>
                 <groupId>cloud.commandframework</groupId>
-                <artifactId>cloud-core</artifactId>
+                <artifactId>cloud-bom</artifactId>
                 <version>${cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cloud.commandframework</groupId>
-                <artifactId>cloud-bukkit</artifactId>
-                <version>${cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cloud.commandframework</groupId>
-                <artifactId>cloud-bungee</artifactId>
-                <version>${cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cloud.commandframework</groupId>
-                <artifactId>cloud-annotations</artifactId>
-                <version>${cloud.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cloud.commandframework</groupId>
-                <artifactId>cloud-velocity</artifactId>
-                <version>${cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.mojang</groupId>

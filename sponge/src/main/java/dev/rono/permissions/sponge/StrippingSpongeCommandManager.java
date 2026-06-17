@@ -22,15 +22,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
- * Cloud command manager for SpongeAPI 8 using {@link RegisterCommandEvent} and raw command forwarding.
+ * SpongeAPI 8 Cloud command manager using {@link RegisterCommandEvent} and raw command forwarding.
+ * <p>
+ * {@code cloud-sponge7} targets SpongeAPI 7 ({@code CommandSource}); this module targets SpongeAPI 8
+ * ({@code CommandCause}) and mirrors the stripping behavior of the other platform managers.
  */
-public class SpongeCloudCommandManager<C> extends CommandManager<C> {
+public final class StrippingSpongeCommandManager<C> extends CommandManager<C> {
     private final PluginContainer owningPlugin;
     private final Function<CommandCause, C> commandSenderMapper;
     private final Function<C, CommandCause> backwardsCommandSenderMapper;
     private final SpongeRegistrationHandler<C> registrationHandler;
 
-    public SpongeCloudCommandManager(
+    public StrippingSpongeCommandManager(
             PluginContainer owningPlugin,
             Function<CommandTree<C>, CommandExecutionCoordinator<C>> executionCoordinator,
             Function<CommandCause, C> commandSenderMapper,
@@ -76,10 +79,10 @@ public class SpongeCloudCommandManager<C> extends CommandManager<C> {
     }
 
     static final class SpongeRegistrationHandler<C> implements cloud.commandframework.internal.CommandRegistrationHandler {
-        private SpongeCloudCommandManager<C> manager;
+        private StrippingSpongeCommandManager<C> manager;
         private final List<QueuedCommand<C>> queued = new ArrayList<>();
 
-        private void initialize(SpongeCloudCommandManager<C> manager) {
+        private void initialize(StrippingSpongeCommandManager<C> manager) {
             this.manager = manager;
         }
 

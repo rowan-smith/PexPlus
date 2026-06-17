@@ -47,7 +47,7 @@ public final class SpongePermissionsExPlugin implements PermissionsEx.ProxyLegac
     private BungeePermissionsExConfig config;
     private PlatformRuntime platformRuntime;
     private CoreCommandService commandService;
-    private SpongeCloudCommandManager<CommandCause> cloudManager;
+    private StrippingSpongeCommandManager<CommandCause> cloudManager;
     private ProxyLegacyBridgeController legacyBridge;
 
     @Inject
@@ -72,7 +72,7 @@ public final class SpongePermissionsExPlugin implements PermissionsEx.ProxyLegac
         legacyBridge = startup.legacyBridge();
         PermissionsEx.registerBridgeHost(this);
         maybeActivateLegacyBridge(server, "startup scan");
-        cloudManager = new SpongeCloudCommandManager<>(
+        cloudManager = new StrippingSpongeCommandManager<>(
                 container,
                 cloud.commandframework.execution.CommandExecutionCoordinator.simpleCoordinator(),
                 Function.identity(),

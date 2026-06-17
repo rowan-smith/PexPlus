@@ -84,7 +84,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 	private PermissionsExConfig config;
 	protected SuperpermsListener superms;
 	private RegexPermissions regexPerms;
-    private StrippingBukkitCommandManager<CommandSender> cloudManager;
+    private BukkitCommandManager<CommandSender> cloudManager;
     private CoreCommandService coreCommandService;
 	private boolean errored = false;
 	private SpigotPlatformBridge platformBridge;
@@ -226,11 +226,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			}
 
             try {
-                this.cloudManager = new StrippingBukkitCommandManager<>(
-                        this,
-                        CommandExecutionCoordinator.simpleCoordinator(),
-                        Function.identity(),
-                        Function.identity());
+                this.cloudManager = createCloudCommandManager();
                 this.coreCommandService = PexCloudCommands.install(new PexCloudCommands.InstallRequest<>(
                         cloudManager,
                         CommandSender.class,
@@ -241,7 +237,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
                         new SpigotUuidConversionBridge(),
                         CoreCloudPlatform.GAME_SERVER,
                         config.options().current().commandFramework()));
-                tryRegisterPaperBrigadier();
+                configureCloudBrigadier(cloudManager);
             } catch (Exception cloudEx) {
                 getLogger().warning("Failed to initialize Cloud command registration: " + cloudEx.getMessage());
             }
@@ -396,13 +392,20 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 		return superms;
 	}
 
-	protected StrippingBukkitCommandManager<CommandSender> getCloudManager() {
+	protected BukkitCommandManager<CommandSender> getCloudManager() {
 		return cloudManager;
 	}
 
-	/** Registers Cloud Brigadier hooks when running on Paper. */
-	protected void tryRegisterPaperBrigadier() {
-		if (cloudManager == null) {
+	protected BukkitCommandManager<CommandSender> createCloudCommandManager() throws Exception {
+		return new StrippingBukkitCommandManager<>(
+				this,
+				CommandExecutionCoordinator.simpleCoordinator(),
+				Function.identity(),
+				Function.identity());
+	}
+
+	protected void configureCloudBrigadier(BukkitCommandManager<CommandSender> manager) {
+		if (manager == null) {
 			return;
 		}
 		try {
@@ -411,7 +414,7 @@ public class SpigotPermissionsExPlugin extends JavaPlugin implements NativeInter
 			return;
 		}
 		try {
-			cloudManager.registerBrigadier();
+			manager.registerBrigadier();
 		} catch (BukkitCommandManager.BrigadierFailureException ex) {
 			getLogger().fine("Brigadier tab-completion hook not available: " + ex.getMessage());
 		}

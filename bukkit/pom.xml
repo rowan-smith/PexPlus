@@ -34,7 +34,11 @@
         </dependency>
         <dependency>
             <groupId>cloud.commandframework</groupId>
-            <artifactId>cloud-bukkit</artifactId>
+            <artifactId>cloud-paper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-brigadier</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
