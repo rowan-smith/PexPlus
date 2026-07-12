@@ -32,3 +32,5 @@ target/
 /.idea/
 /PermissionsEx.iml
 .DS_Store
+
+*.iml

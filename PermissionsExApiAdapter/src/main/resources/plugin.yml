@@ -1,0 +1,9 @@
+name: PermissionsEx
+version: "1.23.4"
+authors: [t3hk0d3, zml, Rono]
+description: PermissionsExApiAdapter - Classic PermissionsEx API.
+website: https://permissionsexplus.rono.dev/
+
+main: ru.tehkode.permissions.bukkit.PermissionsEx
+softdepend: ["NetEvents"]
+depend: ["PermissionsExPlus"]

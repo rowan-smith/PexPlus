@@ -35,13 +35,13 @@ npm run serve
 
 The static site is written to `website/build/`. Pushes to `main` that touch `website/**` trigger [`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml).
 
-| Path | Purpose |
-|------|---------|
-| `website/docs/` | Documentation pages (Markdown / MDX) |
-| `website/src/` | React components and theme CSS |
-| `website/static/` | Static assets (images, CNAME; Javadoc generated at build time) |
-| `examples/` | Sample `config.yml` and `permissions.yml` |
-| `website/docusaurus.config.ts` | Site configuration |
+| Path                           | Purpose                                                        |
+|--------------------------------|----------------------------------------------------------------|
+| `website/docs/`                | Documentation pages (Markdown / MDX)                           |
+| `website/src/`                 | React components and theme CSS                                 |
+| `website/static/`              | Static assets (images, CNAME; Javadoc generated at build time) |
+| `examples/`                    | Sample `config.yml` and `permissions.yml`                      |
+| `website/docusaurus.config.ts` | Site configuration                                             |
 
 ## Build from source
 
@@ -74,37 +74,40 @@ mvn -pl universal test
 
 Maven modules at the repository root (flat layout, like LuckPerms / ViaVersion / Maintenance):
 
-| Module | Purpose |
-|--------|---------|
-| `api-core` | Engine ↔ API SPI |
-| `api` | Modern hook plugin API |
-| `legacy-api` | Classic `ru.tehkode.permissions` API |
-| `legacy-stub` | Compile-only static entry points |
-| `legacy-compat` | Hook plugin regression tests (MockBukkit) |
-| `platform-api` | Platform runtime bridge |
-| `common` | Permission engine (single source of logic) |
-| `proxy-common` | Shared proxy wiring |
-| `bukkit` | Bukkit/Paper runtime |
-| `bungee` | BungeeCord runtime |
-| `velocity` | Velocity runtime |
-| `sponge` | Sponge runtime |
-| `universal` | Merged deployable jar |
-| `example-plugin` / `example-legacy-plugin` | Hook plugin samples |
+| Module                                     | Purpose                                    |
+|--------------------------------------------|--------------------------------------------|
+| `api-core`                                 | Engine ↔ API SPI                           |
+| `api`                                      | Modern hook plugin API                     |
+| `legacy-api`                               | Classic `ru.tehkode.permissions` API       |
+| `legacy-stub`                              | Compile-only static entry points           |
+| `legacy-compat`                            | Hook plugin regression tests (MockBukkit)  |
+| `platform-api`                             | Platform runtime bridge                    |
+| `common`                                   | Permission engine (single source of logic) |
+| `proxy-common`                             | Shared proxy wiring                        |
+| `bukkit`                                   | Bukkit/Paper runtime                       |
+| `bungee`                                   | BungeeCord runtime                         |
+| `velocity`                                 | Velocity runtime                           |
+| `sponge`                                   | Sponge runtime                             |
+| `universal`                                | Merged deployable jar                      |
+| `example-plugin` / `example-legacy-plugin` | Hook plugin samples                        |
 
 See the [Architecture](https://permissionsexplus.rono.dev/developers/architecture) page for module details.
 
 ## Hook plugin development
 
-| API | Docs |
-|-----|------|
+| API                                 | Docs                                                                   |
+|-------------------------------------|------------------------------------------------------------------------|
 | Modern (`dev.rono.permissions.api`) | [Modern API](https://permissionsexplus.rono.dev/developers/api/modern) |
-| Legacy (`ru.tehkode.permissions`) | [Legacy API](https://permissionsexplus.rono.dev/developers/api/legacy) |
-| Overview | [Hook Plugin API](https://permissionsexplus.rono.dev/developers/api) |
+| Legacy (`ru.tehkode.permissions`)   | [Legacy API](https://permissionsexplus.rono.dev/developers/api/legacy) |
+| Overview                            | [Hook Plugin API](https://permissionsexplus.rono.dev/developers/api)   |
 
 ## Contributing
 
 Contributions are welcome. See [Contributing](https://permissionsexplus.rono.dev/developers/contributing) on the docs site, or open an issue / pull request on GitHub.
 
-## License
+## Licenses
 
-PermissionsExPlus is licensed under the GNU General Public License v2.0 or later. See [LICENSE](LICENSE).
+PermissionsExPlus is licensed under the MIT License. See [LICENSE](PermissionsExPlus/LICENSE).
+PermissionsExPlusApi is licensed under the MIT License. See [LICENSE](PermissionsExPlusApi/LICENSE).
+PermissionsExApiAdapter is licensed under the GNU General Public License v2.0 or later. See [LICENSE](PermissionsExApiAdapter/LICENSE).
+PermissionsExCommandAdapter is licensed under the GNU General Public License v2.0 or later. See [LICENSE](PermissionsExCommandAdapter/LICENSE).

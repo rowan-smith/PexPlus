@@ -1,0 +1,14 @@
+package dev.rono.permissions.api.event;
+
+import java.util.function.Consumer;
+
+public interface EventManager {
+
+    <T extends PermissionEvent> void subscribe(
+            Class<T> type,
+            Consumer<T> listener
+    );
+
+    void publish(PermissionEvent event);
+
+}
