@@ -1,0 +1,9 @@
+name: PermissionsExPlus
+main: dev.rono.permissions.spigot.SpigotPlugin
+version: '${project.version}'
+
+commands:
+  pex:
+    description: PermissionsExPlus command
+    permission: permissionsexplus.command
+    aliases: [permissionsex, pexp]

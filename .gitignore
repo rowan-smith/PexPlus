@@ -1,7 +1,30 @@
+# Dependencies
+node_modules/
+website/node_modules/
+
+# Docusaurus
+.docusaurus/
+build/
+website/.docusaurus/
+website/build/
+
+# Generated Javadoc (built in CI via website/scripts/build-all-javadoc.sh)
+website/static/apidocs/
+
+# Legacy Jekyll
+vendor/
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+*.gem
+.bundle/
+
+# Maven / Java
 /.project
 /.classpath
 /.settings
-/target
+target/
 /build.xml
 /build
 /bin
@@ -9,3 +32,6 @@
 /.idea/
 /PermissionsEx.iml
 .DS_Store
+
+*.iml
+dependency-reduced-pom.xml
