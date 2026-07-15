@@ -1,18 +1,19 @@
 package ru.tehkode.permissions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.tehkode.permissions.backends.MultiBackend;
 import ru.tehkode.permissions.backends.PermissionBackend;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class MultiBackendTest extends PEXTestBase {
     private PermissionBackend backend1;
@@ -39,7 +40,7 @@ public class MultiBackendTest extends PEXTestBase {
         // Configure MultiBackend
         ConfigurationSection multiConfig = new MemoryConfiguration();
         multiConfig.set("backends", Arrays.asList("backend1", "backend2"));
-        
+
         // Setup fallbacks
         multiConfig.set("fallback.user", "backend2");
         multiConfig.set("fallback.group", "backend1");
@@ -108,10 +109,10 @@ public class MultiBackendTest extends PEXTestBase {
     @Test
     public void testWorldInheritance() {
         backend2.setWorldInheritance("world", Arrays.asList("parent1", "parent2"));
-        
+
         List<String> inheritance = multiBackend.getWorldInheritance("world");
         assertEquals(Arrays.asList("parent1", "parent2"), inheritance);
-        
+
         multiBackend.setWorldInheritance("world2", Collections.singletonList("parent3"));
         // Default fallback for world is the first backend (backend1) if not specified
         assertEquals(Collections.singletonList("parent3"), backend1.getWorldInheritance("world2"));

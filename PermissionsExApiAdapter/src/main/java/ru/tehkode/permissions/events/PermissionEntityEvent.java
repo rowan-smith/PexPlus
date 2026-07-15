@@ -18,77 +18,77 @@
  */
 package ru.tehkode.permissions.events;
 
+import java.util.UUID;
 import org.bukkit.event.HandlerList;
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-
-import java.util.UUID;
 
 /**
  * @author t3hk0d3
  */
 public class PermissionEntityEvent extends PermissionEvent {
 
-	private static final HandlerList handlers = new HandlerList();
-	protected transient PermissionEntity entity;
-	protected Action action;
-	protected PermissionEntity.Type type;
-	protected String entityIdentifier;
+    private static final HandlerList handlers = new HandlerList();
+    protected transient PermissionEntity entity;
+    protected Action action;
+    protected PermissionEntity.Type type;
+    protected String entityIdentifier;
 
-	public PermissionEntityEvent(UUID sourceUUID, PermissionEntity entity, Action action) {
-		super(sourceUUID);
-		this.entity = entity;
-		this.entityIdentifier = entity.getIdentifier();
-		this.type = entity.getType();
-		this.action = action;
-	}
+    public PermissionEntityEvent(UUID sourceUUID, PermissionEntity entity, Action action) {
+        super(sourceUUID);
+        this.entity = entity;
+        this.entityIdentifier = entity.getIdentifier();
+        this.type = entity.getType();
+        this.action = action;
+    }
 
-	public Action getAction() {
-		return this.action;
-	}
+    public Action getAction() {
+        return this.action;
+    }
 
-	public PermissionEntity getEntity() {
-		if (entity == null) {
-			switch (type) {
-				case GROUP:
-					entity = PermissionsEx.getPermissionManager().getGroup(entityIdentifier);
-					break;
-				case USER:
-					entity = PermissionsEx.getPermissionManager().getUser(entityIdentifier);
-					break;
-			}
-		}
-		return entity;
-	}
+    public PermissionEntity getEntity() {
+        if (entity == null) {
+            switch (type) {
+                case GROUP :
+                    entity = PermissionsEx.getPermissionManager().getGroup(entityIdentifier);
+                    break;
+                case USER :
+                    entity = PermissionsEx.getPermissionManager().getUser(entityIdentifier);
+                    break;
+            }
+        }
 
-	public String getEntityIdentifier() {
-		return entityIdentifier;
-	}
+        return entity;
+    }
 
-	public PermissionEntity.Type getType() {
-		return type;
-	}
+    public String getEntityIdentifier() {
+        return entityIdentifier;
+    }
 
-	public enum Action {
+    public PermissionEntity.Type getType() {
+        return type;
+    }
 
-		PERMISSIONS_CHANGED,
-		OPTIONS_CHANGED,
-		INHERITANCE_CHANGED,
-		INFO_CHANGED,
-		TIMEDPERMISSION_EXPIRED,
-		RANK_CHANGED,
-		DEFAULTGROUP_CHANGED,
-		WEIGHT_CHANGED,
-		SAVED,
-		REMOVED,
-	}
+    public enum Action {
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+        PERMISSIONS_CHANGED,
+        OPTIONS_CHANGED,
+        INHERITANCE_CHANGED,
+        INFO_CHANGED,
+        TIMEDPERMISSION_EXPIRED,
+        RANK_CHANGED,
+        DEFAULTGROUP_CHANGED,
+        WEIGHT_CHANGED,
+        SAVED,
+        REMOVED,
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

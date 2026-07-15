@@ -1,205 +1,99 @@
 # PermissionsExPlus
 
-PermissionsExPlus is a maintained fork of the original PermissionsEx (PEX) plugin for Bukkit/Spigot servers.
+PermissionsExPlus is a modern Bukkit permissions plugin with Spigot and Paper adapters. Core and both platform adapters are implemented against API. The optional legacy PermissionsEx API adapter is retained as a compatibility facade backed by the same runtime.
 
-The goal of this fork is to keep PermissionsEx usable on modern server environments, preserve the familiar command structure, and continue maintenance for server administrators who still rely on PEX-style permission management.
+## Modules
 
-## Overview
+- `PermissionsExPlusApi` — immutable public API contracts, contextual nodes, modifiers, events, and resolvers.
+- `PermissionsExPlus/Core` — platform-independent API runtime, storage, commands, caching, configuration, auditing, and Redis sync.
+- `PermissionsExPlus/Spigot` — Spigot plugin adapter.
+- `PermissionsExPlus/Paper` — Paper plugin adapter.
+- `PermissionsExApiAdapter` — legacy PermissionsEx API/plugin compatibility facade over API.
+- `Test` — example API consumer.
+- `Test2` — example core API consumer.
 
-PermissionsExPlus provides a flexible permissions system with support for users, groups, inheritance, prefixes, suffixes, timed permissions, multi-world setups, and promotion ladders.
+## Build and installation
 
-This fork is based on the original PermissionsEx project and keeps the same core plugin identity and command style where practical.
+Build with Maven and place the appropriate shaded Spigot or Paper JAR in the server's `plugins/` directory:
 
-## Features
-
-- User and group permission management
-- Group inheritance and hierarchy support
-- Prefix and suffix management
-- Timed permissions and timed group membership
-- Multi-world permission handling
-- Permission ladder promotion and demotion
-- Runtime backend inspection and switching
-- UUID conversion support
-- Debug and reporting tools
-
-## TODO
-
-The following features and improvements are planned for PermissionsExPlus:
-
-- [ ] Update compatibility for newer Bukkit/Spigot/Paper versions
-- [ ] Improve reload stability and permission attachment refresh behavior
-- [ ] Add better validation and error messages for invalid configuration files
-- [ ] Improve tab completion and command usability
-- [ ] Add migration helpers for older PermissionsEx data layouts
-- [ ] Expand UUID migration and offline player handling
-- [ ] Improve backend compatibility and database reliability
-- [ ] Add automated tests for core permission resolution logic
-- [ ] Clean up legacy code paths and deprecated API usage
-- [ ] Add clearer logging and debug output for permission resolution issues
-- [ ] Improve documentation and setup examples
-- [ ] Add example configurations for common server setups
-- [ ] Add CI builds and automated release packaging
-- [ ] Investigate a web editor or external management UI
-- [ ] Investigate support for modern platform abstractions and future API changes
-
-## Maven
-
-If you are building from source with Maven:
-
-```bash
+```shell
 mvn clean package
 ```
 
-The compiled plugin jar will typically be generated in the `target/` directory.
+On first startup the plugin creates `config.yml`, `advanced.yml`, `database.yml`, and `data/` under `plugins/PermissionsExPlus/`.
 
-## Installation
+## Configuration
 
-1. Build the project with Maven or download a compiled release.
-2. Place the jar file in your server's `plugins/` directory.
-3. Start or restart the server.
-4. Configure groups, users, and permissions using commands or configuration files.
+All existing configuration surfaces are retained:
+
+- `config.yml`: default group, wildcard/negation policy, hooks, and debug settings.
+- `advanced.yml`: world/server/gamemode/proxy contexts, static environment contexts, inheritance depth, cache and expiry intervals, UUID source, auditing, and Redis messaging.
+- `database.yml`: `h2`, `sqlite`, `mysql`, `postgres`, `memory`, `yaml`, or `json`, including connection-pool and credential settings.
+
+API flat-file data is stored in `data/permissions.yml` or `data/permissions.json`. SQL backends use the `pex_data` table. Redis messages use the `permissionsexplus` protocol namespace.
+
+## API
+
+```java
+PexApi api = PexProvider.get();
+
+api.users().find(playerId).thenAccept(optional -> optional.ifPresent(user -> {
+    QueryOptions query = QueryOptions.builder()
+            .contexts(ContextSet.builder().add("world", "survival").build())
+            .build();
+
+    PermissionResult result = api.resolvers().permissions()
+            .check(user, "example.use", query);
+}));
+```
+
+The facade also exposes `backend()` for storage discovery, `contexts()` for runtime
+context calculators, `placeholders()` for cache-only placeholder resolution, and `events()`
+for lifecycle and modification subscriptions.
+
+Mutations use atomic modifiers and complete after persistence and cache replacement:
+
+```java
+api.users().modify(playerId, modifier -> modifier
+        .allowPermission("example.use")
+        .addGroup("member")
+        .setPrefix("[Member]"));
+```
 
 ## Commands
 
-### Main command
+The command surface remains rooted at `/pex` and includes:
 
-```text
-/pex
-```
+- user inspection, permission add/remove/check, group membership, and options;
+- group create/delete, permission, and parent management;
+- ladder create/delete, group ordering, promotion, and demotion;
+- backend status, version, help, and reload.
 
-### General commands
+The plural registry commands (`/pex users`, `/pex groups`, and `/pex ladders`), backend
+listing/switch guidance, permission traces, contextual permission arguments, group cloning,
+member management, option inspection, and ladder moves are retained. Context arguments use
+comma-separated `key=value` pairs.
 
-```text
-/pex - Display help
-/pex reload - Reload environment
-/pex report - Report an issue with PEX
-/pex config <node> [value] - Print or set a config node
-/pex backend - Print currently used backend
-/pex backend <backend> - Change permission backend on the fly
-/pex hierarchy [world] - Print complete user/group hierarchy
-/pex import <backend> - Import data from another backend
-/pex convert uuid - Bulk convert user data to UUID-based storage
-/pex toggle debug - Enable or disable debug mode
-/pex help [page] [count] - Show command help
-```
+Each mutation uses the same API manager/modifier path as third-party consumers.
 
-### User commands
+## Runtime behavior
 
-```text
-/pex users list
-/pex user <user>
-/pex user <user> list [world]
-/pex user <user> superperms
-/pex user <user> prefix [newprefix] [world]
-/pex user <user> suffix [newsuffix] [world]
-/pex user <user> toggle debug
-/pex user <user> check <permission> [world]
-/pex user <user> get <option> [world]
-/pex user <user> delete
-/pex user <user> add <permission> [world]
-/pex user <user> remove <permission> [world]
-/pex user <user> swap <permission> <targetPermission> [world]
-/pex user <user> timed add <permission> [lifetime] [world]
-/pex user <user> timed remove <permission> [world]
-/pex user <user> set <option> <value> [world]
-/pex user <user> group list [world]
-/pex user <user> group add <group> [world] [lifetime]
-/pex user <user> group set <group> [world]
-/pex user <user> group remove <group> [world]
-/pex users cleanup <group> [threshold]
-```
+Permission and option resolution supports contextual nodes, expiry, inheritance, contextual defaults, group weights, exact/wildcard precedence, explicit deny tie-breaking, primary groups, and explanation candidates. User/group/ladder snapshots are immutable. Mutations are persisted before their completion stage resolves and publish API events after cache replacement.
 
-### Group commands
+Redis publishes user invalidations for user changes and fan-out invalidations for group changes. Remote invalidations reload only users currently present in the local cache. Audit broadcasting and network-wide audit messages continue to use the configured Redis channel.
 
-```text
-/pex groups list [world]
-/pex group <group>
-/pex group <group> list [world]
-/pex group <group> create [parents]
-/pex group <group> delete
-/pex group <group> add <permission> [world]
-/pex group <group> remove <permission> [world]
-/pex group <group> swap <permission> <targetPermission> [world]
-/pex group <group> set <option> <value> [world]
-/pex group <group> weight [weight]
-/pex group <group> prefix [newprefix] [world]
-/pex group <group> suffix [newsuffix] [world]
-/pex group <group> toggle debug
-/pex group <group> timed add <permission> [lifetime] [world]
-/pex group <group> timed remove <permission> [world]
-/pex group <group> users
-/pex group <group> user add <user> [world]
-/pex group <group> user remove <user> [world]
-```
+API v1 realms and metadata are represented natively in as contextual nodes and option
+nodes. For example, a former realm named `survival` is expressed with a `realm=survival`
+context, while prefix, suffix, display name, weight, and custom metadata use option nodes.
 
-### Parent and rank commands
+## Compatibility boundaries
 
-```text
-/pex group <group> parents [world]
-/pex group <group> parents list [world]
-/pex group <group> parents set <parents> [world]
-/pex group <group> parents add <parents> [world]
-/pex group <group> parents remove <parents> [world]
-/pex default group [world]
-/pex set default group <group> <value> [world]
-/pex group <group> rank [rank] [ladder]
-/pex promote <user> [ladder]
-/pex demote <user> [ladder]
-```
+The legacy adapter routes user/group permissions, options, parent groups, default groups,
+weights, identifiers, and enumeration through API. Its world-inheritance configuration is
+currently a process-local compatibility view; API context resolution remains authoritative.
 
-### World commands
-
-```text
-/pex worlds
-/pex world <world>
-/pex world <world> inherit <parentWorlds>
-```
-
-## Standalone commands
-
-```text
-/promote <user> - Promotes a user to the next group
-/demote <user> - Demotes a user to the previous group
-```
-
-## Permission Nodes
-
-```text
-permissionsex.disabled
-```
-
-Disables regex-based permission matching for players who should not have it applied.
-
-## Example Usage
-
-```text
-/pex group admin create
-/pex group admin add '*'
-/pex user Steve group set admin
-/pex user Alex add essentials.home
-/pex group moderator prefix [Mod]
-/pex promote Steve
-```
-
-## Why this fork exists
-
-PermissionsEx was widely used, but the original project became unmaintained.
-
-PermissionsExPlus exists to continue that legacy with active fixes, updated compatibility, and a clearer long-term home for the plugin.
-
-## Credits
-
-- Original authors: `t3hk0d3`, `zml`
-- Additional fork attribution: `Rono`
-- Original project: PermissionsEx
-
-## License
-
-PermissionsExPlus is licensed under the GNU General Public License v2.0 or later.
-See the [LICENSE](LICENSE) file for the full text.
-
-## Contributing
-
-Contributions, bug reports, and compatibility fixes are welcome.
-
-Please open an issue or submit a pull request with a clear description of the change.
+The model intentionally does not reproduce the old named-realm registry, command-extension
+registry, or every fine-grained/cancellable v1 event type. Realms translate to arbitrary
+contexts, metadata translates to option nodes, and publishes lifecycle plus aggregate
+modification events. Existing v1 flat-file/SQL data also requires an explicit migration into
+the store; startup does not silently rewrite it.

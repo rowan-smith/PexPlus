@@ -32,13 +32,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-	String name();
+    String name();
 
-	String syntax();
+    String syntax();
 
-	String description();
+    String description();
 
-	String permission() default "";
+    String permission() default "";
 
-	boolean isPrimary() default false;
+    boolean isPrimary() default false;
 }

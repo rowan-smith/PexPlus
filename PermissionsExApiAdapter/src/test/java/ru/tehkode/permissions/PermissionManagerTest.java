@@ -1,9 +1,12 @@
 package ru.tehkode.permissions;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class PermissionManagerTest extends PEXTestBase {
 
@@ -13,7 +16,7 @@ public class PermissionManagerTest extends PEXTestBase {
         PermissionUser user = manager.getUser(uuid);
         assertNotNull(user);
         assertEquals(uuid, user.getIdentifier());
-        
+
         PermissionUser sameUser = manager.getUser(uuid);
         assertSame(user, sameUser, "User objects should be cached and returned as same instance");
     }
@@ -23,7 +26,7 @@ public class PermissionManagerTest extends PEXTestBase {
         PermissionGroup group = manager.getGroup("NewGroup");
         assertNotNull(group);
         assertEquals("NewGroup", group.getIdentifier());
-        
+
         PermissionGroup sameGroup = manager.getGroup("NewGroup");
         assertSame(group, sameGroup, "Group objects should be cached and returned as same instance");
     }
@@ -32,12 +35,12 @@ public class PermissionManagerTest extends PEXTestBase {
     public void testDefaultGroup() {
         PermissionGroup defaultGroup = manager.getGroup("default");
         defaultGroup.setDefault(true, null);
-        
+
         // Force manager to see the group in its group list
-        manager.getGroups(); 
-        
+        manager.getGroups();
+
         assertTrue(defaultGroup.isDefault(null));
-        
+
         Collection<PermissionGroup> defaults = manager.getDefaultGroups(null);
         boolean found = false;
         for (PermissionGroup g : defaults) {
@@ -46,6 +49,7 @@ public class PermissionManagerTest extends PEXTestBase {
                 break;
             }
         }
+
         assertTrue(found, "Default group should be found in default groups list");
     }
 
@@ -53,7 +57,7 @@ public class PermissionManagerTest extends PEXTestBase {
     public void testGetGroups() {
         manager.getGroup("Group1");
         manager.getGroup("Group2");
-        
+
         Collection<PermissionGroup> groups = manager.getGroupList();
         assertTrue(groups.size() >= 2, "Should have at least 2 groups, but had " + groups.size());
     }

@@ -1,27 +1,23 @@
 package dev.rono.permissions.api.group;
 
-import dev.rono.permissions.api.permission.PermissionNode;
+import dev.rono.permissions.api.managers.Manager;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
-public interface GroupManager {
+public interface GroupManager extends Manager<String, Group, GroupModifier> {
 
-    Optional<Group> find(String name);
+    @Override
+    GroupCacheManager cache();
 
-    Group load(String name);
+    @Override
+    GroupStorageManager storage();
 
-    Group create(String name);
+    default CompletionStage<Group> modify(Group group, Consumer<GroupModifier> action) {
+        Objects.requireNonNull(group, "group");
+        Objects.requireNonNull(action, "action");
 
-    void delete(String name);
-
-    void addPermission(Group group, String permission);
-
-    void removePermission(Group group, String permission);
-
-    void addParent(Group group, Group parent);
-
-    void removeParent(Group group, Group parent);
-
-    Collection<Group> all();
+        return modify(group.name(), action);
+    }
 }

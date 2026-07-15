@@ -1,6 +1,6 @@
 package dev.rono.permissions.spigot.platform;
 
-import dev.rono.permissions.core.bridge.PlatformScheduler;
+import dev.rono.permissions.core.platform.PlatformScheduler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
@@ -41,6 +41,16 @@ public class SpigotScheduler implements PlatformScheduler {
     @Override
     public void executeRepeatingAsync(Runnable task, Duration interval) {
         plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, task, 0, interval.toMillis() / 50);
+    }
+
+    @Override
+    public int scheduleRepeating(Runnable task, Duration interval) {
+        return plugin.getServer().getScheduler().runTaskTimer(plugin, task, 0, interval.toMillis() / 50).getTaskId();
+    }
+
+    @Override
+    public int scheduleRepeatingAsync(Runnable task, Duration interval) {
+        return plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, task, 0, interval.toMillis() / 50).getTaskId();
     }
 
     @Override

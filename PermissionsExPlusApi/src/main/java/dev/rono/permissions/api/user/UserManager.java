@@ -1,24 +1,29 @@
 package dev.rono.permissions.api.user;
 
-import java.util.Collection;
+import dev.rono.permissions.api.managers.Manager;
+
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
-public interface UserManager {
+public interface UserManager extends Manager<UUID, User, UserModifier> {
 
-    Optional<User> find(UUID uuid);
+    @Override
+    UserCacheManager cache();
 
-    User load(UUID uuid);
+    @Override
+    UserStorageManager storage();
 
-    User create(UUID uuid);
+    CompletionStage<User> modify(String username, Consumer<UserModifier> action);
 
-    void unload(UUID uuid);
+    default CompletionStage<User> modify(User user, Consumer<UserModifier> action) {
+        Objects.requireNonNull(user, "user");
+        Objects.requireNonNull(action, "action");
 
-    boolean loaded(UUID uuid);
+        return modify(user.uniqueId(), action);
+    }
 
-    void addPermission(User user, String permission);
-
-    void removePermission(User user, String permission);
-
-    Collection<User> all();
+    CompletionStage<Optional<User>> find(String username);
 }

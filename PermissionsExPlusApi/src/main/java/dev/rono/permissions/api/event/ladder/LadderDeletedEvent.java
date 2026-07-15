@@ -1,5 +1,8 @@
 package dev.rono.permissions.api.event.ladder;
 
-public interface LadderDeletedEvent extends LadderEvent {
+import dev.rono.permissions.api.event.Event;
+import dev.rono.permissions.api.ladder.Ladder;
 
+public interface LadderDeletedEvent extends Event {
+    Ladder ladder();
 }

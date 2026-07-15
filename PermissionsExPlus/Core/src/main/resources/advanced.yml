@@ -1,0 +1,186 @@
+# =====================================================================
+#                    Contexts & Server Scoping
+# =====================================================================
+server-context:
+  # The global fallback name for permissions that apply everywhere.
+  global-name: "global"
+
+  # Automatically tracks the current game world (e.g., world=world_nether)
+  track-worlds: true
+
+  # Automatically tracks the backend server name (e.g., server=survival)
+  track-servers: true
+
+  # Automatically tracks the player's active game mode (e.g., gamemode=creative)
+  track-gamemode: true
+
+  # Automatically tracks multi-proxy instance nodes (e.g., proxy=proxy-us)
+  track-proxies: true
+
+  # Any custom key-value pairs added here act as immediate metadata filters.
+  environment:
+    stage: "development"
+    instance: "survival-node-1"
+
+# =====================================================================
+#                   Inheritance & Meta Settings
+# =====================================================================
+inheritance:
+  # The maximum depth allowed for group inheritance loops to prevent infinite stack overflows.
+  max-depth: 10
+
+  # Dictates how the evaluation engine breaks ties if a user inherits conflicting
+  # nodes from separate parent branches sharing the exact same numerical weight.
+  #   - true_wins : If ANY matching node is ALLOW, it overrides a DENY negation node.
+  #   - deny_wins : If ANY matching node is DENY, it overrides an ALLOW node (Safest).
+  #   - strict    : Throw a warning in the console and skip processing the node.
+  conflict-resolution: "deny_wins"
+
+  # Configures how prefixes, suffixes, and metadata are handled if a player
+  # belongs to multiple groups simultaneously.
+  #
+  # Options:
+  #   - highest_weight : Only displays the prefix/suffix from the group with the
+  #                      absolute highest weight value.
+  #                      (Example: If in 'admin' [weight 100, prefix "&c[Admin] "]
+  #                      and 'donor' [weight 50, prefix "&a[VIP] "], they will
+  #                      ONLY display the Admin prefix).
+  #
+  #   - accumulated    : Merges all prefixes/suffixes together, sorted by their
+  #                      group weights in descending order.
+  #                      (Example: Using the same groups as above, they will
+  #                      display: "&c[Admin] &a[VIP] ").
+  meta-formatting: "highest_weight"
+
+# ========================================================================
+#                Cross-Server Sync & Redis Options
+# ========================================================================
+messaging:
+  # The method used to notify sibling servers to clear cache hooks.
+  # Options: none, redis, pluginmessage
+  type: "none"
+
+  redis:
+    host: "localhost"
+    port: 6379
+    password: ""
+    channel: "networkpermissions:sync"
+    timeout: 2000
+
+# ========================================================================
+#                      Performance & Cache Tuning
+# ========================================================================
+cache:
+  # The maximum amount of time (in minutes) an inactive offline player's
+  # data remains cached in RAM before being automatically cleared.
+  offline-eviction-time: 10
+
+  # The absolute maximum number of offline player profiles allowed to reside
+  # in RAM simultaneously. Once this limit is reached, the oldest cached offline
+  # profiles are evicted instantly, regardless of the eviction time setting above.
+  # Set to 0 to disable the limit (not recommended for large networks).
+  max-cached-offline-users: 5000
+
+  # Should player data be aggressively preloaded asynchronously when a player
+  # initiates a connection handshake?
+  # True ensures zero main-thread tick lag when a player spawns into the world.
+  preload-on-join: true
+
+  # If an uncached offline player's profile fails to load due to a database
+  # timeout or network drop, how should the evaluation engine respond?
+  #   - deny : Return false for all permission checks (Safest for security).
+  #   - allow: Grant standard default rank permissions temporarily.
+  cache-failure-fallback: "deny"
+
+  # Periodic safety checkpoint for YAML/JSON storage. Normal mutations are still
+  # written through immediately; this interval is measured in minutes.
+  auto-save-interval: 5
+
+  # Log successful periodic storage checkpoints to the console.
+  log-save: false
+
+  # Log when inactive offline users are removed from the in-memory cache.
+  log-cache-eviction: false
+
+  # Controls cache eviction log detail.
+  # Options:
+  #   - total      : Prints a single summary line (e.g., "Cleaned up 12 eviction across the network").
+  #   - individual : Prints a detailed list of each eviction.
+  log-cache-mode: "total"
+
+# ========================================================================
+#                     Core Thread Pool Management
+# ========================================================================
+threading:
+  # The core size of the background worker thread pool handling Hibernate/Jackson
+  # saving tasks and Redis packet broadcasts. Adjust this if database lag increases.
+  worker-pool-size: 4
+
+# ========================================================================
+#                 Command Framework Registration Rules
+# ========================================================================
+commands:
+  # Should the core plugin register its Cloud Command Tree on this machine?
+  # Set to false if you wish to run this instance strictly as a headless API listener
+  # or placeholder service provider without command accessibility.
+  register-base-commands: true
+
+# =====================================================================
+#                    Logging & Action Auditing
+# =====================================================================
+audit-log:
+  # Should every permission change (/perm user add...) be logged to a separate file?
+  log-to-file: true
+
+  # Broadcast permission administration actions to online server operators.
+  broadcast-to-ops: true
+
+  # Publish staff audit actions to other servers when Redis messaging is enabled.
+  network-wide-logging: true
+
+
+# =====================================================================
+#                    Temporary / Expiring Nodes
+# =====================================================================
+temporary-permissions:
+  # How often active online players are scanned for expired permission nodes (in seconds).
+  expiry-check-interval: 30
+
+  # Log expiration sweeps when temporary permissions, options, parents, or
+  # group memberships are removed.
+  log-expiry: false
+
+  # Options:
+  #   - total      : Prints a single summary line (e.g., "Cleaned up 12 expired nodes across the network").
+  #   - individual : Prints a separate log line detailing every single node and player name combination.
+  log-expiry-mode: "total"
+
+# =====================================================================
+#                    Identity & UUID Resolution
+# =====================================================================
+identity:
+  # Controls how player usernames are resolved to unique, permanent UUIDs.
+  # Selecting the wrong option can cause severe security or performance issues.
+  #
+  # Options:
+  #   - mix_mode    : [RECOMMENDED] Checks the plugin's local database history first
+  #                   to find a username-to-UUID match. If no match is found, it
+  #                   queries Mojang's official API over the network and caches it.
+  #                   (Best balance of speed and security; prevents Mojang rate-limits).
+  #
+  #   - online_only : Bypasses the local database cache entirely for username lookups.
+  #                   Every command targeting a player name will force an outbound
+  #                   network call to Mojang's API to verify the true UUID.
+  #                   (Extremely secure against name-changers, but will cause severe
+  #                   command lag if Mojang's API goes down or rate-limits your network).
+  #
+  #   - offline     : Used strictly for offline-mode, hybrid, or "cracked" networks.
+  #                   Completely disables Mojang API checks and derives a deterministic
+  #                   UUID directly from the lowercase player name using standard MD5
+  #                   hashing (matching offline BungeeCord/Velocity setups).
+  #                   (WARNING: Anyone can log in with any username and steal their
+  #                   permissions if your network does not have a secure authorization proxy).
+  uuid-source: "mix_mode"
+
+# DO NOT CHANGE THIS VALUE manually.
+advanced-version: 1

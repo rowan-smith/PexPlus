@@ -8,6 +8,4 @@ public class RegExpMatcherTest extends PermissionMatcherTest {
     public void setup() {
         this.matcher = new RegExpMatcher();
     }
-
-
 }

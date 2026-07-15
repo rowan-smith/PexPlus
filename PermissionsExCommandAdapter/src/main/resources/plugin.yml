@@ -1,9 +1,10 @@
-name: PermissionsEx
+name: PermissionsExCommandAdapter
 main: ru.tehkode.permissions.bukkit.PermissionsEx
 version: "${project.version}"
 author: [t3hk0d3, zml, Rono]
 api-version: 1.21
-description: PermissionsEx API Adapter - A API Adapter for PermissionsEx.
+description: PermissionsEx Command Adapter - A Command Adapter for PermissionsEx.
+depend: [PermissionsExPlus]
 
 commands:
   pex:

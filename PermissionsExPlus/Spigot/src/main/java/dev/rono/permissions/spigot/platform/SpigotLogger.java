@@ -1,7 +1,8 @@
 package dev.rono.permissions.spigot.platform;
 
-import dev.rono.permissions.core.bridge.PlatformLogger;
+import dev.rono.permissions.core.platform.PlatformLogger;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SpigotLogger implements PlatformLogger {
@@ -14,5 +15,15 @@ public class SpigotLogger implements PlatformLogger {
     @Override
     public void info(String message) {
         logger.info(message);
+    }
+
+    @Override
+    public void warn(String message) {
+        logger.warning(message);
+    }
+
+    @Override
+    public void error(String message, Throwable error) {
+        logger.log(Level.SEVERE, message, error);
     }
 }

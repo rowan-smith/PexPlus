@@ -1,0 +1,9 @@
+{
+    "rules": [
+        {
+            "key": "java:S6212",
+            "name": "Local-Variable Type Inference (var) should be used",
+            "level": "on"
+        }
+    ]
+}

@@ -1,29 +1,70 @@
 package dev.rono.permissions.api.ladder;
 
-import dev.rono.permissions.api.group.Group;
-import dev.rono.permissions.api.realm.Realm;
+import dev.rono.permissions.api.context.ContextSet;
+import dev.rono.permissions.api.managers.Manager;
 import dev.rono.permissions.api.user.User;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
-public interface LadderManager {
+public interface LadderManager extends Manager<String, Ladder, LadderModifier> {
 
-    Optional<Ladder> find(String name);
+    @Override
+    LadderCacheManager cache();
 
-    Ladder load(String name);
+    @Override
+    LadderStorageManager storage();
 
-    Ladder create(String name);
+    default CompletionStage<Ladder> modify(Ladder ladder, Consumer<LadderModifier> action) {
+        Objects.requireNonNull(ladder, "ladder");
+        Objects.requireNonNull(action, "action");
 
-    void delete(String name);
+        return modify(ladder.name(), action);
+    }
 
-    PromotionResult promote(User user, Ladder ladder, Realm realm);
+    CompletionStage<PromotionResult> promote(String name, String ladder);
 
-    PromotionResult demote(User user, Ladder ladder, Realm realm);
+    default CompletionStage<PromotionResult> promote(UUID uniqueId, String ladder) {
+        return promote(uniqueId, ladder, ContextSet.empty());
+    }
 
-    void addGroup(Ladder ladder, Group group);
+    CompletionStage<PromotionResult> promote(UUID uniqueId, String ladder, ContextSet contexts);
 
-    void removeGroup(Ladder ladder, Group group);
+    default CompletionStage<PromotionResult> promote(User user, String ladder) {
+        Objects.requireNonNull(user, "user");
 
-    Collection<Ladder> all();
+        Objects.requireNonNull(ladder, "ladder");
+
+        return promote(user.uniqueId(), ladder);
+    }
+
+    default CompletionStage<PromotionResult> promote(User user, String ladder, ContextSet contexts) {
+        Objects.requireNonNull(user, "user");
+
+        return promote(user.uniqueId(), ladder, contexts);
+    }
+
+    CompletionStage<PromotionResult> demote(String name, String ladder);
+
+    default CompletionStage<PromotionResult> demote(UUID uniqueId, String ladder) {
+        return demote(uniqueId, ladder, ContextSet.empty());
+    }
+
+    CompletionStage<PromotionResult> demote(UUID uniqueId, String ladder, ContextSet contexts);
+
+    default CompletionStage<PromotionResult> demote(User user, String ladder) {
+        Objects.requireNonNull(user, "user");
+
+        Objects.requireNonNull(ladder, "ladder");
+
+        return demote(user.uniqueId(), ladder);
+    }
+
+    default CompletionStage<PromotionResult> demote(User user, String ladder, ContextSet contexts) {
+        Objects.requireNonNull(user, "user");
+
+        return demote(user.uniqueId(), ladder, contexts);
+    }
 }

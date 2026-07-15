@@ -1,0 +1,19 @@
+name: PermissionsExPlus
+version: '${project.version}'
+
+main: dev.rono.permissions.paper.PaperPlugin
+api-version: '1.21.11'
+load: STARTUP
+
+authors: [Rono]
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true

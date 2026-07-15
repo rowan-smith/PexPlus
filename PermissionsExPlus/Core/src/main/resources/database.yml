@@ -1,0 +1,59 @@
+# ========================================================================
+#                     Database Storage Configuration
+# ========================================================================
+# The primary data storage provider used to persist users, groups, and tracks.
+# Options:
+#   - yaml     (Local flat files)
+#   - json     (Local flat files)
+#   - memory   (volatile RAM storage)
+#   - h2       (Local embedded file database)
+#   - sqlite   (Local embedded SQLite database)
+#   - mysql    (External SQL database)
+#   - postgres (External SQL database)
+type: "h2"
+
+# File path configurations for local embedded engines (yaml, json, h2, sqlite)
+local:
+  # The relative sub-directory folder created inside your plugin data folder.
+  # Leave as "." to store database assets directly in the root directory.
+  storage-directory: "data"
+
+  # The database or flat-file base name (e.g., data/permissions.mv.db or data/users.yml)
+  filename: "permissions"
+
+# Network connection configurations for external engines (mysql, postgres)
+# These settings are completely ignored if a local engine type is selected above.
+credentials:
+  host: "localhost"
+  port: 3306 # Default targets: 3306 for MySQL, 5432 for PostgreSQL
+  database: "permissions_db"
+  username: "root"
+  password: "your_secure_password"
+
+# Connection pool tuning (Crucial for HikariCP/Hibernate stability)
+pool:
+  # The maximum size the connection allocation pool is allowed to grow to.
+  maximum-pool-size: 10
+
+  # The minimum number of idle connection handles HikariCP maintains in RAM.
+  minimum-idle: 2
+
+  # The maximum time (in milliseconds) a thread will wait to acquire a connection.
+  # Prevents thread-pool exhaustion if your remote SQL node lags.
+  connection-timeout: 5000
+
+  # The maximum lifespan (in milliseconds) of a database connection handle before being retired.
+  max-lifetime: 1800000 # 30 minutes in milliseconds
+
+# Hibernate Object-Relational Mapping (ORM) Engine settings
+hibernate:
+  # Configures how Hibernate acts on database tables upon plugin boot.
+  # Options:
+  #   - update   : Automatically updates the schema structure without data loss (Recommended).
+  #   - validate : Validates the existing layout, changing nothing and failing if incorrect.
+  #   - none     : Disables automated schema checking entirely.
+  ddl-generation: "update"
+
+# DO NOT CHANGE THIS VALUE MANUALLY.
+# Used by the core engine to safely execute schema upgrades when updating the plugin.
+data-version: 1

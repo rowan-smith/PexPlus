@@ -39,93 +39,93 @@ import ru.tehkode.permissions.exceptions.PermissionBackendException;
  *
  */
 public class MemoryBackend extends PermissionBackend {
-	private final Map<String, MemoryData> users = new ConcurrentHashMap<>();
-	private final Map<String, MemoryData> groups = new ConcurrentHashMap<>();
-	private final Map<String, List<String>> worldInheritance = new ConcurrentHashMap<>();
+    private final Map<String, MemoryData> users = new ConcurrentHashMap<>();
+    private final Map<String, MemoryData> groups = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> worldInheritance = new ConcurrentHashMap<>();
 
-	public MemoryBackend(PermissionManager manager, ConfigurationSection config) throws PermissionBackendException {
-		super(manager, config);
-	}
+    public MemoryBackend(PermissionManager manager, ConfigurationSection config) throws PermissionBackendException {
+        super(manager, config);
+    }
 
-	@Override
-	public int getSchemaVersion() {
-		return -1;
-	}
+    @Override
+    public int getSchemaVersion() {
+        return -1;
+    }
 
-	@Override
-	protected void setSchemaVersion(int version) {
-		// no-op
-	}
+    @Override
+    protected void setSchemaVersion(int version) {
+        // no-op
+    }
 
-	@Override
-	public void reload() throws PermissionBackendException {
-	}
+    @Override
+    public void reload() throws PermissionBackendException {}
 
-	@Override
-	public PermissionsUserData getUserData(String userName) {
-		MemoryData data = users.get(userName.toLowerCase());
-		if (data == null) {
-			data = new MemoryData(userName);
-			users.put(userName.toLowerCase(), data);
-		}
-		return data;
-	}
+    @Override
+    public PermissionsUserData getUserData(String userName) {
+        MemoryData data = users.get(userName.toLowerCase());
+        if (data == null) {
+            data = new MemoryData(userName);
+            users.put(userName.toLowerCase(), data);
+        }
 
-	@Override
-	public PermissionsGroupData getGroupData(String groupName) {
-		MemoryData data = groups.get(groupName);
-		if (data == null) {
-			data = new MemoryData(groupName);
-			groups.put(groupName, data);
-		}
-		return data;
-	}
+        return data;
+    }
 
-	@Override
-	public boolean hasUser(String userName) {
-		return users.containsKey(userName.toLowerCase());
-	}
+    @Override
+    public PermissionsGroupData getGroupData(String groupName) {
+        MemoryData data = groups.get(groupName);
+        if (data == null) {
+            data = new MemoryData(groupName);
+            groups.put(groupName, data);
+        }
 
-	@Override
-	public boolean hasGroup(String group) {
-		return groups.containsKey(group);
-	}
+        return data;
+    }
 
-	@Override
-	public Collection<String> getUserIdentifiers() {
-		return Collections.unmodifiableCollection(users.keySet());
-	}
+    @Override
+    public boolean hasUser(String userName) {
+        return users.containsKey(userName.toLowerCase());
+    }
 
-	@Override
-	public Collection<String> getUserNames() {
-		return Collections.unmodifiableCollection(users.keySet());
-	}
+    @Override
+    public boolean hasGroup(String group) {
+        return groups.containsKey(group);
+    }
 
-	@Override
-	public Collection<String> getGroupNames() {
-		return Collections.unmodifiableCollection(groups.keySet());
-	}
+    @Override
+    public Collection<String> getUserIdentifiers() {
+        return Collections.unmodifiableCollection(users.keySet());
+    }
 
-	@Override
-	public List<String> getWorldInheritance(String world) {
-		return worldInheritance.getOrDefault(world, Collections.emptyList());
-	}
+    @Override
+    public Collection<String> getUserNames() {
+        return Collections.unmodifiableCollection(users.keySet());
+    }
 
-	@Override
-	public Map<String, List<String>> getAllWorldInheritance() {
-		return Collections.unmodifiableMap(worldInheritance);
-	}
+    @Override
+    public Collection<String> getGroupNames() {
+        return Collections.unmodifiableCollection(groups.keySet());
+    }
 
-	@Override
-	public void setWorldInheritance(String world, List<String> inheritance) {
-		if (inheritance == null || inheritance.isEmpty()) {
-			worldInheritance.remove(world);
-		} else {
-			worldInheritance.put(world, Collections.unmodifiableList(inheritance));
-		}
-	}
+    @Override
+    public List<String> getWorldInheritance(String world) {
+        return worldInheritance.getOrDefault(world, Collections.emptyList());
+    }
 
-	@Override
-	public void writeContents(Writer writer) throws IOException {
-	}
+    @Override
+    public Map<String, List<String>> getAllWorldInheritance() {
+        return Collections.unmodifiableMap(worldInheritance);
+    }
+
+    @Override
+    public void setWorldInheritance(String world, List<String> inheritance) {
+        if (inheritance == null || inheritance.isEmpty()) {
+            worldInheritance.remove(world);
+        } else {
+            worldInheritance.put(world, Collections.unmodifiableList(inheritance));
+        }
+    }
+
+    @Override
+    public void writeContents(Writer writer) throws IOException {}
 }

@@ -1,5 +1,10 @@
 package ru.tehkode.permissions.backends.sql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,12 +13,6 @@ import ru.tehkode.permissions.PEXTestBase;
 import ru.tehkode.permissions.PermissionsGroupData;
 import ru.tehkode.permissions.PermissionsUserData;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class SQLBackendTest extends PEXTestBase {
     private SQLBackend backend;
 
@@ -21,11 +20,12 @@ public class SQLBackendTest extends PEXTestBase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         ConfigurationSection sqlConfig = new MemoryConfiguration();
-        // Use in-memory SQLite for testing with shared cache to keep data between connections
+        // Use in-memory SQLite for testing with shared cache to keep data between
+        // connections
         sqlConfig.set("uri", "sqlite:file::memory:?cache=shared");
-        
+
         backend = new SQLBackend(manager, sqlConfig);
     }
 
@@ -39,10 +39,10 @@ public class SQLBackendTest extends PEXTestBase {
     public void testUserData() throws Exception {
         PermissionsUserData data = backend.getUserData("testUser");
         data.setPermissions(Arrays.asList("perm1", "perm2"), "world");
-        
+
         // Wait for async saving (SQLBackend uses CachingUserData which uses executor)
         waitForExecutor();
-        
+
         PermissionsUserData data2 = backend.getUserData("testUser");
         assertEquals(Arrays.asList("perm1", "perm2"), data2.getPermissions("world"));
     }
@@ -52,9 +52,9 @@ public class SQLBackendTest extends PEXTestBase {
         PermissionsGroupData data = backend.getGroupData("testGroup");
         data.setPermissions(Collections.singletonList("group-perm"), null);
         data.setParents(Collections.singletonList("default"), null);
-        
+
         waitForExecutor();
-        
+
         PermissionsGroupData data2 = backend.getGroupData("testGroup");
         assertEquals(Collections.singletonList("group-perm"), data2.getPermissions(null));
         assertEquals(Collections.singletonList("default"), data2.getParents(null));
@@ -63,7 +63,7 @@ public class SQLBackendTest extends PEXTestBase {
     @Test
     public void testWorldInheritance() {
         backend.setWorldInheritance("world1", Arrays.asList("parent1", "parent2"));
-        
+
         List<String> inheritance = backend.getWorldInheritance("world1");
         assertEquals(Arrays.asList("parent1", "parent2"), inheritance);
     }

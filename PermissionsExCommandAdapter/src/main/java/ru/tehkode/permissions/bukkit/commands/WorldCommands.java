@@ -32,87 +32,94 @@ import ru.tehkode.utils.StringUtils;
 
 public class WorldCommands extends PermissionsCommand {
 
-	@Command(name = "pex",
-			syntax = "worlds",
-			description = "Print loaded worlds",
-			isPrimary = true,
-			permission = "permissions.manage.worlds")
-	public void worldsTree(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
-		List<World> worlds = plugin.getServer().getWorlds();
+    @Command(name = "pex", syntax = "worlds", description = "Print loaded worlds", isPrimary = true, permission = "permissions.manage.worlds")
+    public void worldsTree(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
+        List<World> worlds = plugin.getServer().getWorlds();
 
-		PermissionManager manager = plugin.getPermissionsManager();
+        PermissionManager manager = plugin.getPermissionsManager();
 
-		sender.sendMessage("Worlds on server: ");
-		for (World world : worlds) {
-			List<String> parentWorlds = manager.getWorldInheritance(world.getName());
-			String output = "  " + world.getName();
-			if (!parentWorlds.isEmpty()) {
-				output += ChatColor.GREEN + " [" + ChatColor.WHITE + StringUtils.implode(parentWorlds, ", ") + ChatColor.GREEN + "]";
-			}
+        sender.sendMessage("Worlds on server: ");
 
-			sender.sendMessage(output);
-		}
-	}
+        for (World world : worlds) {
+            List<String> parentWorlds = manager.getWorldInheritance(world.getName());
 
-	@Command(name = "pex",
-			syntax = "world <world>",
-			description = "Print <world> inheritance info",
-			permission = "permissions.manage.worlds")
-	public void worldPrintInheritance(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
-		String worldName = this.autoCompleteWorldName(args.get("world"));
-		PermissionManager manager = plugin.getPermissionsManager();
-		if (plugin.getServer().getWorld(worldName) == null) {
-			sender.sendMessage("Specified world \"" + args.get("world") + "\" not found.");
-			return;
-		}
+            String output = "  " + world.getName();
 
-		List<String> parentWorlds = manager.getWorldInheritance(worldName);
+            if (!parentWorlds.isEmpty()) {
+                output += ChatColor.GREEN + " [" + ChatColor.WHITE + StringUtils.implode(parentWorlds, ", ")
+                        + ChatColor.GREEN + "]";
+            }
 
-		if (parentWorlds.isEmpty()) {
-			sender.sendMessage("World \"" + worldName + "\" inherits nothing.");
-			return;
-		}
+            sender.sendMessage(output);
+        }
+    }
 
-		sender.sendMessage("World \"" + worldName + "\" inherits:");
+    @Command(name = "pex", syntax = "world <world>", description = "Print <world> inheritance info", permission = "permissions.manage.worlds")
+    public void worldPrintInheritance(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
+        String worldName = this.autoCompleteWorldName(args.get("world"));
 
-		for (String parentWorld : parentWorlds) {
-			List<String> parents = manager.getWorldInheritance(parentWorld);
-			String output = "  " + parentWorld;
-			if (!parents.isEmpty()) {
-				output += ChatColor.GREEN + " [" + ChatColor.WHITE + StringUtils.implode(parents, ", ") + ChatColor.GREEN + "]";
-			}
+        PermissionManager manager = plugin.getPermissionsManager();
 
-			sender.sendMessage(output);
-		}
-	}
+        if (plugin.getServer().getWorld(worldName) == null) {
+            sender.sendMessage("Specified world \"" + args.get("world") + "\" not found.");
 
-	@Command(name = "pex",
-			syntax = "world <world> inherit <parentWorlds>",
-			description = "Set <parentWorlds> for <world>",
-			permission = "permissions.manage.worlds.inheritance")
-	public void worldSetInheritance(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
-		String worldName = this.autoCompleteWorldName(args.get("world"));
-		PermissionManager manager = plugin.getPermissionsManager();
-		if (plugin.getServer().getWorld(worldName) == null) {
-			sender.sendMessage("Specified world \"" + args.get("world") + "\" not found.");
-			return;
-		}
+            return;
+        }
 
-		List<String> parents = new ArrayList<>();
-		String parentWorlds = args.get("parentWorlds");
-		if (parentWorlds.contains(",")) {
-			for (String world : parentWorlds.split(",")) {
-				world = this.autoCompleteWorldName(world, "parentWorlds");
-				if (!parents.contains(world)) {
-					parents.add(world.trim());
-				}
-			}
-		} else {
-			parents.add(parentWorlds.trim());
-		}
+        List<String> parentWorlds = manager.getWorldInheritance(worldName);
 
-		manager.setWorldInheritance(worldName, parents);
+        if (parentWorlds.isEmpty()) {
+            sender.sendMessage("World \"" + worldName + "\" inherits nothing.");
 
-		sender.sendMessage("World \"" + worldName + "\" inherits " + StringUtils.implode(parents, ", "));
-	}
+            return;
+        }
+
+        sender.sendMessage("World \"" + worldName + "\" inherits:");
+
+        for (String parentWorld : parentWorlds) {
+            List<String> parents = manager.getWorldInheritance(parentWorld);
+
+            String output = "  " + parentWorld;
+
+            if (!parents.isEmpty()) {
+                output += ChatColor.GREEN + " [" + ChatColor.WHITE + StringUtils.implode(parents, ", ")
+                        + ChatColor.GREEN + "]";
+            }
+
+            sender.sendMessage(output);
+        }
+    }
+
+    @Command(name = "pex", syntax = "world <world> inherit <parentWorlds>", description = "Set <parentWorlds> for <world>", permission = "permissions.manage.worlds.inheritance")
+    public void worldSetInheritance(PermissionsEx plugin, CommandSender sender, Map<String, String> args) {
+        String worldName = this.autoCompleteWorldName(args.get("world"));
+
+        PermissionManager manager = plugin.getPermissionsManager();
+
+        if (plugin.getServer().getWorld(worldName) == null) {
+            sender.sendMessage("Specified world \"" + args.get("world") + "\" not found.");
+
+            return;
+        }
+
+        List<String> parents = new ArrayList<>();
+
+        String parentWorlds = args.get("parentWorlds");
+
+        if (parentWorlds.contains(",")) {
+            for (String world : parentWorlds.split(",")) {
+                world = this.autoCompleteWorldName(world, "parentWorlds");
+
+                if (!parents.contains(world)) {
+                    parents.add(world.trim());
+                }
+            }
+        } else {
+            parents.add(parentWorlds.trim());
+        }
+
+        manager.setWorldInheritance(worldName, parents);
+
+        sender.sendMessage("World \"" + worldName + "\" inherits " + StringUtils.implode(parents, ", "));
+    }
 }

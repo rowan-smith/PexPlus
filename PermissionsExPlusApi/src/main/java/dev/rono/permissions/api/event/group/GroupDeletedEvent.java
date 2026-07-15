@@ -1,5 +1,8 @@
 package dev.rono.permissions.api.event.group;
 
-public interface GroupDeletedEvent extends GroupEvent {
+import dev.rono.permissions.api.event.Event;
+import dev.rono.permissions.api.group.Group;
 
+public interface GroupDeletedEvent extends Event {
+    Group group();
 }

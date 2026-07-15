@@ -1,0 +1,48 @@
+# ========================================================================
+#                      General Plugin Settings
+# ========================================================================
+
+# Implicit fallback group used when a user's data record has no assigned groups.
+# This fallback is calculated in memory and is not persisted as a membership.
+default-group: "default"
+
+# Should permission node checks be case-sensitive?
+case-sensitive: false
+
+# Wildcard tracking configuration
+wildcards:
+  # Enables standard '*' wildcard permissions (e.g., 'essentials.*')
+  enabled: true
+
+  # Allows deep negation nodes (e.g., assigning '-essentials.fly' to strip a permission)
+  allow-negations: true
+
+  # Enables brace expansion while permission data is loaded or modified.
+  #
+  # Examples:
+  #   - Lists:     'essentials.kits.{vip,mvp}'
+  #   - Numbers:   'plots.plot.max.{1-3}'
+  #   - Characters: 'facility.sector.{a-c}'
+  enable-shorthand-expansions: true
+
+# =====================================================================
+#                     External API Integrations
+# =====================================================================
+hooks:
+  # Enable integration with the Vault API (Crucial for chat formatting and economy plugins)
+  vault:
+    enabled: true
+
+  # Enable the optional PlaceholderAPI expansion when PlaceholderAPI is installed.
+  placeholder-api: true
+
+# ========================================================================
+#                        Debug & Log Options
+# ========================================================================
+debug:
+  # Set to true to print verbose database queries and sync packets to console.
+  verbose: false
+
+# DO NOT CHANGE THIS VALUE manually.
+# Used by the core engine to track when to inject missing base config keys.
+config-version: 1

@@ -2,14 +2,23 @@
 
 ## Binary Compatability Shim
 
-Provides a compatability shim for the PermissionsEx API. This adapter allows for seamless integration with plugins that rely on the PermissionsEx API, ensuring compatibility with existing configurations and permissions systems.
+* Provides a 100% binary api compatability shim for the original PermissionsEx API.
+* This adapter allows for seamless integration with plugins that rely on the PermissionsEx API, ensuring compatibility with existing configurations and permissions systems.
 
 ### How it works
 
-We delegate all API calls to the PermissionsExPlus API.
+We delegate all API calls to the PermissionsExPlus API equivilents.
 
-### Dependencies
+### Differences
 
-Since we delegate to the new PermissionsExPlus API, this adapter has no additional dependencies beyond the PermissionsExPlus plugin itself.
+* We have stripped out:
+  * Configuration (handled by PermissionsExPlus)
+  * Commands (original commands are handled by PermissionsExCommandAdapter)
+  * Backends (handled by PermissionsExPlus)
+
+* Configuration is handled by the PermissionsExPlus API.
+  * This will include a `/pex backend import permissionsex` command or delegate in future.
+
+## Hard Dependencies
 
 - PermissionExPlus

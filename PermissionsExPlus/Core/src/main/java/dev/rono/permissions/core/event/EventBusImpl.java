@@ -1,41 +1,50 @@
 package dev.rono.permissions.core.event;
 
+import dev.rono.permissions.api.event.Event;
 import dev.rono.permissions.api.event.EventBus;
-import dev.rono.permissions.api.event.EventSubscription;
-import dev.rono.permissions.api.event.PermissionEvent;
+import dev.rono.permissions.api.event.Subscription;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
-
 public final class EventBusImpl implements EventBus {
+    private final CopyOnWriteArrayList<Listener<?>> listeners = new CopyOnWriteArrayList<>();
+    private final Consumer<Throwable> errors;
 
-    private final ConcurrentHashMap<Class<?>, CopyOnWriteArrayList<EventSubscription<?>>> listeners = new ConcurrentHashMap<>();
-
-    @Override
-    public <T extends PermissionEvent> EventSubscription<T> subscribe(Class<T> type, Consumer<T> listener) {
-        var subscription = new SimpleEventSubscription<>(type, listener);
-
-        listeners.computeIfAbsent(type, x -> new CopyOnWriteArrayList<>()).add(subscription);
-
-        return subscription;
+    public EventBusImpl(Consumer<Throwable> errors) {
+        this.errors = Objects.requireNonNull(errors, "errors");
     }
 
     @Override
-    public void publish(PermissionEvent event) {
-        List<EventSubscription<?>> subscriptions = listeners.get(event.getClass());
+    public <E extends Event> Subscription subscribe(Class<E> type, Consumer<? super E> listener) {
+        Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(listener, "listener");
 
-        if (subscriptions == null) {
-            return;
+        var value = new Listener<>(type, listener);
+
+        listeners.add(value);
+
+        return () -> listeners.remove(value);
+    }
+
+    public void publish(Event event) {
+        Objects.requireNonNull(event, "event");
+
+        for (var listener : listeners) {
+            if (listener.type.isInstance(event)) {
+                listener.accept(event, errors);
+            }
         }
-
-        subscriptions.forEach(sub -> dispatch(sub, event));
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T extends PermissionEvent> void dispatch(EventSubscription<T> sub, PermissionEvent event) {
-        sub.fire((T) event);
+    private record Listener<E extends Event>(Class<E> type, Consumer<? super E> consumer) {
+        void accept(Event event, Consumer<Throwable> errors) {
+            try {
+                consumer.accept(type.cast(event));
+            } catch (Throwable error) {
+                errors.accept(error);
+            }
+        }
     }
 }

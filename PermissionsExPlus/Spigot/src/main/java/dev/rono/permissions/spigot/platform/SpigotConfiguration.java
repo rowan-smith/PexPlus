@@ -1,12 +1,11 @@
 package dev.rono.permissions.spigot.platform;
 
-import dev.rono.permissions.core.bridge.PlatformConfiguration;
+import dev.rono.permissions.core.platform.PlatformConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
 
 public class SpigotConfiguration implements PlatformConfiguration {
-
     private final JavaPlugin plugin;
 
     public SpigotConfiguration(JavaPlugin plugin) {

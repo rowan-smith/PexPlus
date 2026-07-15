@@ -1,7 +1,8 @@
 package dev.rono.permissions.api.event.user;
 
-import dev.rono.permissions.api.ladder.Ladder;
+import dev.rono.permissions.api.event.Event;
+import dev.rono.permissions.api.ladder.PromotionResult;
 
-public interface UserDemotedEvent extends UserEvent {
-    Ladder ladder();
+public interface UserDemotedEvent extends Event {
+    PromotionResult result();
 }

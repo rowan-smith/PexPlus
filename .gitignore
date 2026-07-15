@@ -29,9 +29,11 @@ target/
 /build
 /bin
 /dist
-/.idea/
+/.idea/*
+!/.idea/sonarlint.xml
 /PermissionsEx.iml
 .DS_Store
+/maven-bin/
 
 *.iml
 dependency-reduced-pom.xml

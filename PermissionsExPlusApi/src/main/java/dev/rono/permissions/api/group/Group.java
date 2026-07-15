@@ -1,16 +1,45 @@
 package dev.rono.permissions.api.group;
 
-import dev.rono.permissions.api.permission.PermissionNode;
-import dev.rono.permissions.api.subject.PermissionSubject;
+import dev.rono.permissions.api.context.ContextSet;
+import dev.rono.permissions.api.parent.ParentNode;
+import dev.rono.permissions.api.permission.NamedPermissionHolder;
+import dev.rono.permissions.api.util.Identifiers;
 
-import java.util.Collection;
+import java.util.Objects;
+import java.util.OptionalInt;
+import java.util.Set;
 
-public interface Group extends PermissionSubject {
-    Collection<PermissionNode> permissions();
+/**
+ * A group whose name is a lowercase-normalized, case-insensitive identifier.
+ */
+public interface Group extends NamedPermissionHolder {
 
-    Collection<String> parents();
+    OptionalInt weight();
 
-    void addParent(Group group);
+    /**
+     * Returns the names of groups directly inherited by this group.
+     *
+     * <p>
+     * The returned set is immutable and does not include indirect
+     * ancestors.
+     * </p>
+     *
+     * @return a set of parent group names directly inherited by this group
+     */
+    Set<ParentNode> parents();
 
-    void removeParent(Group group);
+    default boolean hasDirectParent(ParentNode parent) {
+        Objects.requireNonNull(parent, "parent");
+
+        return parents().contains(parent);
+    }
+
+    default boolean hasDirectParent(String group, ContextSet contexts) {
+        var normalizedGroup = Identifiers.group(group);
+
+        Objects.requireNonNull(contexts, "contexts");
+
+        return parents().stream()
+                .anyMatch(node -> node.group().equals(normalizedGroup) && node.contexts().equals(contexts));
+    }
 }

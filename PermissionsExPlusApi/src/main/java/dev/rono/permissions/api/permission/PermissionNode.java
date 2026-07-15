@@ -1,21 +1,37 @@
 package dev.rono.permissions.api.permission;
 
-import dev.rono.permissions.api.metadata.MetadataMap;
-import dev.rono.permissions.api.realm.Realm;
+import dev.rono.permissions.api.util.Node;
 
-import java.time.Instant;
-import java.util.Optional;
+import java.util.Objects;
 
-public interface PermissionNode {
+public interface PermissionNode extends Node {
+
     String permission();
 
     PermissionValue value();
 
-    Realm realm();
+    default boolean allowed() {
+        return value() == PermissionValue.ALLOW;
+    }
 
-    int priority();
+    default boolean denied() {
+        return value() == PermissionValue.DENY;
+    }
 
-    Optional<Instant> expires();
+    static PermissionNodeBuilder builder() {
+        return PermissionNodes.builder();
+    }
 
-    MetadataMap metadata();
+    static PermissionNodeBuilder builder(PermissionNode node) {
+        Objects.requireNonNull(node, "node");
+
+        var builder = builder()
+                .permission(node.permission())
+                .value(node.value())
+                .contexts(node.contexts());
+
+        node.expiry().ifPresent(builder::expiry);
+
+        return builder;
+    }
 }

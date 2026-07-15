@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.rono</groupId>
+    <groupId>dev.rono.permissions</groupId>
     <artifactId>PexPlus</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -11,8 +11,11 @@
     <modules>
         <module>PermissionsExApiAdapter</module>
         <module>PermissionsExCommandAdapter</module>
-        <module>PermissionsExPlusApi</module>
         <module>PermissionsExPlus</module>
+        <module>PermissionsExPlusApi</module>
+        <module>Test</module>
+        <module>Test2</module>
+        <module>../Vault</module>
     </modules>
 
     <properties>
@@ -26,7 +29,9 @@
         <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
+        <spotless.plugin.version>2.44.5</spotless.plugin.version>
         <cloud.version>2.0.0-beta.17</cloud.version>
+        <mockbukkit.version>4.110.0</mockbukkit.version>
     </properties>
 
     <issueManagement>
@@ -56,4 +61,48 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.plugin.version}</version>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <version>4.35</version>
+                            <file>${maven.multiModuleProjectDirectory}/config/eclipse-java-formatter.xml</file>
+                        </eclipse>
+                        <indent>
+                            <spaces>true</spaces>
+                        </indent>
+                        <trimTrailingWhitespace/>
+                        <formatAnnotations/>
+                        <removeUnusedImports/>
+                        <replaceRegex>
+                            <name>no blank line before closing braces</name>
+                            <searchRegex>(?m)(\R)[^\S\r\n]*\R(?=[^\S\r\n]*})</searchRegex>
+                            <replacement>$1</replacement>
+                        </replaceRegex>
+                        <replaceRegex>
+                            <name>blank line after compound statements</name>
+                            <searchRegex>(?m)^(\s*})(\R)(?=[^\S\r\n]*(?!(?:[})]|else\b|catch\b|finally\b))\S)</searchRegex>
+                            <replacement>$1$2$2</replacement>
+                        </replaceRegex>
+                        <endWithNewline/>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>java-style</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

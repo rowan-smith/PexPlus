@@ -1,0 +1,9 @@
+name: Test
+version: '${version}'
+
+main: dev.rono.permissions.test.Test
+api-version: '1.21'
+load: STARTUP
+depend: [PermissionsExPlus]
+
+authors: [Rono]

@@ -1,11 +1,27 @@
 package dev.rono.permissions.api.ladder;
 
-public enum PromotionResult {
-    PROMOTED,
-    DEMOTED,
+import dev.rono.permissions.api.parent.ParentNode;
+import dev.rono.permissions.api.user.User;
 
-    ALREADY_TOP,
-    ALREADY_BOTTOM,
+import java.util.Optional;
 
-    NOT_IN_LADDER
+public interface PromotionResult {
+
+    User user();
+
+    Ladder ladder();
+
+    Optional<ParentNode> previousMembership();
+
+    Optional<ParentNode> currentMembership();
+
+    default Optional<String> oldGroup() {
+        return previousMembership().map(ParentNode::group);
+    }
+
+    default Optional<String> newGroup() {
+        return currentMembership().map(ParentNode::group);
+    }
+
+    PromotionStatus status();
 }

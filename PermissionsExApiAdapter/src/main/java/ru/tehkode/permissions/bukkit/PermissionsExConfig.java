@@ -1,117 +1,118 @@
 package ru.tehkode.permissions.bukkit;
 
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import ru.tehkode.permissions.backends.PermissionBackend;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import ru.tehkode.permissions.backends.PermissionBackend;
 
 /**
  * @author zml2008
  */
 public class PermissionsExConfig {
-	private final Configuration config;
-	private final PermissionsEx plugin;
+    private final Configuration config;
+    private final PermissionsEx plugin;
 
-	private final boolean debug;
-	private final boolean allowOps;
-	private final boolean userAddGroupsLast;
-	private final boolean logPlayers;
-	private final boolean createUserRecords;
-	private final boolean saveDefaultGroup;
-	private final String defaultBackend;
-	private final boolean informPlayers;
-	private final String basedir;
+    private final boolean debug;
+    private final boolean allowOps;
+    private final boolean userAddGroupsLast;
+    private final boolean logPlayers;
+    private final boolean createUserRecords;
+    private final boolean saveDefaultGroup;
+    private final String defaultBackend;
+    private final boolean informPlayers;
+    private final String basedir;
 
-	public PermissionsExConfig(Configuration config, PermissionsEx plugin) {
-		this.config = config;
-		this.plugin = plugin;
-		this.debug = getBoolean("permissions.debug", false);
-		this.allowOps = getBoolean("permissions.allowOps", false);
-		this.userAddGroupsLast = getBoolean("permissions.user-add-groups-last", false);
-		this.logPlayers = getBoolean("permissions.log-players", false);
-		this.createUserRecords = getBoolean("permissions.createUserRecords", false);
-		this.saveDefaultGroup = getBoolean("permissions.save-default-group", false);
-		this.defaultBackend = getString("permissions.backend", PermissionBackend.DEFAULT_BACKEND);
-		this.informPlayers = getBoolean("permissions.informplayers.changes", false);
-		this.basedir = getString("permissions.basedir", "plugins/PermissionsEx");
-	}
+    public PermissionsExConfig(Configuration config, PermissionsEx plugin) {
+        this.config = config;
+        this.plugin = plugin;
+        this.debug = getBoolean("permissions.debug", false);
+        this.allowOps = getBoolean("permissions.allowOps", false);
+        this.userAddGroupsLast = getBoolean("permissions.user-add-groups-last", false);
+        this.logPlayers = getBoolean("permissions.log-players", false);
+        this.createUserRecords = getBoolean("permissions.createUserRecords", false);
+        this.saveDefaultGroup = getBoolean("permissions.save-default-group", false);
+        this.defaultBackend = getString("permissions.backend", PermissionBackend.DEFAULT_BACKEND);
+        this.informPlayers = getBoolean("permissions.informplayers.changes", false);
+        this.basedir = getString("permissions.basedir", "plugins/PermissionsEx");
+    }
 
-	private boolean getBoolean(String key, boolean def) {
-		if (!config.isSet(key)) {
-			config.set(key, def);
-		}
-		return config.getBoolean(key, def);
-	}
+    private boolean getBoolean(String key, boolean def) {
+        if (!config.isSet(key)) {
+            config.set(key, def);
+        }
 
-	private String getString(String key, String def) {
-		String ret = config.getString(key);
-		if (ret == null) {
-			ret = def;
-			config.set(key, ret);
-		}
-		return ret;
-	}
+        return config.getBoolean(key, def);
+    }
 
-	private List<String> getStringList(String key, String... def) {
-		List<String> ret = config.getStringList(key);
+    private String getString(String key, String def) {
+        String ret = config.getString(key);
+        if (ret == null) {
+            ret = def;
+            config.set(key, ret);
+        }
 
-		if (ret == null) {
-			ret = Arrays.asList(def);
-			config.set(key, ret);
-		}
+        return ret;
+    }
 
-		return Collections.unmodifiableList(ret);
-	}
+    private List<String> getStringList(String key, String... def) {
+        List<String> ret = config.getStringList(key);
 
-	public boolean isDebug() {
-		return debug;
-	}
+        if (ret == null) {
+            ret = Arrays.asList(def);
+            config.set(key, ret);
+        }
 
-	public boolean allowOps() {
-		return allowOps;
-	}
+        return Collections.unmodifiableList(ret);
+    }
 
-	public boolean userAddGroupsLast() {
-		return userAddGroupsLast;
-	}
+    public boolean isDebug() {
+        return debug;
+    }
 
-	public String getDefaultBackend() {
-		return defaultBackend;
-	}
+    public boolean allowOps() {
+        return allowOps;
+    }
 
-	public boolean shouldLogPlayers() {
-		return logPlayers;
-	}
+    public boolean userAddGroupsLast() {
+        return userAddGroupsLast;
+    }
 
-	public boolean createUserRecords() {
-		return createUserRecords;
-	}
+    public String getDefaultBackend() {
+        return defaultBackend;
+    }
 
-	public boolean saveDefaultGroup() {
-		return saveDefaultGroup;
-	}
+    public boolean shouldLogPlayers() {
+        return logPlayers;
+    }
 
-	public boolean informPlayers() {
-		return informPlayers;
-	}
+    public boolean createUserRecords() {
+        return createUserRecords;
+    }
 
-	public String getBasedir() {
-		return basedir;
-	}
+    public boolean saveDefaultGroup() {
+        return saveDefaultGroup;
+    }
 
-	public ConfigurationSection getBackendConfig(String backend) {
-		ConfigurationSection section = config.getConfigurationSection("permissions.backends." + backend);
-		if (section == null) {
-			section = config.createSection("permissions.backends." + backend);
-		}
-		return section;
-	}
+    public boolean informPlayers() {
+        return informPlayers;
+    }
 
-	public void save() {
-		plugin.saveConfig();
-	}
+    public String getBasedir() {
+        return basedir;
+    }
 
+    public ConfigurationSection getBackendConfig(String backend) {
+        ConfigurationSection section = config.getConfigurationSection("permissions.backends." + backend);
+        if (section == null) {
+            section = config.createSection("permissions.backends." + backend);
+        }
+
+        return section;
+    }
+
+    public void save() {
+        plugin.saveConfig();
+    }
 }

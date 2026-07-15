@@ -1,0 +1,209 @@
+package dev.rono.permissions.core.command;
+
+import dev.rono.permissions.api.context.ContextSet;
+import dev.rono.permissions.api.group.Group;
+import dev.rono.permissions.api.options.OptionNode;
+import dev.rono.permissions.api.parent.ParentNode;
+import dev.rono.permissions.api.permission.*;
+import dev.rono.permissions.api.resolver.CandidateStatus;
+import dev.rono.permissions.api.resolver.QueryOptions;
+import dev.rono.permissions.api.resolver.ResolutionCandidate;
+import dev.rono.permissions.api.user.User;
+import dev.rono.permissions.core.PexApiImpl;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiConsumer;
+
+abstract class CommandSupport<C> {
+    protected final PexApiImpl<C> core;
+    private final BiConsumer<C, String> messages;
+
+    CommandSupport(PexApiImpl<C> core, BiConsumer<C, String> messages) {
+        this.core = core;
+        this.messages = messages;
+    }
+
+    protected void reply(C sender, String message) {
+        messages.accept(sender, message);
+    }
+
+    protected void audit(C sender, String action) {
+        core.logger().audit(String.valueOf(sender), action);
+    }
+
+    protected <T> T await(CompletionStage<T> stage) {
+        return stage.toCompletableFuture().join();
+    }
+
+    protected void heading(C sender, String type, String value) {
+        reply(sender, "§6" + type + ": §e" + value);
+    }
+
+    protected void section(C sender, String title, Collection<String> values) {
+        orderedSection(sender, title, values.stream().sorted().toList());
+    }
+
+    protected void orderedSection(C sender, String title, Collection<String> values) {
+        reply(sender, "§6" + title + ":");
+
+        if (values.isEmpty()) {
+            reply(sender, "§7(none)");
+            return;
+        }
+
+        values.forEach(value -> reply(sender, "§7- §f" + value));
+    }
+
+    protected String permission(PermissionNode node) {
+        var value = node.value() == PermissionValue.ALLOW ? node.permission() : "-" + node.permission();
+        return contextual(value, node.contexts());
+    }
+
+    protected String option(OptionNode node) {
+        return contextual(node.key() + ":" + node.value(), node.contexts());
+    }
+
+    protected String parent(ParentNode node) {
+        return contextual(node.group(), node.contexts());
+    }
+
+    protected QueryOptions queryOptions(ContextSet contexts) {
+        return QueryOptions.builder().contexts(contexts).build();
+    }
+
+    protected void trace(C sender, PermissionHolder holder, String permission, QueryOptions options) {
+        var resolution = core.resolvers().permissions().explain(holder, permission, options);
+
+        reply(sender, "§6Tracing permission resolution for " + holderLabel(holder) + "§6...");
+        reply(sender, "§6Node: §f" + permission);
+        reply(sender, "§6Context: " + contexts(options.contexts()));
+
+        var branches = new LinkedHashMap<PermissionHolder, Collection<ResolutionCandidate>>();
+
+        resolution.candidates().stream().filter(candidate -> candidate.status() != CandidateStatus.PERMISSION_MISMATCH)
+                .forEach(candidate -> branches.computeIfAbsent(candidate.source(), ignored -> new java.util.ArrayList<>()).add(candidate));
+
+        if (branches.isEmpty()) {
+            reply(sender, "§7(none)");
+        }
+
+        branches.forEach((source, candidates) -> {
+            var distance = candidates.iterator().next().inheritanceDistance();
+
+            reply(sender, branchLabel(source, distance));
+            candidates.forEach(candidate -> reply(sender, "§7↳" + candidateLine(candidate)));
+            reply(sender, "");
+        });
+
+        reply(sender, "§6Final effective state: " + resultLabel(resolution.result()) + "§7 " + resolution.winner().map(candidate -> "(Resolved via " + sourceLabel(candidate.source()) + "§7)").orElse("(No applicable node)"));
+        reply(sender, "§7§m------------------------------");
+    }
+
+    protected void check(C sender, PermissionHolder holder, String permission, QueryOptions options) {
+        var resolution = core.resolvers().permissions().explain(holder, permission, options);
+
+        reply(sender, "§6Checking permission for " + holderLabel(holder) + "§6...");
+        reply(sender, "§6Node: §f" + permission);
+        reply(sender, "§6Context: " + contexts(options.contexts()));
+        reply(sender, "§6Result: " + resultLabel(resolution.result()) + "§7 " + resolution.winner().map(candidate -> "(" + winnerReason(candidate) + ")").orElse("(No matching node)"));
+        resolution.winner().ifPresent(candidate -> reply(sender, "§6Source: " + sourceLabel(candidate.source())));
+    }
+
+    private String holderLabel(PermissionHolder holder) {
+        if (holder instanceof User user) {
+            return "user §e§l" + user.name();
+        }
+
+        if (holder instanceof Group group) {
+            return "group §e§l" + group.name();
+        }
+
+        return "holder §e§l" + holder;
+    }
+
+    private String branchLabel(PermissionHolder source, int distance) {
+        if (source instanceof User) {
+            return "§6User Profile §7(Explicit Nodes):";
+        }
+
+        if (source instanceof Group group) {
+            var depth = distance > 1 ? "Deep inherited branch" : "Parent branch";
+            var weight = group.weight().isPresent() ? Integer.toString(group.weight().getAsInt()) : "none";
+
+            return "§6" + depth + ": Group §e" + group.name() + " §7(Weight: " + weight + ")";
+        }
+
+        return "§6Source: " + sourceLabel(source);
+    }
+
+    private String candidateLine(ResolutionCandidate candidate) {
+        var node = (candidate.node().denied() ? "-" : "") + candidate.node().permission();
+
+        return statusIcon(candidate.status()) + " §f" + node + " §7" + contexts(candidate.node().contexts()) + " §8- " + statusLabel(candidate.status()) + candidate.detail().map(detail -> " §8(" + detail + ")").orElse("");
+    }
+
+    private String winnerReason(ResolutionCandidate candidate) {
+        var decision = candidate.node().allowed() ? "granted" : "denied";
+
+        return candidate.inheritanceDistance() == 0 ? "Explicitly " + decision : "Inherited permission " + decision;
+    }
+
+    private String sourceLabel(PermissionHolder source) {
+        if (source instanceof Group group) {
+            return "§eInherited from group " + group.name();
+        }
+
+        if (source instanceof NamedPermissionHolder named) {
+            return "§eExplicit node on " + named.name();
+        }
+
+        return "§e" + source;
+    }
+
+    private String resultLabel(PermissionResult result) {
+        return switch (result) {
+            case ALLOW -> "§a§lALLOWED §r";
+            case DENY -> "§c§lDENIED §r";
+            case UNDEFINED -> "§e§lUNDEFINED §r";
+        };
+    }
+
+    private String statusIcon(CandidateStatus status) {
+        return status == CandidateStatus.WINNER ? "§a✔" : "§c✘";
+    }
+
+    private String statusLabel(CandidateStatus status) {
+        return switch (status) {
+            case WINNER -> "§a§lMATCHED §r";
+            case OUTRANKED -> "§cSKIPPED";
+            case CONFLICT -> "§cCONFLICT";
+            case EXPIRED -> "§cEXPIRED";
+            case CONTEXT_MISMATCH -> "§cIGNORED (Context mismatch)";
+            case PERMISSION_MISMATCH -> "§cIGNORED (Permission mismatch)";
+            case INHERITANCE_DISABLED -> "§cIGNORED (Inheritance disabled)";
+            case DEFAULTS_DISABLED -> "§cIGNORED (Defaults disabled)";
+        };
+    }
+
+    private String contexts(ContextSet contexts) {
+        if (contexts.isEmpty()) {
+            return "§7(Global)";
+        }
+
+        return "§7[" + contexts.asMap().entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().map(value -> entry.getKey() + "=" + value)).sorted()
+                .reduce((left, right) -> left + ", " + right).orElse("") + "]";
+    }
+
+    private String contextual(String value, ContextSet contexts) {
+        if (contexts.isEmpty()) {
+            return value;
+        }
+
+        return value + " [" + contexts.asMap().entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().map(item -> entry.getKey() + "=" + item)).sorted()
+                .reduce((left, right) -> left + "," + right).orElse("") + "]";
+    }
+}

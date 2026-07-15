@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="ruleSettings">
+      <map>
+        <entry key="java:S6212">
+          <value>
+            <SonarLintRuleSettings>
+              <option name="enabled" value="true" />
+            </SonarLintRuleSettings>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>dev.rono</groupId>
+        <groupId>dev.rono.permissions</groupId>
         <artifactId>PexPlus</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -13,6 +13,7 @@
     <modules>
         <module>Core</module>
         <module>Spigot</module>
+        <module>Paper</module>
     </modules>
 
     <artifactId>PermissionsExPlus</artifactId>
@@ -22,6 +23,14 @@
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hibernate.version>7.4.4.Final</hibernate.version>
+        <h2.version>2.3.232</h2.version>
+        <configurate.version>4.2.0</configurate.version>
+        <sqlite.version>3.49.0.0</sqlite.version>
+        <postgres.version>42.7.7</postgres.version>
+        <mysql.version>9.3.0</mysql.version>
+        <jedis.version>5.2.0</jedis.version>
+        <caffeine.version>3.2.4</caffeine.version>
     </properties>
 
     <dependencyManagement>
