@@ -1,0 +1,8 @@
+{
+  "label": "Legacy Adapters",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Compatibility layers for legacy PermissionsEx 1.x plugins and commands."
+  }
+}

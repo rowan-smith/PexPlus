@@ -1,5 +1,9 @@
 # PermissionsExPlus
 
+<p align="center">
+  <img src="website/static/img/logo.svg" alt="PermissionsExPlus Logo" width="400">
+</p>
+
 PermissionsExPlus is a modern Bukkit permissions plugin with Spigot and Paper adapters. Core and both platform adapters are implemented against API. The optional legacy PermissionsEx API adapter is retained as a compatibility facade backed by the same runtime.
 
 ## Modules
@@ -72,7 +76,7 @@ The command surface remains rooted at `/pex` and includes:
 The plural registry commands (`/pex users`, `/pex groups`, and `/pex ladders`), backend
 listing/switch guidance, permission traces, contextual permission arguments, group cloning,
 member management, option inspection, and ladder moves are retained. Context arguments use
-comma-separated `key=value` pairs.
+flags such as `--world <world>` and `--server <server>`.
 
 Each mutation uses the same API manager/modifier path as third-party consumers.
 

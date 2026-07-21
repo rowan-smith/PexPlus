@@ -1,0 +1,21 @@
+---
+sidebar_position: 1
+---
+
+# Introduction
+
+<p align="center">
+  <img src="/img/logo.svg" alt="PermissionsExPlus Logo" width="400" />
+</p>
+
+PermissionsExPlus is a modern Bukkit permissions plugin with Spigot and Paper adapters. Core and both platform adapters are implemented against API. The optional legacy PermissionsEx API adapter is retained as a compatibility facade backed by the same runtime.
+
+## Modules
+
+- `PermissionsExPlusApi` — immutable public API contracts, contextual nodes, modifiers, events, and resolvers.
+- `PermissionsExPlus/Core` — platform-independent API runtime, storage, commands, caching, configuration, auditing, and Redis sync.
+- `PermissionsExPlus/Spigot` — Spigot plugin adapter.
+- `PermissionsExPlus/Paper` — Paper plugin adapter.
+- `PermissionsExApiAdapter` — legacy PermissionsEx API/plugin compatibility facade over API.
+- `Test` — example API consumer.
+- `Test2` — example core API consumer.

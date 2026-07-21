@@ -1,0 +1,8 @@
+{
+  "label": "Options",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Metadata and additional properties like weights, prefixes, and suffixes."
+  }
+}

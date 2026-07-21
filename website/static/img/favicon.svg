@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g transform="translate(50, 50) scale(0.9)">
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#222222" stroke-width="5" />
+    <g transform="translate(-40, 18) rotate(-15)">
+      <rect x="-15" y="0" width="30" height="25" rx="5" fill="#222222" />
+      <path d="M-11,0 V-10 A11,11 0 0,1 11,-10 V0" fill="none" stroke="#222222" stroke-width="6" />
+      <path d="M0,8 a3,3 0 1,0 0.001,0 M-1.5,12 L1.5,12 L0,18 Z" fill="#ffffff" />
+    </g>
+    <g transform="rotate(-70) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#00adee" fill-rule="evenodd" />
+    </g>
+    <g transform="rotate(-40) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#00ccff" fill-rule="evenodd" />
+    </g>
+    <g transform="rotate(-10) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#8cc63f" fill-rule="evenodd" />
+    </g>
+    <g transform="rotate(20) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#fff200" fill-rule="evenodd" />
+    </g>
+    <g transform="rotate(50) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#f7941d" fill-rule="evenodd" />
+    </g>
+    <g transform="rotate(80) translate(38, 0)"> 
+       <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 28 V 2 H 26 V 6 H 23 V 2 H 21 V 6 H 18 V 2 H 8 Z" fill="#ed1c24" fill-rule="evenodd" />
+    </g>
+  </g>
+</svg>

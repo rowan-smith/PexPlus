@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 140">
+  <g transform="translate(20, 80)">
+    <text font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="64" letter-spacing="0">
+      <tspan fill="#a4c639">Permissions</tspan><tspan fill="#222222">Ex</tspan><tspan fill="#4caf50">Plus</tspan>
+    </text>
+    <text y="35" x="5" font-family="Arial, sans-serif" font-weight="bold" font-size="22" fill="#82c4e5" letter-spacing="0">
+      hardcore permissions plugin
+    </text>
+  </g>
+  <g transform="translate(760, 75) scale(1.1)">
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#222222" stroke-width="1" />
+    <g transform="translate(-38, 15) rotate(25)">
+      <rect x="-15" y="0" width="20" height="20" rx="3" fill="#222222" />
+      <path d="M-11,0 V-10 A11,11 0 0,1 11,-10 V0" fill="none" stroke="#222222" stroke-width="4" />
+      <path d="M0,8 a3,3 0 1,0 0.001,0 M-1.5,12 L1.5,12 L0,18 Z" fill="#ffffff" />
+    </g>
+      <g transform="rotate(-100) translate(20, 0)">
+          <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 30 V 2 H 28 V 6 H 25 V 2 H 23 V 6 H 20 V 2 H 8 Z" fill="#00ccff" fill-rule="evenodd" />
+      </g>
+      <g transform="rotate(-70) translate(20, 0)">
+          <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 30 V 2 H 28 V 6 H 25 V 2 H 23 V 6 H 20 V 2 H 8 Z" fill="#8cc63f" fill-rule="evenodd" />
+      </g>
+      <g transform="rotate(-40) translate(20, 0)">
+          <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 30 V 2 H 28 V 6 H 25 V 2 H 23 V 6 H 20 V 2 H 8 Z" fill="#fff200" fill-rule="evenodd" />
+      </g>
+      <g transform="rotate(-10) translate(20, 0)">
+          <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 30 V 2 H 28 V 6 H 25 V 2 H 23 V 6 H 20 V 2 H 8 Z" fill="#f7941d" fill-rule="evenodd" />
+      </g>
+      <g transform="rotate(20) translate(20, 0)">
+          <path d="M 0,0 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 Z m 8,0 a 4,4 0 1,1 -8,0 a 4,4 0 1,1 8,0 Z M 8,-2 H 30 V 2 H 28 V 6 H 25 V 2 H 23 V 6 H 20 V 2 H 8 Z" fill="#ed1c24" fill-rule="evenodd" />
+      </g>
+  </g>
+</svg>

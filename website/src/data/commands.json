@@ -1,0 +1,127 @@
+[
+  {
+    "command": "/pex reload",
+    "description": "Reload the plugin configuration and backends.",
+    "category": "General"
+  },
+  {
+    "command": "/pex version",
+    "description": "Display the plugin version and environment info.",
+    "category": "General"
+  },
+  {
+    "command": "/pex debug",
+    "description": "Toggle debug mode for permission resolution.",
+    "category": "General"
+  },
+  {
+    "command": "/pex backend list",
+    "description": "List all configured backends.",
+    "category": "General"
+  },
+  {
+    "command": "/pex user <user> list",
+    "description": "List details for a specific user.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> check <permission>",
+    "description": "Check if a user has a specific permission.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> permission add <permission> [--world <world>] [--server <server>]",
+    "description": "Add a permission to a user.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> permission remove <permission> [--world <world>] [--server <server>]",
+    "description": "Remove a permission from a user.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> group add <group>",
+    "description": "Add a user to a group.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> group remove <group>",
+    "description": "Remove a user from a group.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex user <user> option set <key> <value>",
+    "description": "Set an option for a user.",
+    "category": "Users"
+  },
+  {
+    "command": "/pex group <group> create",
+    "description": "Create a new permission group.",
+    "category": "Groups"
+  },
+  {
+    "command": "/pex group <group> delete",
+    "description": "Delete an existing group.",
+    "category": "Groups"
+  },
+  {
+    "command": "/pex group <group> permission add <permission> [--world <world>] [--server <server>]",
+    "description": "Add a permission to a group.",
+    "category": "Groups"
+  },
+  {
+    "command": "/pex group <group> parent add <parent>",
+    "description": "Add a parent group to inherit from.",
+    "category": "Groups"
+  },
+  {
+    "command": "/pex group <group> option set weight <value>",
+    "description": "Set the weight of a group.",
+    "category": "Groups"
+  },
+  {
+    "command": "/pex ladder <ladder> create",
+    "description": "Create a new rank ladder.",
+    "category": "Ranks"
+  },
+  {
+    "command": "/pex promote <user> [ladder]",
+    "description": "Promote a user in a ladder.",
+    "category": "Ranks"
+  },
+  {
+    "command": "/pex demote <user> [ladder]",
+    "description": "Demote a user in a ladder.",
+    "category": "Ranks"
+  },
+  {
+    "command": "/pex user <user> permission check <permission>",
+    "description": "Grant, remove, swap, and inspect permission nodes.",
+    "category": "Permissions"
+  },
+  {
+    "command": "/pex user <user> permission add <permission> [--world <world>] [--server <server>]",
+    "description": "Add a permission to a user.",
+    "category": "Permissions"
+  },
+  {
+    "command": "/pex user <user> permission remove <permission> [--world <world>] [--server <server>]",
+    "description": "Remove a permission from a user.",
+    "category": "Permissions"
+  },
+  {
+    "command": "/pex group <group> permission add <permission> [--world <world>] [--server <server>]",
+    "description": "Add a permission to a group.",
+    "category": "Permissions"
+  },
+  {
+    "command": "/pex group <group> permission remove <permission> [--world <world>] [--server <server>]",
+    "description": "Remove a permission from a group.",
+    "category": "Permissions"
+  },
+  {
+    "command": "/pex world <world> inherit <parent>",
+    "description": "Set world-specific inheritance.",
+    "category": "Worlds"
+  }
+]
