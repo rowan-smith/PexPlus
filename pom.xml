@@ -15,7 +15,6 @@
         <module>PermissionsExPlusApi</module>
         <module>Test</module>
         <module>Test2</module>
-        <module>../Vault</module>
     </modules>
 
     <properties>
