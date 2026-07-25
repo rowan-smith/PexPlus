@@ -1,19 +1,18 @@
 package dev.rono.permissions.api.context;
 
-public final class ContextKeys {
-    public static final String WORLD = "world";
+public enum ContextKeys {
+    WORLD("world"),
+    SERVER("server"),
+    GAMEMODE("gamemode"),
+    PROXY("proxy");
 
-    public static final String SERVER = "server";
+    private final String key;
 
-    public static final String DIMENSION = "dimension";
+    ContextKeys(String key) {
+        this.key = key;
+    }
 
-    public static final String GAMEMODE = "gamemode";
-
-    public static final String PROXY = "proxy";
-
-    public static final String REALM = "realm";
-
-    private ContextKeys() {
-        throw new AssertionError();
+    public String key() {
+        return key;
     }
 }

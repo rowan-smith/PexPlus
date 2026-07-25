@@ -35,6 +35,7 @@ import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 public final class UserManagerImpl implements UserManager {
 
@@ -105,6 +106,7 @@ public final class UserManagerImpl implements UserManager {
         this.logger = logger;
     }
 
+    @Internal
     public void attachGroups(GroupManager groups) {
         this.groups = Objects.requireNonNull(groups, "groups");
     }
@@ -159,6 +161,7 @@ public final class UserManagerImpl implements UserManager {
         return Stages.call(() -> findNameNow(username).map(User.class::cast), executor);
     }
 
+    @Internal
     public CompletionStage<Boolean> delete(UUID id) {
         return Stages.call(() -> {
             synchronized (this) {
@@ -180,10 +183,12 @@ public final class UserManagerImpl implements UserManager {
         }, executor);
     }
 
+    @Internal
     public CompletionStage<User> create(UUID id) {
         return create(id, id.toString());
     }
 
+    @Internal
     public CompletionStage<User> create(UUID id, String username) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(username, "username");
@@ -204,10 +209,12 @@ public final class UserManagerImpl implements UserManager {
         }, executor);
     }
 
+    @Internal
     public CompletionStage<User> load(UUID id) {
         return Stages.call(() -> loadNow(id), executor);
     }
 
+    @Internal
     public CompletionStage<User> loadOrCreateUser(UUID id, String name) {
         return Stages.call(() -> {
             synchronized (this) {
@@ -229,6 +236,7 @@ public final class UserManagerImpl implements UserManager {
         }, executor);
     }
 
+    @Internal
     public void loadOrCreateUserAsync(UUID id, String name, Consumer<User> callback) {
         if (!pendingUserLoads.add(id)) {
             return;
@@ -248,6 +256,7 @@ public final class UserManagerImpl implements UserManager {
                 });
     }
 
+    @Internal
     public void createUserAsync(UUID id, String name, BiConsumer<User, Boolean> callback) {
         var task = (Runnable) () -> find(id).whenComplete((existing, lookupError) -> {
             if (lookupError != null) {
@@ -282,6 +291,7 @@ public final class UserManagerImpl implements UserManager {
         }
     }
 
+    @Internal
     public synchronized List<ExpiryRemoval> purgeExpired() {
         var removals = new ArrayList<ExpiryRemoval>();
 
@@ -310,6 +320,7 @@ public final class UserManagerImpl implements UserManager {
         return List.copyOf(removals);
     }
 
+    @Internal
     synchronized void renameGroup(String oldName, String newName) {
         for (var user : storage.allNow().values()) {
             if (user.groups().stream().anyMatch(parent -> parent.group().equals(oldName))) {
@@ -328,6 +339,7 @@ public final class UserManagerImpl implements UserManager {
         }
     }
 
+    @Internal
     synchronized void removeGroup(String name) {
         for (var user : storage.allNow().values()) {
             if (user.groups().stream().anyMatch(parent -> parent.group().equals(name))) {

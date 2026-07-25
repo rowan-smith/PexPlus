@@ -8,7 +8,7 @@ Core reads `database.yml` and stores local data beneath the plugin `data/` direc
 
 - H2: `data/<filename>.mv.db`
 - SQLite: `data/<filename>.db`
-- YAML/JSON: `data/users`, `data/groups`, `data/ladders`, and `data/realms`
+- YAML/JSON: `data/users`, `data/groups`, and `data/ladders`
 
 Writes are queued on the platform's async scheduler and flushed before storage closes.
 

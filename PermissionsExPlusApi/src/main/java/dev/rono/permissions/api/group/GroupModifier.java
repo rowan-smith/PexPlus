@@ -1,5 +1,6 @@
 package dev.rono.permissions.api.group;
 
+import dev.rono.permissions.api.context.ContextKeys;
 import dev.rono.permissions.api.context.ContextSet;
 import dev.rono.permissions.api.parent.ParentNode;
 import dev.rono.permissions.api.permission.PermissionHolderModifier;
@@ -39,6 +40,10 @@ public interface GroupModifier extends PermissionHolderModifier<GroupModifier> {
         return addParent(ParentNode.builder().group(group).contexts(contexts).build());
     }
 
+    default GroupModifier addParent(String group, ContextKeys contextKey, String contextValue) {
+        return addParent(group, ContextSet.builder().add(contextKey, contextValue).build());
+    }
+
     default GroupModifier addTemporaryParent(String group, Duration duration) {
         return addParent(ParentNode.builder().group(group).duration(duration).build());
     }
@@ -53,7 +58,15 @@ public interface GroupModifier extends PermissionHolderModifier<GroupModifier> {
                 .build());
     }
 
+    default GroupModifier addTemporaryParent(String group, ContextKeys contextKey, String contextValue, Duration duration) {
+        return addTemporaryParent(group, ContextSet.builder().add(contextKey, contextValue).build(), duration);
+    }
+
     GroupModifier removeParent(String group, ContextSet contexts);
+
+    default GroupModifier removeParent(String group, ContextKeys contextKey, String contextValue) {
+        return removeParent(group, ContextSet.builder().add(contextKey, contextValue).build());
+    }
 
     default GroupModifier removeParent(String group) {
         return removeParent(group, ContextSet.empty());

@@ -12,6 +12,10 @@ public interface ContextSet {
 
     boolean contains(String key, String value);
 
+    default boolean contains(ContextKeys key, String value) {
+        return contains(key.key(), value);
+    }
+
     boolean isEmpty();
 
     static ContextSet empty() {

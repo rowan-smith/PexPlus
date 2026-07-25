@@ -2,6 +2,10 @@ package dev.rono.permissions.test;
 
 import dev.rono.permissions.api.PexProvider;
 import dev.rono.permissions.api.platform.context.ContextRegistration;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,11 +14,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public final class Test extends JavaPlugin implements Listener {
     private final ConcurrentMap<UUID, Boolean> flying = new ConcurrentHashMap<>();

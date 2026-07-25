@@ -42,12 +42,8 @@ API flat-file data is stored in `data/permissions.yml` or `data/permissions.json
 PexApi api = PexProvider.get();
 
 api.users().find(playerId).thenAccept(optional -> optional.ifPresent(user -> {
-    QueryOptions query = QueryOptions.builder()
-            .contexts(ContextSet.builder().add("world", "survival").build())
-            .build();
-
     PermissionResult result = api.resolvers().permissions()
-            .check(user, "example.use", query);
+            .check(user, "example.use", ContextKeys.WORLD, "survival");
 }));
 ```
 
@@ -86,9 +82,8 @@ Permission and option resolution supports contextual nodes, expiry, inheritance,
 
 Redis publishes user invalidations for user changes and fan-out invalidations for group changes. Remote invalidations reload only users currently present in the local cache. Audit broadcasting and network-wide audit messages continue to use the configured Redis channel.
 
-API v1 realms and metadata are represented natively in as contextual nodes and option
-nodes. For example, a former realm named `survival` is expressed with a `realm=survival`
-context, while prefix, suffix, display name, weight, and custom metadata use option nodes.
+Metadata is represented natively as option nodes. Prefix, suffix, display name,
+weight, and custom metadata use option nodes.
 
 ## Compatibility boundaries
 
@@ -96,8 +91,8 @@ The legacy adapter routes user/group permissions, options, parent groups, defaul
 weights, identifiers, and enumeration through API. Its world-inheritance configuration is
 currently a process-local compatibility view; API context resolution remains authoritative.
 
-The model intentionally does not reproduce the old named-realm registry, command-extension
-registry, or every fine-grained/cancellable v1 event type. Realms translate to arbitrary
-contexts, metadata translates to option nodes, and publishes lifecycle plus aggregate
+The model intentionally does not reproduce the old command-extension
+registry, or every fine-grained/cancellable v1 event type. Metadata translates to option
+nodes, and publishes lifecycle plus aggregate
 modification events. Existing v1 flat-file/SQL data also requires an explicit migration into
 the store; startup does not silently rewrite it.

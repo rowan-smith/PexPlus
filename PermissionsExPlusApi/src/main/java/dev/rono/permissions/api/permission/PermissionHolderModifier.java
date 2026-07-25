@@ -1,5 +1,6 @@
 package dev.rono.permissions.api.permission;
 
+import dev.rono.permissions.api.context.ContextKeys;
 import dev.rono.permissions.api.context.ContextSet;
 import dev.rono.permissions.api.options.OptionModifier;
 
@@ -37,6 +38,10 @@ public interface PermissionHolderModifier<Self extends PermissionHolderModifier<
                 .build());
     }
 
+    default Self allowPermission(String permission, ContextKeys contextKey, String contextValue) {
+        return allowPermission(permission, ContextSet.builder().add(contextKey, contextValue).build());
+    }
+
     default Self denyPermission(String permission) {
         return setPermission(PermissionNode.builder()
                 .permission(permission)
@@ -54,6 +59,10 @@ public interface PermissionHolderModifier<Self extends PermissionHolderModifier<
                 .build());
     }
 
+    default Self denyPermission(String permission, ContextKeys contextKey, String contextValue) {
+        return denyPermission(permission, ContextSet.builder().add(contextKey, contextValue).build());
+    }
+
     default Self allowTimedPermission(String permission, Duration duration) {
         return setPermission(PermissionNode.builder()
                 .permission(permission)
@@ -69,6 +78,10 @@ public interface PermissionHolderModifier<Self extends PermissionHolderModifier<
                 .contexts(contexts)
                 .duration(duration)
                 .build());
+    }
+
+    default Self allowTimedPermission(String permission, ContextKeys contextKey, String contextValue, Duration duration) {
+        return allowTimedPermission(permission, ContextSet.builder().add(contextKey, contextValue).build(), duration);
     }
 
     default Self denyTimedPermission(String permission, Duration duration) {
@@ -90,6 +103,10 @@ public interface PermissionHolderModifier<Self extends PermissionHolderModifier<
                 .build());
     }
 
+    default Self denyTimedPermission(String permission, ContextKeys contextKey, String contextValue, Duration duration) {
+        return denyTimedPermission(permission, ContextSet.builder().add(contextKey, contextValue).build(), duration);
+    }
+
     /**
      * Removes the explicit permission assignment matching the permission and exact
      * context set.
@@ -102,11 +119,19 @@ public interface PermissionHolderModifier<Self extends PermissionHolderModifier<
      */
     Self removePermission(String permission, ContextSet contexts);
 
+    default Self removePermission(String permission, ContextKeys contextKey, String contextValue) {
+        return removePermission(permission, ContextSet.builder().add(contextKey, contextValue).build());
+    }
+
     /** Removes all explicit permission assignments. */
     Self clearPermissions();
 
     /** Removes all explicit permission assignments with exactly these contexts. */
     Self clearPermissions(ContextSet contexts);
+
+    default Self clearPermissions(ContextKeys contextKey, String contextValue) {
+        return clearPermissions(ContextSet.builder().add(contextKey, contextValue).build());
+    }
 
     default Self removePermission(String permission) {
         Objects.requireNonNull(permission, "permission");

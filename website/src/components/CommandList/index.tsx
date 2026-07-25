@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './styles.module.css';
 import commandsData from '../../data/commands.json';
 
@@ -16,7 +16,7 @@ export default function CommandList() {
 
   const filteredCommands = useMemo(() => {
     return commandsData.filter((cmd) => {
-      const matchesSearch = 
+      const matchesSearch =
         cmd.command.toLowerCase().includes(search.toLowerCase()) ||
         cmd.description.toLowerCase().includes(search.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || cmd.category === selectedCategory;
@@ -50,7 +50,7 @@ export default function CommandList() {
             </button>
           )}
         </div>
-        
+
         {/* Quick Tags */}
         <div className={styles.tags}>
           <span className={styles.tagLabel}>Try:</span>
@@ -98,8 +98,8 @@ export default function CommandList() {
         <h3>Browse by category</h3>
         <div className={styles.categoryGrid}>
           {categories.filter(c => c !== 'All').map((cat) => (
-            <div 
-              key={cat} 
+            <div
+              key={cat}
               className={`${styles.categoryCard} ${selectedCategory === cat ? styles.activeCard : ''}`}
               onClick={() => setSelectedCategory(selectedCategory === cat ? 'All' : cat)}
             >
@@ -126,7 +126,7 @@ function getCategoryDescription(category: string) {
     case 'Users': return 'Player permissions, groups, prefixes, timed nodes, and cleanup.';
     case 'Groups': return 'Create groups, assign permissions, parents, weight, and defaults.';
     case 'Permissions': return 'Grant, remove, swap, and inspect permission nodes.';
-    case 'Worlds': return 'Multi-world contexts, inheritance, and realm-specific rules.';
+    case 'Worlds': return 'Multi-world contexts, inheritance, and world-specific rules.';
     case 'Ranks': return 'Rank ladders — modern `/pex ladder` subcommands; classic promote/demote shortcuts.';
     default: return '';
   }

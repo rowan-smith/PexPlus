@@ -46,9 +46,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-/** Platform-independent, API native PermissionsExPlus runtime. */
-public final class PexApiImpl<C> implements PexApi {
+    /** Platform-independent, API native PermissionsExPlus runtime. */
+    @Internal
+    public final class PexApiImpl<C> implements PexApi {
     private final Platform<C> platform;
 
     private volatile Runtime<C> runtime;
@@ -95,11 +97,13 @@ public final class PexApiImpl<C> implements PexApi {
         runtime = createRuntime();
     }
 
+    @Internal
     @Override
     public UserManagerImpl users() {
         return runtime.users;
     }
 
+    @Internal
     @Override
     public GroupManagerImpl groups() {
         return runtime.groups;

@@ -33,7 +33,7 @@ class ContextContractTest {
 
         stateTracker.updateState(subject, ContextKeys.WORLD, "survival");
 
-        contexts.registerCalculator((id, consumer) -> consumer.accept(ContextKeys.GAMEMODE, "creative"));
+        contexts.registerCalculator((id, consumer) -> consumer.accept(ContextKeys.GAMEMODE.key(), "creative"));
 
         var result = contexts.contexts(subject);
 
@@ -61,7 +61,7 @@ class ContextContractTest {
     void replaceAndClearManageSubjectContexts() {
         var subject = UUID.randomUUID();
 
-        stateTracker.replaceState(subject, Map.of(ContextKeys.WORLD, "nether", ContextKeys.PROXY, "proxy-a"));
+        stateTracker.replaceState(subject, Map.of(ContextKeys.WORLD.key(), "nether", ContextKeys.PROXY.key(), "proxy-a"));
 
         assertTrue(contexts.contexts(subject).contains(ContextKeys.WORLD, "nether"));
 
@@ -83,9 +83,9 @@ class ContextContractTest {
     void policyFiltersDisabledAndUnknownPlatformValues() {
         var policy = new ContextPolicy(configuration(true, false, true, false));
 
-        var selected = policy.select(Map.of(ContextKeys.WORLD, "survival", ContextKeys.GAMEMODE, "creative", ContextKeys.SERVER, "hub", "unknown", "value"));
+        var selected = policy.select(Map.of(ContextKeys.WORLD.key(), "survival", ContextKeys.GAMEMODE.key(), "creative", ContextKeys.SERVER.key(), "hub", "unknown", "value"));
 
-        assertEquals(Map.of(ContextKeys.WORLD, "survival", ContextKeys.SERVER, "hub"), selected);
+        assertEquals(Map.of(ContextKeys.WORLD.key(), "survival", ContextKeys.SERVER.key(), "hub"), selected);
     }
 
     private static AdvancedConfiguration configuration(boolean worlds, boolean gameModes, boolean servers, boolean proxies) {

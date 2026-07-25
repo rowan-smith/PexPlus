@@ -38,6 +38,69 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <doclint>none</doclint>
+                    <quiet>true</quiet>
+                    <windowtitle>PermissionsExPlus API</windowtitle>
+                    <doctitle>PermissionsExPlus API ${project.version}</doctitle>
+                    <bottom>Copyright &#169; ${project.inceptionYear}&#8211;${currentYear} rowan-smith. All rights reserved.</bottom>
+                    <groups>
+                        <group>
+                            <title>API</title>
+                            <packages>dev.rono.permissions.api</packages>
+                        </group>
+                        <group>
+                            <title>Context</title>
+                            <packages>dev.rono.permissions.api.context</packages>
+                        </group>
+                        <group>
+                            <title>Groups</title>
+                            <packages>dev.rono.permissions.api.group</packages>
+                        </group>
+                        <group>
+                            <title>Users</title>
+                            <packages>dev.rono.permissions.api.user</packages>
+                        </group>
+                        <group>
+                            <title>Permissions</title>
+                            <packages>dev.rono.permissions.api.permission</packages>
+                        </group>
+                        <group>
+                            <title>Options</title>
+                            <packages>dev.rono.permissions.api.options</packages>
+                        </group>
+                        <group>
+                            <title>Resolver</title>
+                            <packages>dev.rono.permissions.api.resolver</packages>
+                        </group>
+                        <group>
+                            <title>Ladders</title>
+                            <packages>dev.rono.permissions.api.ladder</packages>
+                        </group>
+                        <group>
+                            <title>Events</title>
+                            <packages>dev.rono.permissions.api.event</packages>
+                        </group>
+                        <group>
+                            <title>Platform</title>
+                            <packages>dev.rono.permissions.api.platform</packages>
+                        </group>
+                    </groups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

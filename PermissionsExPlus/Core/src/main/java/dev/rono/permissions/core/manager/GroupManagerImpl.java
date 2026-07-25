@@ -30,6 +30,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 public final class GroupManagerImpl implements GroupManager {
 
@@ -62,6 +63,7 @@ public final class GroupManagerImpl implements GroupManager {
         this.storage = new GroupStorageManagerImpl(store, executor);
     }
 
+    @Internal
     public void attach(UserManagerImpl users, LadderManagerImpl ladders) {
         this.users = users;
         this.ladders = ladders;
@@ -87,10 +89,12 @@ public final class GroupManagerImpl implements GroupManager {
         return Stages.call(() -> findNow(key).map(Group.class::cast), executor);
     }
 
+    @Internal
     public CompletionStage<Group> load(String key) {
         return Stages.call(() -> loadNow(key), executor);
     }
 
+    @Internal
     public CompletionStage<Group> create(String name) {
         Objects.requireNonNull(name, "name");
 
@@ -113,6 +117,7 @@ public final class GroupManagerImpl implements GroupManager {
         }, executor);
     }
 
+    @Internal
     public CompletionStage<Group> rename(String currentName, String newName) {
         return Stages.call(() -> {
             synchronized (this) {
@@ -159,6 +164,7 @@ public final class GroupManagerImpl implements GroupManager {
         }, executor);
     }
 
+    @Internal
     public CompletionStage<Boolean> delete(String name) {
         return Stages.call(() -> {
             synchronized (this) {
@@ -197,6 +203,7 @@ public final class GroupManagerImpl implements GroupManager {
         }, executor);
     }
 
+    @Internal
     public synchronized void loadAll() {
         cache.clear();
 
@@ -207,6 +214,7 @@ public final class GroupManagerImpl implements GroupManager {
                 .forEach(cache::put);
     }
 
+    @Internal
     public synchronized List<ExpiryRemoval> purgeExpired() {
         var removals = new ArrayList<ExpiryRemoval>();
 

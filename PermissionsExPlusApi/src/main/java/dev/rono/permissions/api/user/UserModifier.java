@@ -1,5 +1,6 @@
 package dev.rono.permissions.api.user;
 
+import dev.rono.permissions.api.context.ContextKeys;
 import dev.rono.permissions.api.context.ContextSet;
 import dev.rono.permissions.api.parent.ParentNode;
 import dev.rono.permissions.api.permission.PermissionHolderModifier;
@@ -24,6 +25,10 @@ public interface UserModifier extends PermissionHolderModifier<UserModifier> {
         return addGroup(ParentNode.builder().group(group).contexts(contexts).build());
     }
 
+    default UserModifier addGroup(String group, ContextKeys contextKey, String contextValue) {
+        return addGroup(group, ContextSet.builder().add(contextKey, contextValue).build());
+    }
+
     default UserModifier addTemporaryGroup(String group, Duration duration) {
         return addGroup(ParentNode.builder().group(group).duration(duration).build());
     }
@@ -38,7 +43,15 @@ public interface UserModifier extends PermissionHolderModifier<UserModifier> {
                 .build());
     }
 
+    default UserModifier addTemporaryGroup(String group, ContextKeys contextKey, String contextValue, Duration duration) {
+        return addTemporaryGroup(group, ContextSet.builder().add(contextKey, contextValue).build(), duration);
+    }
+
     UserModifier removeGroup(String group, ContextSet contexts);
+
+    default UserModifier removeGroup(String group, ContextKeys contextKey, String contextValue) {
+        return removeGroup(group, ContextSet.builder().add(contextKey, contextValue).build());
+    }
 
     default UserModifier removeGroup(String group) {
         return removeGroup(group, ContextSet.empty());

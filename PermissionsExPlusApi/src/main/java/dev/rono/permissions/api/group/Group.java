@@ -1,5 +1,6 @@
 package dev.rono.permissions.api.group;
 
+import dev.rono.permissions.api.context.ContextKeys;
 import dev.rono.permissions.api.context.ContextSet;
 import dev.rono.permissions.api.parent.ParentNode;
 import dev.rono.permissions.api.permission.NamedPermissionHolder;
@@ -41,5 +42,9 @@ public interface Group extends NamedPermissionHolder {
 
         return parents().stream()
                 .anyMatch(node -> node.group().equals(normalizedGroup) && node.contexts().equals(contexts));
+    }
+
+    default boolean hasDirectParent(String group, ContextKeys contextKey, String contextValue) {
+        return hasDirectParent(group, ContextSet.builder().add(contextKey, contextValue).build());
     }
 }

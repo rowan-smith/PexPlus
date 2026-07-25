@@ -33,9 +33,9 @@ class RuntimeStateTrackerTest {
         var tracker = tracker(true, false, false, false);
         var subject = UUID.randomUUID();
 
-        tracker.replaceState(subject, Map.of(ContextKeys.WORLD, "world", ContextKeys.GAMEMODE, "creative", "faction", "claimed"));
+        tracker.replaceState(subject, Map.of(ContextKeys.WORLD.key(), "world", ContextKeys.GAMEMODE.key(), "creative", "faction", "claimed"));
 
-        assertEquals(Map.of(ContextKeys.WORLD, Set.of("world")), tracker.contexts(subject).asMap());
+        assertEquals(Map.of(ContextKeys.WORLD.key(), Set.of("world")), tracker.contexts(subject).asMap());
     }
 
     @Test

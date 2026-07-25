@@ -4,13 +4,41 @@ sidebar_position: 6
 
 # World Commands
 
-Commands for managing world-specific settings and inheritance.
+PermissionsExPlus handles world-specific permissions through context flags rather than dedicated world commands.
 
-## World Inheritance
+## Using World Context
 
-- `/pex world <world> inherit <parent>`: Set the parent world for inheritance.
-- `/pex world <world> list`: List all settings for a specific world.
+World-scoped permissions are applied using the `--world` flag with user and group commands:
 
-## Multi-world Contexts
+### User commands with world context
 
-PermissionsExPlus uses the `--world <name>` context for world-specific permissions. While these are usually handled via `/pex user` or `/pex group` commands with context, the `/pex world` commands provide a way to manage world-level properties.
+```bash
+# Add a permission in a specific world
+/pex user <user> permission add <permission> --world <world>
+
+# Remove a permission in a specific world
+/pex user <user> permission remove <permission> --world <world>
+
+# List permissions in a specific world
+/pex user <user> permissions list --world <world>
+
+# Add user to a group in a specific world
+/pex user <user> groups add <group> --world <world>
+```
+
+### Group commands with world context
+
+```bash
+# Add a permission in a specific world
+/pex group <group> permission add <permission> --world <world>
+
+# Set group prefix in a specific world
+/pex group <group> options set prefix <prefix> --world <world>
+
+# Add parent group in a specific world
+/pex group <group> parents add <parent> --world <world>
+```
+
+## Legacy World Commands
+
+The legacy PermissionsEx 1.x `/pex world` commands for managing world inheritance are not supported in PermissionsExPlus. World inheritance is now handled through the context system.
