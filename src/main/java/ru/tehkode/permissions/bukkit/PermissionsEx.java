@@ -18,13 +18,6 @@
  */
 package ru.tehkode.permissions.bukkit;
 
-import java.lang.reflect.Field;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -59,6 +52,13 @@ import ru.tehkode.permissions.events.PermissionEvent;
 import ru.tehkode.permissions.exceptions.PermissionBackendException;
 import ru.tehkode.permissions.exceptions.PermissionsNotAvailable;
 import ru.tehkode.utils.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * @author code
@@ -243,6 +243,11 @@ public class PermissionsEx extends JavaPlugin implements NativeInterface {
 	}
 
 	@Override
+	public List<String> onTabComplete(@NonNull CommandSender sender, @NonNull Command command, @NonNull String alias, @NonNull String[] args) {
+		return this.commandsManager.tabComplete(sender, command, alias, args);
+	}
+
+	@Override
 	public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String commandLabel, @NonNull String[] args) {
 		try {
 			PluginDescriptionFile pdf = this.getDescription();
@@ -323,7 +328,7 @@ public class PermissionsEx extends JavaPlugin implements NativeInterface {
 			return null;
 		}
 
-		return worlds.getFirst().getUID();
+		return worlds.get(0).getUID();
 	}
 
 	@Override
