@@ -9,3 +9,7 @@
 /.idea/
 /PermissionsEx.iml
 .DS_Store
+
+# Node
+node_modules/
+.docusaurus
